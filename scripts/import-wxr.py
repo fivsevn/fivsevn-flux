@@ -19,7 +19,7 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT_DIR = Path(__file__).resolve().parent
 sys.path.insert(0, str(SCRIPT_DIR))
-from media_utils import download_asset, is_remote_url  # noqa: E402
+from media_utils import download_asset, is_remote_url, best_img_url  # noqa: E402
 
 NS = {
     'content': 'http://purl.org/rss/1.0/modules/content/',
@@ -78,7 +78,7 @@ def clean_and_localize(raw_html: str, item_dir: Path, download_media: bool = Tru
     media = []
     img_index = 0
     for img in soup.find_all('img'):
-        src = img.get('src') or ''
+        src = best_img_url(img)
         if download_media and is_remote_url(src):
             img_index += 1
             local, original = download_asset(src, item_dir / 'assets', img_index)
