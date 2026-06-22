@@ -105,7 +105,7 @@ doc = f'''<!doctype html>
 <body>
   <main class="site">
     <header class="topline">
-      <a class="brand" href="./">typing…</a>
+      <a class="brand" href="./">typing</a>
       <nav class="nav" aria-label="links">
         <a href="https://fivsevn.com/posts/">source</a>
         <a href="https://github.com/fivsevn/fivsevn-flux">repo</a>
