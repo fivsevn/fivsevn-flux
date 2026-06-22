@@ -9,6 +9,7 @@ wp_slug: github-text-e58d2eb
 status: published
 tags: []
 comments: 0
+sync: auto
 ---
 
 🚧ei，wordpress 更新之后好多模块动一下就全没了，晚上要紧急施工 😖

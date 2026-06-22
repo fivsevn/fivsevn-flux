@@ -10,6 +10,7 @@ status: published
 tags:
 - 东风一只
 comments: 0
+sync: auto
 ---
 
 遇强则强者，不是师傅厉害就是对手强大。

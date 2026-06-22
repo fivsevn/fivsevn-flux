@@ -9,6 +9,7 @@ wp_slug: 4-march-2026-0153
 status: published
 tags: []
 comments: 0
+sync: auto
 ---
 
 新板块：《公众表达的 AI 逻辑检测》

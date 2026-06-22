@@ -9,6 +9,7 @@ wp_slug: 4-march-2026-1955
 status: published
 tags: []
 comments: 0
+sync: auto
 ---
 
 专栏【AI 话语分析】更新：《AI 生成文本与沟通责任问题》<https://fivsevn-agy.github.io/fivsevn-devlog/posts/ai-discourse-analysis/content/002-chatbot-etiquette.html>

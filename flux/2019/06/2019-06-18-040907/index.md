@@ -9,6 +9,7 @@ wp_slug: '%e6%b7%b1%e5%a4%9c%e5%9b%9b%e6%99%82'
 status: published
 tags: []
 comments: 0
+sync: auto
 ---
 
 眠い

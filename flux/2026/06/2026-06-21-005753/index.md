@@ -9,6 +9,7 @@ wp_slug: github-text-861acea
 status: published
 tags: []
 comments: 0
+sync: auto
 ---
 
 > ...  

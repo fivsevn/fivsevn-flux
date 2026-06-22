@@ -9,6 +9,7 @@ wp_slug: github-text-87a3e26
 status: published
 tags: []
 comments: 0
+sync: auto
 ---
 
 之前让 AI 辅助做过 system-map 一类的文档，那时候先凑合着用的。刚才我自己重新做了一份，比 AI 做的简洁一些。AI 之前弄得有点复杂，虽然大致意思都是对的。

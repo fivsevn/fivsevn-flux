@@ -9,6 +9,7 @@ wp_slug: 21-april-2026-0029
 status: published
 tags: []
 comments: 0
+sync: auto
 ---
 
 📷🌊<https://fivsevn.com/2026/04/20/kamakura/>

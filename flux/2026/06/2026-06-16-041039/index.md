@@ -9,6 +9,7 @@ wp_slug: github-text-5c67178
 status: published
 tags: []
 comments: 0
+sync: auto
 ---
 
 更新了 [spec](https://github.com/fivsevn-agy/fivsevn-spec) 🥳

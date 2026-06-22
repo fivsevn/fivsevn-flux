@@ -32,7 +32,5 @@ a:hover{color:var(--accent); border-bottom-color:var(--accent)}
 .entry-body img{display:block; max-width:100%; height:auto; margin:8px 0 14px; border:1px solid var(--faint); background:#000;}
 .entry-body code{background:#101411; padding:.1em .28em; border:1px solid var(--faint);}
 .entry-body pre{overflow:auto; padding:14px; border:1px solid var(--faint); background:#080b09;}
-.meta{margin-top:20px; color:var(--muted); font-size:.79rem; line-height:1.8; white-space:pre-line;}
-.dot{color:var(--muted); margin:18px 0 4px;}
 .footer{margin-top:52px; color:var(--muted); font-size:.78rem;}
 @media (max-width:620px){.site{padding:28px 16px 64px}.topline{display:block}.nav{margin-top:12px}.nav a{margin:0 14px 0 0}.entry-title{font-size:1.05rem}}

@@ -9,6 +9,7 @@ wp_slug: 7-june-2026-1446
 status: published
 tags: []
 comments: 0
+sync: auto
 ---
 
 博客的图片和视频内容存放在哪里、如何在页面或者正文内容当中引用，我的方法归纳在这里：<https://devlog.fivsevn.com/blogops/content/blogops-assets-media-reference-001.html>

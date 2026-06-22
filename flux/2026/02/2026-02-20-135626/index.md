@@ -9,6 +9,7 @@ wp_slug: 20-february-2026-1356
 status: published
 tags: []
 comments: 0
+sync: auto
 ---
 
 Stop Thinking of AI as a Coworker. It's an Exoskeleton.

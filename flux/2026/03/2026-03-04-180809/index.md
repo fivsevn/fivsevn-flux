@@ -9,6 +9,7 @@ wp_slug: 4-march-2026-1808
 status: published
 tags: []
 comments: 0
+sync: auto
 ---
 
 改名字了：《AI话语分析》这样简洁、直接一点。<https://fivsevn-agy.github.io/fivsevn-devlog/posts/ai-discourse-analysis/>

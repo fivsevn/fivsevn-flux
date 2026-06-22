@@ -9,6 +9,7 @@ wp_slug: 17-march-2026-0736
 status: published
 tags: []
 comments: 0
+sync: auto
 ---
 
 做了一个昆虫数据库索引：<https://devlog.fivsevn.com/natsci/taxonomy/insecta/natsci-taxonomy-insecta-database-001.html>

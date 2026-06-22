@@ -9,6 +9,7 @@ wp_slug: github-text-bb07794
 status: published
 tags: []
 comments: 0
+sync: auto
 ---
 
 以后发布文字内容可以直接更改下面这个 trigger 文档并 commit。

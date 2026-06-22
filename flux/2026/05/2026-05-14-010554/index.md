@@ -9,6 +9,7 @@ wp_slug: 14-may-2026-0105
 status: published
 tags: []
 comments: 0
+sync: auto
 ---
 
 You can‘t live a life worth living when it’s rotten at the core.

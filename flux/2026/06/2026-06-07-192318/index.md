@@ -9,6 +9,7 @@ wp_slug: 7-june-2026-1923
 status: published
 tags: []
 comments: 0
+sync: auto
 ---
 
 <https://www.npr.org/2026/06/06/nx-s1-5847932/why-one-historian-uses-social-media-to-remember-d-day-in-real-time>

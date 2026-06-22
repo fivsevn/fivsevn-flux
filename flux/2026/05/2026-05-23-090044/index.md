@@ -9,6 +9,7 @@ wp_slug: 23-may-2026-0900
 status: published
 tags: []
 comments: 0
+sync: auto
 ---
 
 试用 Runway 做 AI 视频。用以前 Instagram 旧账号上面发过的图片转视频试试！

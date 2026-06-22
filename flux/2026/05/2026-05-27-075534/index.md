@@ -9,6 +9,7 @@ wp_slug: 27-may-2026-0755
 status: published
 tags: []
 comments: 0
+sync: auto
 ---
 
 《拳愿阿修罗》主要企业：<https://w.atwiki.jp/aniwotawiki/pages/47584.html#id_a2b840de>

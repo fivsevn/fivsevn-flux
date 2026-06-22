@@ -9,6 +9,7 @@ wp_slug: 17-april-2026-2244
 status: published
 tags: []
 comments: 0
+sync: auto
 ---
 
 <https://jeffreyarnett.com>

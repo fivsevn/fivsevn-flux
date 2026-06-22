@@ -9,6 +9,7 @@ wp_slug: 17-may-2026-0008
 status: published
 tags: []
 comments: 0
+sync: auto
 ---
 
 《印尼etc.》第五章有关捕鲸的内容值得看一看。

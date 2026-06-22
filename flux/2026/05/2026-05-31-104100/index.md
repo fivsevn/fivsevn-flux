@@ -9,6 +9,7 @@ wp_slug: '3196'
 status: published
 tags: []
 comments: 0
+sync: auto
 ---
 
 岩井：阿德勒心理学与弗洛伊德心理学的区分

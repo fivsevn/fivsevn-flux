@@ -9,6 +9,7 @@ wp_slug: 3-june-2026-1705
 status: published
 tags: []
 comments: 0
+sync: auto
 ---
 
 类似 Upstract（<https://upstract.com>）和 Buzzing（<https://www.buzzing.cc>）这类资讯聚合网站，很适合快速浏览各类信息。另外，像 garss（<https://github.com/zhaoolee/garss>）这种可以直接生成每日新闻列表的项目，也非常方便。
