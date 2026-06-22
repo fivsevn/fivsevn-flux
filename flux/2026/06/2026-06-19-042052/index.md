@@ -9,6 +9,7 @@ wp_slug: github-text-d52f234
 status: published
 tags: []
 comments: 0
+sync: auto
 ---
 
 [预测市场](https://devlog.fivsevn.com/posts/2026/posts-20260619-methods-prediction-market-001.html)

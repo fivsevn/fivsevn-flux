@@ -9,6 +9,7 @@ wp_slug: 30-may-2026-0900
 status: published
 tags: []
 comments: 0
+sync: auto
 ---
 
 Well, you can't get the right answers if you haven't got the right questions.

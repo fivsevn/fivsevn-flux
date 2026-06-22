@@ -9,6 +9,7 @@ wp_slug: 10-may-2026-0223
 status: published
 tags: []
 comments: 0
+sync: auto
 ---
 
 start of something new

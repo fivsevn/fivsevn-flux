@@ -9,6 +9,7 @@ wp_slug: 4-june-2026-0635
 status: published
 tags: []
 comments: 0
+sync: auto
 ---
 
 <https://www.nature.com/articles/d41586-026-01728-w>

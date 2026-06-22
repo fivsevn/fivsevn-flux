@@ -9,6 +9,7 @@ wp_slug: 6-june-2026-1502
 status: published
 tags: []
 comments: 0
+sync: auto
 ---
 
 现在图片上传到 GitHub 对应的仓库文件夹，就可以自动更新到博客对应栏目🥳。上传到 YouTube 频道存档的视频也会自动同步更新到对应的博客页面。详见：<https://github.com/fivsevn/fivsevn-assets/blob/main/README.md>

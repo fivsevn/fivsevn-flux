@@ -9,6 +9,7 @@ wp_slug: 1-june-2026-1417
 status: published
 tags: []
 comments: 0
+sync: auto
 ---
 
 阿德勒心理学

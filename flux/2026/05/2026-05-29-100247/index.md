@@ -9,6 +9,7 @@ wp_slug: '3064'
 status: published
 tags: []
 comments: 0
+sync: auto
 ---
 
 https://www.youtube.com/watch?v=64mxEOPAHLc

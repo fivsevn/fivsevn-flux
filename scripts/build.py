@@ -5,6 +5,7 @@ import re, html, yaml, mistune
 ROOT = Path(__file__).resolve().parents[1]
 FLUX = ROOT / 'flux'
 
+
 def split_frontmatter(text):
     if not text.startswith('---'):
         return {}, text
@@ -29,11 +30,9 @@ for fm, body in items:
     ident = fm.get('id') or fm['_dir'].split('/')[-1]
     title = fm.get('title') or ident
     html_body = markdown(body) if body else ''
-    meta = f".\n\ntags: {', '.join(fm.get('tags') or [])}\n\ncomment:\n\n{fm.get('comments', 0)}\n\n{fm.get('date','')}"
     entries.append(f'''<article class="entry" id="{html.escape(str(ident))}">
   <h2 class="entry-title"><a href="#{html.escape(str(ident))}">{html.escape(str(title))}</a></h2>
   <div class="entry-body">{html_body}</div>
-  <div class="meta">{html.escape(meta)}</div>
 </article>''')
 
 doc = f'''<!doctype html>

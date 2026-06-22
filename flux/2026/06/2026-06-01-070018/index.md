@@ -9,6 +9,7 @@ wp_slug: 1-june-2026-0654
 status: published
 tags: []
 comments: 0
+sync: auto
 ---
 
 阿德勒心理学 岩井研究

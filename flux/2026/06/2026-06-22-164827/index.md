@@ -9,6 +9,7 @@ wp_slug: github-text-ce2618f
 status: published
 tags: []
 comments: 0
+sync: auto
 ---
 
 相关文章：https://charitydotwtf.substack.com/p/ai-demands-more-engineering-discipline

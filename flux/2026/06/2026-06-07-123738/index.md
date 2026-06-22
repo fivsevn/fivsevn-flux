@@ -9,6 +9,7 @@ wp_slug: 7-june-2026-1237
 status: published
 tags: []
 comments: 0
+sync: auto
 ---
 
 以前看到这个：

@@ -9,6 +9,7 @@ wp_slug: 15-april-2026-0428
 status: published
 tags: []
 comments: 0
+sync: auto
 ---
 
 阿内特

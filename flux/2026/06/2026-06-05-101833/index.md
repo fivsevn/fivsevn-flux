@@ -9,6 +9,7 @@ wp_slug: 5-june-2026-1018
 status: published
 tags: []
 comments: 0
+sync: auto
 ---
 
 <https://www.theguardian.com/australia-news/2026/jun/05/live-cockroaches-seized-nsw-breeder-australia>

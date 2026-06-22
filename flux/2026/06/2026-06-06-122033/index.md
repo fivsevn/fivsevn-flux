@@ -9,6 +9,7 @@ wp_slug: 6-june-2026-1220
 status: published
 tags: []
 comments: 0
+sync: auto
 ---
 
 <https://www.themarginalian.org/2026/06/01/nathaniel-hawthorne-classification/>

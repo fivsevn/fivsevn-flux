@@ -9,6 +9,7 @@ wp_slug: '%e3%80%8a%e6%b4%9e%e7%a9%b4%e5%a5%87%e6%a1%88%e3%80%8b%e9%80%9f%e8%ae%
 status: published
 tags: []
 comments: 0
+sync: auto
 ---
 
 笔记：<https://fivsevn-agy.github.io/fivsevn-devlog/posts/2026/20260222speluncean.html>

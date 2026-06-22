@@ -9,6 +9,7 @@ wp_slug: github-text-d06d81d
 status: published
 tags: []
 comments: 0
+sync: auto
 ---
 
 > It's the universal motive for all crime through out human history.  

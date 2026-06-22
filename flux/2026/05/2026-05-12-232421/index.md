@@ -9,6 +9,7 @@ wp_slug: 12-may-2026-2324
 status: published
 tags: []
 comments: 0
+sync: auto
 ---
 
 印尼etc.

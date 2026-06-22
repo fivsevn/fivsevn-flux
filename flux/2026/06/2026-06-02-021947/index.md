@@ -9,6 +9,7 @@ wp_slug: 2-june-2026-0219
 status: published
 tags: []
 comments: 0
+sync: auto
 ---
 
 Without stakes, it's hard to spot a lie. There's no fear of being caught.

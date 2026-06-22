@@ -9,6 +9,7 @@ wp_slug: 1-june-2026-1422
 status: published
 tags: []
 comments: 0
+sync: auto
 ---
 
 有关“为什么有些书的译本很多”，AI 给出的参考思路：
