@@ -10,10 +10,15 @@ status: published
 tags: []
 comments: 0
 sync: auto
+media:
+- file: ./assets/01-IMG_6885.png
+  source: https://raw.githubusercontent.com/fivsevn/fivsevn-assets/7fefbd6a6fa594482ec5e46f5c814cd30685f046/post/2026/202605/IMG_6885.PNG
+- file: ./assets/02-IMG_6886.png
+  source: https://raw.githubusercontent.com/fivsevn/fivsevn-assets/7fefbd6a6fa594482ec5e46f5c814cd30685f046/post/2026/202605/IMG_6886.PNG
 ---
 
-![](https://cdn.jsdelivr.net/gh/fivsevn/fivsevn-assets@7fefbd6a6fa594482ec5e46f5c814cd30685f046/post/2026/202605/IMG_6885.PNG)
-![](https://cdn.jsdelivr.net/gh/fivsevn/fivsevn-assets@7fefbd6a6fa594482ec5e46f5c814cd30685f046/post/2026/202605/IMG_6886.PNG)
+![](./assets/01-IMG_6885.png)
+![](./assets/02-IMG_6886.png)
 
 检测到未注册肉质组件  
 正在执行强制卸载…
