@@ -2,14 +2,13 @@
 id: 2026-06-01-070018
 date: '2026-06-01T07:00:18+08:00'
 title: 1 June, 2026 06:54
-source: wordpress
+source: wordpress-live
+sync: auto
+source_hash: e1b32c56aefc1eed
 wp_post_id: 3205
 wp_url: https://fivsevn.com/2026/06/01/1-june-2026-0654/
 wp_slug: 1-june-2026-0654
 status: published
-tags: []
-comments: 0
-sync: auto
 ---
 
 阿德勒心理学 岩井研究

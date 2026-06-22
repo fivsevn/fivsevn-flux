@@ -2,19 +2,21 @@
 id: 2026-06-05-101833
 date: '2026-06-05T10:18:33+08:00'
 title: 5 June, 2026 10:18
-source: wordpress
+source: wordpress-live
+sync: auto
+source_hash: fd0e7c8bad251ea2
 wp_post_id: 3367
 wp_url: https://fivsevn.com/2026/06/05/5-june-2026-1018/
 wp_slug: 5-june-2026-1018
 status: published
-tags: []
-comments: 0
-sync: auto
 ---
 
 <https://www.theguardian.com/australia-news/2026/jun/05/live-cockroaches-seized-nsw-breeder-australia>
+
 ChatGPT：
+
 这篇《卫报》报道的核心是：澳大利亚新州 Bathurst 一家商业繁殖者被查获 **10万多只活体外来蟑螂**，估值最高约 **20万澳元**，被称为澳大利亚迄今最大规模的非法外来无脊椎动物查获案。
+
 主要信息：
 
 - 查获地点：新南威尔士州中西部 **Bathurst**。
