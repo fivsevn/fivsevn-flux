@@ -1,0 +1,39 @@
+name: Full rescan WordPress posts
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: flux-full-rescan
+  cancel-in-progress: false
+
+jobs:
+  full-rescan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - run: pip install -r requirements.txt
+
+      - name: Full rescan WordPress posts
+        run: python scripts/sync-from-live.py --full-rescan --soft-delete-missing
+
+      - name: Localize remote media
+        run: python scripts/localize-media.py
+
+      - name: Build index
+        run: python scripts/build.py
+
+      - name: Commit full rescan result
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: full rescan wordpress posts
+          file_pattern: flux/** index.html
