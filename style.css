@@ -1,4 +1,4 @@
-/* fivsevn flux - small type revision */
+/* fivsevn flux - mobile alignment revision */
 
 :root {
   --bg: #131415;
@@ -6,6 +6,7 @@
   --muted: #8a8f8c;
   --line: rgba(216, 216, 210, 0.14);
   --link: #6becae;
+  --content: 760px;
 }
 
 * {
@@ -27,11 +28,13 @@ body {
   line-height: 1.68;
   font-weight: 400;
   letter-spacing: 0;
+  overflow-x: hidden;
 }
 
 .site {
-  width: min(920px, calc(100vw - 44px));
-  margin: 0 auto;
+  width: min(var(--content), calc(100vw - 40px));
+  margin-left: auto;
+  margin-right: auto;
   padding: 28px 0 72px;
 }
 
@@ -73,6 +76,7 @@ body {
 }
 
 .entry {
+  width: 100%;
   padding: 0 0 36px;
   margin: 0 0 34px;
   border-bottom: 1px solid var(--line);
@@ -96,6 +100,8 @@ body {
   font-size: 13px;
   line-height: 1.72;
   font-weight: 400;
+  overflow-wrap: anywhere;
+  word-break: normal;
 }
 
 .entry-body > *:first-child {
@@ -119,6 +125,8 @@ a:visited,
   text-decoration-thickness: 1px;
   text-underline-offset: 0.16em;
   font-weight: 400;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 img {
@@ -182,12 +190,19 @@ pre {
 
 @media (max-width: 640px) {
   .site {
-    width: min(100vw - 28px, 920px);
+    width: min(100vw - 40px, var(--content));
+    margin-left: auto;
+    margin-right: auto;
     padding-top: 22px;
   }
 
   .topline {
     margin-bottom: 40px;
+  }
+
+  .entry {
+    padding-bottom: 34px;
+    margin-bottom: 32px;
   }
 
   .entry-title {
