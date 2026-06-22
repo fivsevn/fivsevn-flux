@@ -2,15 +2,15 @@
 id: 2026-05-17-004259
 date: '2026-05-17T00:42:59+08:00'
 title: 17 May, 2026 00:42
-source: wordpress
+source: wordpress-live
+sync: auto
+source_hash: 22d09ebd51164640
 wp_post_id: 2770
 wp_url: https://fivsevn.com/2026/05/17/17-may-2026-0042/
 wp_slug: 17-may-2026-0042
 status: published
-tags: []
-comments: 0
-sync: auto
 ---
 
 印尼etc.
+
 > 如此难看的成绩单系教学不良所致，教学水平低落则是利益输送的结果。担任教职最容易挤进令人垂涎的公务员行列，地方政治人物也总是为其支持者提供教职，于是学校里被安插了一堆立志当公务员、无意作育英才的人。这些教师的心态与印尼官僚如出一辙，认为他们可以弹性上班、随意休假。

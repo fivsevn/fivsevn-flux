@@ -2,20 +2,22 @@
 id: 2026-06-04-063550
 date: '2026-06-04T06:35:50+08:00'
 title: 4 June, 2026 06:35
-source: wordpress
+source: wordpress-live
+sync: auto
+source_hash: b927943505846fa6
 wp_post_id: 3359
 wp_url: https://fivsevn.com/2026/06/04/4-june-2026-0635/
 wp_slug: 4-june-2026-0635
 status: published
-tags: []
-comments: 0
-sync: auto
 ---
 
 <https://www.nature.com/articles/d41586-026-01728-w>
 AI 略读：
+
 > 这篇 Nature 文章的核心意思是：关于“人类最长能活多久”的很多说法其实证据很不稳，当前科学并不能可靠地给出一个明确上限。
+>
 > 它不是一篇原创研究论文，而是 Nature 的 Book Review / 访谈式文章，围绕 Saul Justin Newman 的新书 Morbid: Debunking Modern Longevity Science 展开；Nature 页面标题是 “How long can humans live? We simply don’t know”，副标题直接说：关于人类寿命上限的许多主张充满炒作、数据缺陷和粗糙科学。
+>
 > 主要讲了几层：
 >
 > 1. 不要轻信“人类寿命有精确上限”或“可以无限延长”的断言。

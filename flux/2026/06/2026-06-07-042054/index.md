@@ -2,14 +2,16 @@
 id: 2026-06-07-042054
 date: '2026-06-07T04:20:54+08:00'
 title: 07 Jun, 2026 05:05
-source: wordpress
+source: wordpress-live
+sync: auto
+source_hash: 881833334cfc9522
 wp_post_id: 3664
 wp_url: https://fivsevn.com/2026/06/07/asset-post-stream-img-6891-png/
 wp_slug: asset-post-stream-img-6891-png
 status: published
-tags: []
-comments: 0
-sync: auto
+media:
+- file: ./assets/01-IMG_6891.png
+  source: https://raw.githubusercontent.com/fivsevn/fivsevn-assets/main/post/stream/IMG_6891.PNG
 ---
 
-![07 Jun, 2026 05:05](https://cdn.jsdelivr.net/gh/fivsevn/fivsevn-assets@main/post/flux/IMG_6891.PNG)
+![07 Jun, 2026 05:05](./assets/01-IMG_6891.png)

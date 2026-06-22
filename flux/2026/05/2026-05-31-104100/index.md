@@ -2,14 +2,13 @@
 id: 2026-05-31-104100
 date: '2026-05-31T10:41:00+08:00'
 title: 2026-05-31-104100
-source: wordpress
+source: wordpress-live
+sync: auto
+source_hash: d18a4c3bcddf6cc7
 wp_post_id: 3196
 wp_url: https://fivsevn.com/2026/05/31/3196/
 wp_slug: '3196'
 status: published
-tags: []
-comments: 0
-sync: auto
 ---
 
 岩井：阿德勒心理学与弗洛伊德心理学的区分

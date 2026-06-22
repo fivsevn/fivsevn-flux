@@ -2,18 +2,19 @@
 id: 2026-05-31-023651
 date: '2026-05-31T02:36:51+08:00'
 title: 31 May, 2026 02:36
-source: wordpress
+source: wordpress-live
+sync: auto
+source_hash: fff78839b3d79ffa
 wp_post_id: 3136
 wp_url: https://fivsevn.com/2026/05/31/31-may-2026-0236/
 wp_slug: 31-may-2026-0236
 status: published
-tags: []
-comments: 0
-sync: auto
 ---
 
 阿德勒心理学 岩井研究
+
 > 根据阿德勒心理学的理论，要了解一个人，观察他与别人相处的模式是一条捷径。
+>
 > 比起关注对方的想法（思想），关注其人际关系（行为）更易于考察，且不会出错。
 
 [日]岩井俊宪. 阿德勒心理学实践手册[M]. 刘峥, 译. 北京: 中信出版集团股份有限公司, 2023. ISBN 978-7-5217-4802-4
