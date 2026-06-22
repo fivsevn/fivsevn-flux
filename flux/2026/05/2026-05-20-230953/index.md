@@ -10,14 +10,9 @@ status: published
 tags: []
 comments: 0
 sync: auto
-media:
-- file: ./assets/image-01.jpg
-  source: https://cdn.jsdelivr.net/gh/fivsevn/fivsevn-assets@7fefbd6a6fa594482ec5e46f5c814cd30685f046/post/2026/202605/IMG_6881.JPG
-- file: ./assets/image-02.jpg
-  source: https://cdn.jsdelivr.net/gh/fivsevn/fivsevn-assets@7fefbd6a6fa594482ec5e46f5c814cd30685f046/post/2026/202605/IMG_6882.JPG
 ---
 
-![](./assets/image-01.jpg)
-![](./assets/image-02.jpg)
+![](https://cdn.jsdelivr.net/gh/fivsevn/fivsevn-assets@7fefbd6a6fa594482ec5e46f5c814cd30685f046/post/2026/202605/IMG_6881.JPG)
+![](https://cdn.jsdelivr.net/gh/fivsevn/fivsevn-assets@7fefbd6a6fa594482ec5e46f5c814cd30685f046/post/2026/202605/IMG_6882.JPG)
 
 🔴 现已摘除抑制器失控核心，执行强制泄压。
