@@ -2,15 +2,15 @@
 id: 2026-04-23-165821
 date: '2026-04-23T16:58:21+08:00'
 title: 23 April, 2026 16:58
-source: wordpress
+source: wordpress-live
+sync: auto
+source_hash: c507e4c226fa94c7
 wp_post_id: 2634
 wp_url: https://fivsevn.com/2026/04/23/23-april-2026-1658/
 wp_slug: 23-april-2026-1658
 status: published
-tags: []
-comments: 0
-sync: auto
 ---
 
 阿内特
+
 > 维果茨基最有影响力的两个观点是最近发展区和脚手架理论。最近发展区（zone ofproximal development）是青少年独立解决问题的实际发展水平与其在成年人或有能力的同伴的指导下达到的解决问题的水平之间的差距。维果茨基认为，如果儿童和青少年得到的指导最靠近他们的最近发展区，那么他们的学习效果最好。所以他们通常在一开始需要帮助，之后逐渐能够独立完成任务。例如，学习乐器的青少年如果完全自学，可能会感到茫然不知所措，但是如果有一个会弹乐器的人给予指导，他们就能取得进步。

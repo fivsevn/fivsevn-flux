@@ -2,14 +2,13 @@
 id: 2026-03-17-073623
 date: '2026-03-17T07:36:23+08:00'
 title: 17 March, 2026 07:36
-source: wordpress
+source: wordpress-live
+sync: auto
+source_hash: b25ba630da98ec0e
 wp_post_id: 2467
 wp_url: https://fivsevn.com/2026/03/17/17-march-2026-0736/
 wp_slug: 17-march-2026-0736
 status: published
-tags: []
-comments: 0
-sync: auto
 ---
 
 做了一个昆虫数据库索引：<https://devlog.fivsevn.com/natsci/taxonomy/insecta/natsci-taxonomy-insecta-database-001.html>

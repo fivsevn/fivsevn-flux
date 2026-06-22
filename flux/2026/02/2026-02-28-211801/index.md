@@ -2,14 +2,13 @@
 id: 2026-02-28-211801
 date: '2026-02-28T21:18:01+08:00'
 title: 28 February, 2026 21:18
-source: wordpress
+source: wordpress-live
+sync: auto
+source_hash: e4ef8aa0ebff2b7d
 wp_post_id: 2293
 wp_url: https://fivsevn.com/2026/02/28/28-february-2026-2118/
 wp_slug: 28-february-2026-2118
 status: published
-tags: []
-comments: 0
-sync: auto
 ---
 
 对于不少人来说，在互动过程中，“被理解的感觉”往往比“被理解”本身更有效。这里需要区分两个概念。所谓“被理解”，指的是理解的精度——对方是 100% 把握了你的意思，还是只抓住了 70% 。它是认知层面的准确度。而“被理解的感觉”并不是结构精度的问题，而是互动状态的问题：对方是否回应你，是在否定还是在肯定，是否在情绪上与你对齐，是否让你感到安全。这是一种心理上的安全感。

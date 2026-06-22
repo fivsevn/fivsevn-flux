@@ -2,16 +2,17 @@
 id: 2026-04-17-224403
 date: '2026-04-17T22:44:03+08:00'
 title: 17 April, 2026 22:44
-source: wordpress
+source: wordpress-live
+sync: auto
+source_hash: 6aee895064d52498
 wp_post_id: 2522
 wp_url: https://fivsevn.com/2026/04/17/17-april-2026-2244/
 wp_slug: 17-april-2026-2244
 status: published
-tags: []
-comments: 0
-sync: auto
 ---
 
 <https://jeffreyarnett.com>
+
 阿内特的青少年心理学研究，为理解个体发展提供了一个较为清晰且有启发性的分析框架。尽管其结论在不同社会背景与家庭条件下未必完全适用（这主要与研究样本有关，一般读者不必过度苛求其普适性），但整体上仍具有较高的参考价值。
+
 其意义也并不局限于18–25岁这一年龄阶段。相较而言，已经走过这一阶段的人群，反而更适合通过阅读与对照，对自身经历进行回溯式反思。对于那些并未完全对应自身特征的描述，也可以将其视为一种“潜在可能性”，而非简单排除在外。

@@ -2,14 +2,13 @@
 id: 2026-03-04-195531
 date: '2026-03-04T19:55:31+08:00'
 title: 4 March, 2026 19:55
-source: wordpress
+source: wordpress-live
+sync: auto
+source_hash: 25c677503b4c71bd
 wp_post_id: 2358
 wp_url: https://fivsevn.com/2026/03/04/4-march-2026-1955/
 wp_slug: 4-march-2026-1955
 status: published
-tags: []
-comments: 0
-sync: auto
 ---
 
 专栏【AI 话语分析】更新：《AI 生成文本与沟通责任问题》<https://fivsevn-agy.github.io/fivsevn-devlog/posts/ai-discourse-analysis/content/002-chatbot-etiquette.html>
