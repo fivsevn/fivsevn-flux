@@ -1,4 +1,4 @@
-/* fivsevn flux - post card visual revision */
+/* fivsevn flux - avatar post cards, compact revision */
 
 :root {
   --bg: #131415;
@@ -7,8 +7,11 @@
   --muted: #929292;
   --line: rgba(146, 146, 146, 0.22);
   --link: #6becae;
-  --content: 760px;
+  --content: 900px;
+  --avatar-size: 64px;
+  --avatar-gap: 18px;
   --post-radius: 15px;
+  --avatar-url: url("https://cdn.jsdelivr.net/gh/fivsevn/fivsevn-assets@main/avatar/avatar202511main512.png");
 }
 
 * {
@@ -26,8 +29,8 @@ body {
   background: var(--bg);
   color: var(--fg);
   font-family: "Courier New", Courier, monospace;
-  font-size: 13px;
-  line-height: 1.68;
+  font-size: 12px;
+  line-height: 1.58;
   font-weight: 400;
   letter-spacing: 0;
   overflow-x: hidden;
@@ -45,8 +48,8 @@ body {
   justify-content: space-between;
   align-items: baseline;
   gap: 20px;
-  margin-bottom: 52px;
-  font-size: 11px;
+  margin-bottom: 48px;
+  font-size: 10px;
   line-height: 1.4;
   font-weight: 400;
 }
@@ -78,32 +81,50 @@ body {
 }
 
 .entry {
-  width: 100%;
-  margin: 0 0 28px;
-  padding: 22px 24px 24px;
+  position: relative;
+  width: calc(100% - var(--avatar-size) - var(--avatar-gap));
+  margin: 0 0 30px calc(var(--avatar-size) + var(--avatar-gap));
+  padding: 18px 20px 20px;
   background: var(--post-bg);
   border: 0;
-  border-radius: var(--post-radius);
+  border-radius: 0 var(--post-radius) var(--post-radius) var(--post-radius);
   box-shadow: none;
 }
 
+.entry::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: calc(-1 * (var(--avatar-size) + var(--avatar-gap)));
+  width: var(--avatar-size);
+  height: var(--avatar-size);
+  background-image: var(--avatar-url);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border: 0;
+  border-radius: 0;
+}
+
 .entry-title {
-  margin: 0 0 17px;
-  font-size: 17px;
+  margin: 0 0 14px;
+  color: var(--link);
+  font-size: 14px;
   line-height: 1.35;
   font-weight: 400;
   letter-spacing: 0.01em;
 }
 
-.entry-title a {
-  color: var(--fg);
+.entry-title a,
+.entry-title a:visited {
+  color: var(--link);
   text-decoration: none;
   font-weight: 400;
 }
 
 .entry-body {
-  font-size: 13px;
-  line-height: 1.72;
+  font-size: 12px;
+  line-height: 1.62;
   font-weight: 400;
   overflow-wrap: anywhere;
   word-break: normal;
@@ -118,7 +139,18 @@ body {
 }
 
 p {
-  margin: 0 0 1.15em;
+  margin: 0 0 1em;
+}
+
+ul,
+ol {
+  margin-top: 0.85em;
+  margin-bottom: 1em;
+  padding-left: 1.7em;
+}
+
+li {
+  margin: 0.15em 0;
 }
 
 a,
@@ -138,7 +170,7 @@ img {
   display: block;
   max-width: 100%;
   height: auto;
-  margin: 1.1em 0;
+  margin: 1em 0;
   border: 0;
   outline: 0;
   box-shadow: none;
@@ -146,20 +178,20 @@ img {
 }
 
 figure {
-  margin: 1.1em 0;
+  margin: 1em 0;
 }
 
 figcaption {
   color: var(--muted);
-  font-size: 12px;
-  line-height: 1.5;
-  margin-top: 0.5em;
+  font-size: 11px;
+  line-height: 1.45;
+  margin-top: 0.45em;
   font-weight: 400;
 }
 
 blockquote {
-  margin: 1.15em 0;
-  padding-left: 1em;
+  margin: 1em 0;
+  padding-left: 0.9em;
   border-left: 2px solid var(--link);
   color: var(--fg);
   font-weight: 400;
@@ -173,16 +205,16 @@ code {
 
 pre {
   overflow-x: auto;
-  padding: 1em;
+  padding: 0.9em;
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 8px;
 }
 
 .entry-meta {
-  margin-top: 18px;
+  margin-top: 14px;
   color: var(--muted);
-  font-size: 12px;
-  line-height: 1.5;
+  font-size: 11px;
+  line-height: 1.45;
   font-weight: 400;
   letter-spacing: 0;
 }
@@ -201,36 +233,43 @@ pre {
 }
 
 .footer {
-  margin-top: 42px;
+  margin-top: 38px;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 400;
 }
 
 @media (max-width: 640px) {
+  :root {
+    --avatar-size: 42px;
+    --avatar-gap: 10px;
+  }
+
   .site {
-    width: min(100vw - 28px, var(--content));
+    width: min(100vw - 24px, var(--content));
     margin-left: auto;
     margin-right: auto;
     padding-top: 22px;
   }
 
   .topline {
-    margin-bottom: 40px;
+    margin-bottom: 36px;
   }
 
   .entry {
-    margin-bottom: 22px;
-    padding: 20px 18px 22px;
-    border-radius: var(--post-radius);
+    width: calc(100% - var(--avatar-size) - var(--avatar-gap));
+    margin-left: calc(var(--avatar-size) + var(--avatar-gap));
+    margin-bottom: 24px;
+    padding: 16px 16px 18px;
+    border-radius: 0 var(--post-radius) var(--post-radius) var(--post-radius);
   }
 
   .entry-title {
-    font-size: 16px;
+    font-size: 13px;
   }
 
   body,
   .entry-body {
-    font-size: 13px;
+    font-size: 12px;
   }
 }
