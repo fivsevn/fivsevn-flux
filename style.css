@@ -1,4 +1,4 @@
-/* fivsevn flux - looser message-flow layout */
+/* fivsevn flux - equal-width narrower message bubbles */
 
 :root {
   --bg: #131415;
@@ -8,8 +8,8 @@
   --line: rgba(146, 146, 146, 0.22);
   --link: #6becae;
 
-  --content: 980px;
-  --bubble-max: 790px;
+  --content: 900px;
+  --bubble-max: 720px;
   --avatar-size: 56px;
   --avatar-gap: 18px;
   --post-radius: 15px;
@@ -82,13 +82,9 @@ b {
 
 .brand,
 .nav,
-.footer {
-  display: block;
-  width: fit-content;
-  max-width: min(var(--bubble-max), calc(100% - var(--avatar-size) - var(--avatar-gap)));
-}
-
+.footer,
 .entry {
+  display: block;
   width: calc(100% - var(--avatar-size) - var(--avatar-gap));
   max-width: var(--bubble-max);
 }
@@ -372,16 +368,11 @@ pre {
 
   .brand,
   .nav,
-  .footer {
-    max-width: calc(100% - var(--avatar-size) - var(--avatar-gap));
-    margin-left: calc(var(--avatar-size) + var(--avatar-gap));
-    border-radius: 0 var(--post-radius) var(--post-radius) var(--post-radius);
-  }
-
+  .footer,
   .entry {
     width: calc(100% - var(--avatar-size) - var(--avatar-gap));
-    margin-left: calc(var(--avatar-size) + var(--avatar-gap));
     max-width: none;
+    margin-left: calc(var(--avatar-size) + var(--avatar-gap));
     border-radius: 0 var(--post-radius) var(--post-radius) var(--post-radius);
   }
 
