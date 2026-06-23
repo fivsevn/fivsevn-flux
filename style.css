@@ -85,8 +85,15 @@ b {
 .footer,
 .entry {
   display: block;
-  width: calc(100% - var(--avatar-size) - var(--avatar-gap));
+  width: min(var(--bubble-max), calc(100% - var(--avatar-size) - var(--avatar-gap)));
   max-width: var(--bubble-max);
+  margin-left: max(
+    calc(var(--avatar-size) + var(--avatar-gap)),
+    calc(
+      (100% - var(--bubble-max) - var(--avatar-size) - var(--avatar-gap)) / 2
+      + var(--avatar-size) + var(--avatar-gap)
+    )
+  );
 }
 
 .brand::before,
