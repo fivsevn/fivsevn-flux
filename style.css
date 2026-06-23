@@ -13,6 +13,7 @@
   --avatar-size: 56px;
   --avatar-gap: 18px;
   --post-radius: 15px;
+  --message-gap: 48px;
 
   --avatar-main: url("https://cdn.jsdelivr.net/gh/fivsevn/fivsevn-assets@main/avatar/avatar202511main512.png");
   --avatar-typing: url("https://cdn.jsdelivr.net/gh/fivsevn/fivsevn-assets@main/avatar/avatar202511nvesvif512.png");
@@ -61,7 +62,7 @@ b {
 /* The top area is part of the message stream, not a standalone header. */
 .topline {
   display: block;
-  margin: 0 0 30px;
+  margin: 0 0 var(--message-gap);
   font-size: 12px;
   line-height: 1.58;
   font-weight: 400;
@@ -82,7 +83,7 @@ b {
 .brand,
 .nav,
 .footer {
-  display: inline-block;
+  display: block;
   width: fit-content;
   max-width: min(var(--bubble-max), calc(100% - var(--avatar-size) - var(--avatar-gap)));
 }
@@ -112,7 +113,7 @@ b {
 /* First fixed message: typing. */
 .brand {
   padding: 16px 20px;
-  margin-bottom: 30px;
+  margin-bottom: var(--message-gap);
   color: transparent;
   text-decoration: none;
   font-size: 0;
@@ -143,7 +144,7 @@ b {
 /* Source/repo are also a message, using the dev avatar. */
 .nav {
   padding: 16px 20px;
-  margin-bottom: 42px;
+  margin-bottom: 0;
   color: var(--fg);
   font-size: 12px;
   line-height: 1.55;
@@ -181,7 +182,7 @@ b {
 
 .entry {
   margin-top: 0;
-  margin-bottom: 40px;
+  margin-bottom: var(--message-gap);
   padding: 21px 25px 24px;
 }
 
@@ -323,7 +324,7 @@ pre {
 
 /* Footer is the last message, using the same avatar as typing. */
 .footer {
-  margin-top: 44px;
+  margin-top: var(--message-gap);
   padding: 17px 21px;
   color: transparent;
   font-size: 0;
@@ -358,6 +359,10 @@ pre {
     line-height: 1.62;
   }
 
+  .topline {
+    margin-bottom: 38px;
+  }
+
   .site {
     width: min(100vw - 28px, var(--content));
     margin-left: auto;
@@ -382,16 +387,20 @@ pre {
 
   .brand {
     padding: 14px 16px;
-    margin-bottom: 26px;
+    margin-bottom: 38px;
   }
 
   .nav {
     padding: 14px 16px;
-    margin-bottom: 34px;
+    margin-bottom: 0;
+  }
+
+  .brand + .nav {
+    margin-top: 38px;
   }
 
   .entry {
-    margin-bottom: 34px;
+    margin-bottom: 38px;
     padding: 18px 18px 20px;
   }
 
@@ -409,4 +418,14 @@ pre {
     animation: none;
     content: "typing...";
   }
+}
+
+
+/* Force utility messages to stack vertically like normal chat bubbles. */
+.brand + .nav {
+  margin-top: var(--message-gap);
+}
+
+.nav {
+  clear: both;
 }
