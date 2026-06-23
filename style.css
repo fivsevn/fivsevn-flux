@@ -1,12 +1,14 @@
-/* fivsevn flux - mobile alignment revision */
+/* fivsevn flux - post card visual revision */
 
 :root {
-  --bg: #131415;
-  --fg: #d8d8d2;
-  --muted: #8a8f8c;
-  --line: rgba(216, 216, 210, 0.14);
+  --bg: #0F0F0F;
+  --post-bg: #0F0F0F;
+  --fg: #FFFFFF;
+  --muted: #929292;
+  --line: rgba(146, 146, 146, 0.22);
   --link: #6becae;
   --content: 760px;
+  --post-radius: 15px;
 }
 
 * {
@@ -77,9 +79,12 @@ body {
 
 .entry {
   width: 100%;
-  padding: 0 0 36px;
-  margin: 0 0 34px;
-  border-bottom: 1px solid var(--line);
+  margin: 0 0 28px;
+  padding: 22px 24px 24px;
+  background: var(--post-bg);
+  border: 0;
+  border-radius: var(--post-radius);
+  box-shadow: none;
 }
 
 .entry-title {
@@ -170,6 +175,7 @@ pre {
   overflow-x: auto;
   padding: 1em;
   border: 1px solid var(--line);
+  border-radius: 10px;
 }
 
 .entry-meta {
@@ -181,6 +187,19 @@ pre {
   letter-spacing: 0;
 }
 
+/* Hide tag/comment metadata if those elements exist in the generated HTML. */
+.entry-tags,
+.entry-comments,
+.post-tags,
+.post-comments,
+.tags,
+.comments,
+.tags-links,
+.comments-link,
+.cat-links {
+  display: none !important;
+}
+
 .footer {
   margin-top: 42px;
   color: var(--muted);
@@ -190,7 +209,7 @@ pre {
 
 @media (max-width: 640px) {
   .site {
-    width: min(100vw - 40px, var(--content));
+    width: min(100vw - 28px, var(--content));
     margin-left: auto;
     margin-right: auto;
     padding-top: 22px;
@@ -201,8 +220,9 @@ pre {
   }
 
   .entry {
-    padding-bottom: 34px;
-    margin-bottom: 32px;
+    margin-bottom: 22px;
+    padding: 20px 18px 22px;
+    border-radius: var(--post-radius);
   }
 
   .entry-title {
