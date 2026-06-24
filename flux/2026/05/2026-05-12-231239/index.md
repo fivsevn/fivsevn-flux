@@ -4,7 +4,7 @@ date: '2026-05-12T23:12:39+08:00'
 title: 12 May, 2026 23:12
 source: wordpress-live
 sync: auto
-source_hash: d828aea33b4ffb19
+source_hash: 6114c6437e692820
 wp_post_id: 2711
 wp_url: https://fivsevn.com/2026/05/12/12-may-2026-2312-2/
 wp_slug: 12-may-2026-2312-2
