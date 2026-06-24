@@ -71,7 +71,7 @@ scripts/media_utils.py      Shared media helpers
 
 ## GitHub Actions
 
-GitHub Actions handle regular WordPress sync, full rescans, media localization, and index rebuilding.
+GitHub Actions keep the repository synchronized with WordPress, localize post media, and rebuild `index.html`.
 
 Manual editing can be done directly in the post package files under `flux/`.
 
