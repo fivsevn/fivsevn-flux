@@ -15,20 +15,24 @@ concurrency:
 jobs:
   sync:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+
       - run: pip install -r requirements.txt
-      - name: Import new posts from live WordPress page
+
+      - name: Sync recent WordPress posts
         run: python scripts/sync-from-live.py --limit 80
-      - name: Localize remote media
+
+      - name: Localize media
         run: python scripts/localize-media.py
-      - name: Build index
-        run: python scripts/build.py
+
       - name: Commit synced flux packages
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: sync live wordpress posts
-          file_pattern: flux/** index.html
+          file_pattern: flux/**
