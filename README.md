@@ -1,6 +1,8 @@
 # fivsevn-flux
 
-Static archive for `flux.fivsevn.com`.
+Static GitHub Pages archive for `flux.fivsevn.com`.
+
+This repository mirrors published posts from `https://fivsevn.com/posts/` and renders them as a lightweight static version of the WordPress posts page. It is used to test a GitHub-based editing and publishing workflow.
 
 Content is stored as flux packages under the `flux/` directory. Each package represents one post.
 
