@@ -1,6 +1,11 @@
-# macOS
+# macOS / Finder
 .DS_Store
 **/.DS_Store
+.AppleDouble
+.LSOverride
+
+# iCloud Drive placeholders / sync metadata
+*.icloud
 
 # Python
 __pycache__/
