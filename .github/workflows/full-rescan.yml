@@ -24,7 +24,7 @@ jobs:
       - run: pip install -r requirements.txt
 
       - name: Full rescan WordPress posts
-        run: python scripts/sync-from-live.py --full-rescan --soft-delete-missing
+        run: python scripts/sync-from-live.py --limit 9999
 
       - name: Localize media
         run: python scripts/localize-media.py
