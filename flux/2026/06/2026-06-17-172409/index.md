@@ -4,7 +4,7 @@ date: '2026-06-17T17:24:09+08:00'
 title: 17 Jun, 2026 18:23
 source: wordpress-live
 sync: auto
-source_hash: 1a251532c5f526c6
+source_hash: 43a49d7eb45d7980
 wp_post_id: 3962
 wp_url: https://fivsevn.com/2026/06/17/asset-post-stream-img-7202-jpg/
 wp_slug: asset-post-stream-img-7202-jpg

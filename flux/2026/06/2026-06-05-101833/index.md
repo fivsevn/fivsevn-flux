@@ -4,7 +4,7 @@ date: '2026-06-05T10:18:33+08:00'
 title: 5 June, 2026 10:18
 source: wordpress-live
 sync: auto
-source_hash: fd0e7c8bad251ea2
+source_hash: a3815b6cd674c8cb
 wp_post_id: 3367
 wp_url: https://fivsevn.com/2026/06/05/5-june-2026-1018/
 wp_slug: 5-june-2026-1018

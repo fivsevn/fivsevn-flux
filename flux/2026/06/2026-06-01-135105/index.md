@@ -4,7 +4,7 @@ date: '2026-06-01T13:51:05+08:00'
 title: 1 June, 2026 13:51
 source: wordpress-live
 sync: auto
-source_hash: aacf309dabf3c8b4
+source_hash: abd79c930d873dec
 wp_post_id: 3281
 wp_url: https://fivsevn.com/2026/06/01/1-june-2026-1351/
 wp_slug: 1-june-2026-1351
