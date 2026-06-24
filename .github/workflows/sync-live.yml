@@ -31,8 +31,13 @@ jobs:
       - name: Localize media
         run: python scripts/localize-media.py
 
-      - name: Commit synced flux packages
+      - name: Build index
+        run: python scripts/build.py
+
+      - name: Commit synced flux packages and index
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: sync live wordpress posts
-          file_pattern: flux/**
+          commit_message: sync live wordpress posts and build index
+          file_pattern: |
+            flux/**
+            index.html
