@@ -67,7 +67,6 @@ scripts/sync-from-live.py   Sync published WordPress posts
 scripts/localize-media.py   Download and rewrite post media
 scripts/build.py            Generate the static index
 scripts/media_utils.py      Shared media helpers
-scripts/import-wxr.py       Import posts from a WordPress export file
 ```
 
 ## GitHub Actions
