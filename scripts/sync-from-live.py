@@ -141,6 +141,29 @@ def source_hash(raw_html: str) -> str:
     return hashlib.sha256(canonical_source(raw_html).encode("utf-8")).hexdigest()[:16]
 
 
+def post_source_hash(post: dict) -> str:
+    """Hash WordPress post content plus metadata that should trigger a resync."""
+    title = BeautifulSoup(
+        (post.get("title") or {}).get("rendered") or "",
+        "html.parser",
+    ).get_text("").strip()
+
+    raw_html = (post.get("content") or {}).get("rendered") or ""
+
+    payload = {
+        "title": title,
+        "content": canonical_source(raw_html),
+        "slug": post.get("slug") or "",
+        "link": post.get("link") or "",
+        "date": post.get("date") or post.get("date_gmt") or "",
+        "modified": post.get("modified") or post.get("modified_gmt") or "",
+        "status": post.get("status") or "",
+    }
+
+    text = json.dumps(payload, ensure_ascii=False, sort_keys=True)
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()[:16]
+
+
 def cleanup_markdown(text: str) -> str:
     lines = [ln.rstrip() for ln in (text or "").splitlines()]
     cleaned: list[str] = []
@@ -386,7 +409,7 @@ def sync_rest(
 
             item_dir = item_dir_from_date(date, ident)
             raw_html = (post.get("content") or {}).get("rendered") or ""
-            shash = source_hash(raw_html)
+            shash = post_source_hash(post)
 
             old_fm, _ = read_existing(item_dir)
 
