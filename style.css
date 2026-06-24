@@ -329,22 +329,15 @@ pre {
 .footer {
   margin-top: var(--message-gap);
   padding: 17px 21px;
-  color: transparent;
-  font-size: 0;
-  line-height: 0;
-}
-
-.footer::before {
-  background-image: var(--avatar-typing);
-}
-
-.footer::after {
-  content: "这些内容由 flux packages 生成，目前一共有 129 posts。";
   color: var(--muted);
   font-size: 12px;
   line-height: 1.58;
   font-weight: 400;
   letter-spacing: 0.035em;
+}
+
+.footer::before {
+  background-image: var(--avatar-typing);
 }
 
 @media (max-width: 640px) {
@@ -357,7 +350,7 @@ pre {
   body,
   .topline,
   .entry-body,
-  .footer::after {
+  .footer {
     font-size: 11.5px;
     line-height: 1.62;
   }
