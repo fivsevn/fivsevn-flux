@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  actions: write
 
 concurrency:
   group: flux-live-sync
@@ -26,18 +27,18 @@ jobs:
       - run: pip install -r requirements.txt
 
       - name: Sync recent WordPress posts
-        run: python scripts/sync-from-live.py --limit 73
+        run: python scripts/sync-from-live.py --limit 77
 
       - name: Localize media
         run: python scripts/localize-media.py
 
-      - name: Build index
-        run: python scripts/build.py
-
-      - name: Commit synced flux packages and index
+      - name: Commit synced flux packages
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: sync live wordpress posts and build index
-          file_pattern: |
-            flux/**
-            index.html
+          commit_message: sync live wordpress posts
+          file_pattern: flux/**
+
+      - name: Trigger build workflow
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run build.yml --ref main
