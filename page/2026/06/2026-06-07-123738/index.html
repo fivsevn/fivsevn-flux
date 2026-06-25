@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+ <meta charset="utf-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1">
+ <title>7 June, 2026 12:37 · fivsevn flux</title>
+ <meta name="description" content="7 June, 2026 12:37">
+ <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+ <main class="site">
+ <section class="feed" aria-label="flux">
+<article class="entry" id="2026-06-07-123738">
+ <h2 class="entry-title"><a href="/page/2026/06/2026-06-07-123738/">7 June, 2026 12:37</a></h2>
+ <div class="entry-body"><p>以前看到这个：</p>
+<p><a href="https://t.me/Z_Turns/1403">https://t.me/Z_Turns/1403</a></p>
+<blockquote>
+<p>Created by Nickilism
+在 Safari 中分享 URL 给这个 Shortcuts，会自动生成 Markdown 文件，再选择发给如 ChatGPT、Grok 等 Chatbot 来实现文章的总结。</p>
+</blockquote>
+<p>作者站点：</p>
+<ul>
+<li><a href="https://github.com/Neurogram-R">https://github.com/Neurogram-R</a></li>
+<li><a href="https://neurogram.notion.site/Neurogram-5dff7288cc914a85a7d8cf2b8d8706b1">https://neurogram.notion.site/Neurogram-5dff7288cc914a85a7d8cf2b8d8706b1</a></li>
+</ul>
+<p>这个快捷指令特别好。我主要用它来抓取原文，再交给 AI 做逐句翻译和整理。</p>
+<p>今天我改了一下内容抓取方式：原版用的是 iOS / Safari 自带的网页正文提取，也就是先把网页识别成 Article，再转成 Markdown；我改成了用 Jina Reader 提取正文，也就是把网页 URL 拼成 <a href="https://r.jina.ai/">https://r.jina.ai/</a>原链接，由 Jina Reader 返回 Markdown。</p>
+<p>这样改的原因是：文章比较长、网页结构比较复杂的时候，Safari 不一定能抓全正文；Jina Reader 通常更适合把网页转换成完整的 Markdown 文本。当然，它依赖外部服务，高频或批量使用时可能会遇到限制，必要时需要 API key 或付费方案。但我目前只是针对部分文章手动整理，用量不高，问题不大。</p>
+<p>我保留快捷指令这一层，是因为我想把交给 AI 的指令提前打包好。我的前置指令里包含 frontmatter 写法、翻译要求、格式规范等内容。这样从 Safari 分享网页后，快捷指令就能自动完成“抓取网页 → 组装提示词 → 输出 Markdown 文件”的流程，再把结果交给 ChatGPT、Grok 或其他工具处理。</p>
+</div>
+ <div class="entry-meta"><time datetime="2026-06-07T12:37:38+08:00">2026-06-07T12:37:38+08:00</time></div>
+</article>
+ </section>
+ </main>
+</body>
+</html>
