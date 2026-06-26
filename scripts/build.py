@@ -19,6 +19,12 @@ PER_PAGE = 17
 CONTENT_REPO_URL = "https://devlog.fivsevn.com/posts/"
 
 
+markdown = mistune.create_markdown(
+    escape=False,
+    plugins=["strikethrough", "table", "url"],
+)
+
+
 def split_frontmatter(text):
     if not text.startswith("---"):
         return {}, text
@@ -145,7 +151,7 @@ def render_content_repo_bubble():
     return (
         '<nav class="nav" aria-label="content repository">'
         '??? 分享了一条链接：[ '
-        f'<a href="{CONTENT_REPO_URL}">内容仓库</a>'
+        f'<a href="{html.escape(CONTENT_REPO_URL, quote=True)}">内容仓库</a>'
         ' ]'
         '</nav>'
     )
@@ -180,24 +186,26 @@ def render_pager(current_page, total_pages):
     if total_pages <= 1:
         return ""
 
-    parts = ['<span class="pager-sleep">Zzz...</span>']
+    parts = ['<span class="pager-label">Zzz...</span>']
 
     for page_num in range(1, total_pages + 1):
         label = str(page_num)
         if page_num == current_page:
-            parts.append(f'<span class="pager-current">{label}</span>')
+            parts.append(f'<span class="pager-current" aria-current="page">{label}</span>')
         else:
-            parts.append(f'<a href="{feed_url(page_num)}">{label}</a>')
+            parts.append(f'<a href="{html.escape(feed_url(page_num), quote=True)}">{label}</a>')
 
     if current_page < total_pages:
-        parts.append(f'<a class="pager-next" href="{feed_url(current_page + 1)}">»</a>')
+        parts.append(f'<a class="pager-next" href="{html.escape(feed_url(current_page + 1), quote=True)}">»</a>')
 
     return '<nav class="footer pager" aria-label="pagination">' + "\n ".join(parts) + '</nav>'
 
 
 def render_feed_page(page_items, current_page, total_pages):
     entries = [render_entry(fm, body, title_href=page_url(fm)) for fm, body in page_items]
-    return f'''{render_head("fivsevn flux", "Static flux mirror for fivsevn posts.")}
+    title = "fivsevn flux" if current_page == 1 else f"fivsevn flux · page {current_page}"
+
+    return f'''{render_head(title, "Static flux mirror for fivsevn posts.")}
  {render_typing_bubble()}
  {render_content_repo_bubble()}
  <section class="feed" aria-label="flux">
@@ -221,11 +229,6 @@ for p in FLUX.glob("**/index.md"):
     items.append((fm, body.strip()))
 
 items.sort(key=lambda x: x[0].get("date", ""), reverse=True)
-
-markdown = mistune.create_markdown(
-    escape=False,
-    plugins=["strikethrough", "table", "url"],
-)
 
 if PAGE.exists():
     shutil.rmtree(PAGE)
