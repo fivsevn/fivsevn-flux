@@ -16,6 +16,7 @@ FLUX = ROOT / "flux"
 PAGE = ROOT / "page"
 FEED = ROOT / "feed"
 PER_PAGE = 17
+CONTENT_REPO_URL = "https://devlog.fivsevn.com/posts/"
 
 
 def split_frontmatter(text):
@@ -70,7 +71,6 @@ def rewrite_local_asset_paths(rendered_html, item_dir):
 
 def page_rel_dir(fm):
     parts = fm["_dir"].split("/")
-
     if len(parts) >= 4 and parts[0] == "flux":
         _, year, month, ident = parts[:4]
         return f"page/{year}/{month}/{ident}"
@@ -83,16 +83,10 @@ def page_url(fm):
     return f"/{page_rel_dir(fm)}/"
 
 
-def feed_url(page_number):
-    if page_number <= 1:
+def feed_url(page_num):
+    if page_num <= 1:
         return "/"
-    return f"/feed/{page_number}/"
-
-
-def feed_out_path(page_number):
-    if page_number <= 1:
-        return ROOT / "index.html"
-    return ROOT / "feed" / str(page_number) / "index.html"
+    return f"/feed/{page_num}/"
 
 
 def render_entry(fm, body, title_href=None):
@@ -120,29 +114,6 @@ def render_entry(fm, body, title_href=None):
 </article>'''
 
 
-def render_pager(current_page, total_pages):
-    if total_pages <= 1:
-        return ""
-
-    parts = ['<span class="pager-sleep">Zzz...</span>']
-
-    if current_page > 1:
-        parts.append(f'<a href="{html.escape(feed_url(current_page - 1), quote=True)}" aria-label="newer page">«</a>')
-
-    for n in range(1, total_pages + 1):
-        if n == current_page:
-            parts.append(f'<span class="pager-current" aria-current="page">{n}</span>')
-        else:
-            parts.append(f'<a href="{html.escape(feed_url(n), quote=True)}">{n}</a>')
-
-    if current_page < total_pages:
-        parts.append(f'<a href="{html.escape(feed_url(current_page + 1), quote=True)}" aria-label="older page">»</a>')
-
-    return f'''<nav class="footer pager" aria-label="pagination">
- {' '.join(parts)}
-</nav>'''
-
-
 def render_head(title, description):
     return f'''<!doctype html>
 <html lang="zh-Hans">
@@ -153,15 +124,87 @@ def render_head(title, description):
  <meta name="description" content="{html.escape(description, quote=True)}">
  <link rel="stylesheet" href="/style.css">
 </head>
-<body>'''
+<body>
+ <main class="site">
+'''
+
+
+def render_end(extra=""):
+    return f'''{extra}
+ </main>
+</body>
+</html>
+'''
+
+
+def render_typing_bubble():
+    return '<a class="brand" href="/">typing...</a>'
+
+
+def render_content_repo_bubble():
+    return (
+        '<nav class="nav" aria-label="content repository">'
+        '??? 分享了一条链接：[ '
+        f'<a href="{CONTENT_REPO_URL}">内容仓库</a>'
+        ' ]'
+        '</nav>'
+    )
 
 
 def render_return_bubble():
-    return '<a class="brand return-brand" href="/" data-return-home aria-label="return to flux">still typing...</a>'
+    return '<a class="brand return-brand" href="/" onclick="return goBackHome(event)">still typing...</a>'
 
 
 def render_return_script():
-    return '<script>\n(function () {\n  document.addEventListener("click", function (event) {\n    var link = event.target.closest("[data-return-home]");\n    if (!link) return;\n\n    try {\n      var ref = document.referrer ? new URL(document.referrer) : null;\n      if (ref && ref.origin === window.location.origin && window.history.length > 1) {\n        event.preventDefault();\n        window.history.back();\n      }\n    } catch (error) {}\n  });\n})();\n</script>'
+    return '''
+<script>
+function goBackHome(event) {
+  try {
+    const ref = document.referrer ? new URL(document.referrer) : null;
+    const sameSite = ref && ref.origin === window.location.origin;
+
+    if (sameSite && window.history.length > 1) {
+      event.preventDefault();
+      window.history.back();
+      return false;
+    }
+  } catch (e) {}
+
+  return true;
+}
+</script>
+'''
+
+
+def render_pager(current_page, total_pages):
+    if total_pages <= 1:
+        return ""
+
+    parts = ['<span class="pager-sleep">Zzz...</span>']
+
+    for page_num in range(1, total_pages + 1):
+        label = str(page_num)
+        if page_num == current_page:
+            parts.append(f'<span class="pager-current">{label}</span>')
+        else:
+            parts.append(f'<a href="{feed_url(page_num)}">{label}</a>')
+
+    if current_page < total_pages:
+        parts.append(f'<a class="pager-next" href="{feed_url(current_page + 1)}">»</a>')
+
+    return '<nav class="footer pager" aria-label="pagination">' + "\n ".join(parts) + '</nav>'
+
+
+def render_feed_page(page_items, current_page, total_pages):
+    entries = [render_entry(fm, body, title_href=page_url(fm)) for fm, body in page_items]
+    return f'''{render_head("fivsevn flux", "Static flux mirror for fivsevn posts.")}
+ {render_typing_bubble()}
+ {render_content_repo_bubble()}
+ <section class="feed" aria-label="flux">
+{chr(10).join(entries)}
+ </section>
+ {render_pager(current_page, total_pages)}
+{render_end()}'''
 
 
 items = []
@@ -184,46 +227,30 @@ markdown = mistune.create_markdown(
     plugins=["strikethrough", "table", "url"],
 )
 
-for generated_dir in [PAGE, FEED]:
-    if generated_dir.exists():
-        shutil.rmtree(generated_dir)
+if PAGE.exists():
+    shutil.rmtree(PAGE)
 
-# Home/feed pages: bubbles split into fixed-size pages.
+if FEED.exists():
+    shutil.rmtree(FEED)
+
+# Feed pages.
 total_pages = max(1, math.ceil(len(items) / PER_PAGE))
 
-for page_number in range(1, total_pages + 1):
-    start = (page_number - 1) * PER_PAGE
-    chunk = items[start:start + PER_PAGE]
+for idx in range(total_pages):
+    current_page = idx + 1
+    start = idx * PER_PAGE
+    end = start + PER_PAGE
+    page_items = items[start:end]
+    doc = render_feed_page(page_items, current_page, total_pages)
 
-    entries = []
-    for fm, body in chunk:
-        entries.append(render_entry(fm, body, title_href=page_url(fm)))
+    if current_page == 1:
+        out_file = ROOT / "index.html"
+    else:
+        out_dir = FEED / str(current_page)
+        out_dir.mkdir(parents=True, exist_ok=True)
+        out_file = out_dir / "index.html"
 
-    pager = render_pager(page_number, total_pages)
-    title = "fivsevn flux" if page_number == 1 else f"fivsevn flux · page {page_number}"
-
-    feed_doc = f'''{render_head(title, "Static flux mirror for fivsevn posts.")}
- <main class="site">
- <header class="topline">
- <a class="brand" href="/">typing</a>
- <nav class="nav" aria-label="links">
- <a href="https://fivsevn.com/posts/">source</a>
- <a href="https://github.com/fivsevn/fivsevn-flux">repo</a>
- </nav>
- </header>
- <section class="feed" aria-label="flux">
-{chr(10).join(entries)}
-{pager}
- </section>
- <footer class="footer">generated from flux packages · {len(items)} posts</footer>
- </main>
-</body>
-</html>
-'''
-
-    out_path = feed_out_path(page_number)
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    out_path.write_text(feed_doc, encoding="utf-8")
+    out_file.write_text(doc, encoding="utf-8")
 
 # Single pages: same bubble, one post per page.
 for fm, body in items:
@@ -234,17 +261,13 @@ for fm, body in items:
     title = str(fm.get("title") or ident)
 
     post_doc = f'''{render_head(f"{title} · fivsevn flux", title)}
- <main class="site">
  {render_return_bubble()}
  <section class="feed" aria-label="flux">
 {render_entry(fm, body, title_href=page_url(fm))}
  </section>
- </main>
-{render_return_script()}
-</body>
-</html>
-'''
+ {render_return_script()}
+{render_end()}'''
 
     (out_dir / "index.html").write_text(post_doc, encoding="utf-8")
 
-print(f"built index.html, {max(0, total_pages - 1)} feed pages, and {len(items)} page files")
+print(f"built index.html, {total_pages - 1} feed pages, and {len(items)} page files")
