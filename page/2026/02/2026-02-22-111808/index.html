@@ -8,9 +8,10 @@
  <link rel="stylesheet" href="/style.css">
 </head>
 <body>
- <main class="site">
- <a class="brand return-brand" href="/" data-return-home aria-label="return to flux">still typing...</a>
- <section class="feed" aria-label="flux">
+<main class="site">
+
+<a class="brand return-brand" href="/" onclick="return goBackHome(event)" aria-label="still typing">still typing...</a>
+<section class="feed" aria-label="single flux">
 <article class="entry" id="2026-02-22-111808">
  <h2 class="entry-title"><a href="/page/2026/02/2026-02-22-111808/">[旧贴] Poirot Goes to Egypt</a></h2>
  <div class="entry-body"><p>“一个星期之后。在沙漠里，金色的沙子被我们踩在脚下，烈日直晒头顶。波洛神情痛苦，在我身旁萎靡不振。这位小个子男人可不擅长旅行。 我们从马赛坐了四天的轮船，对他来说真是种 漫长的煎熬。他在亚历山大登陆时已经不成人形了，甚至连他一贯的整洁也看不到了。我们一到开罗就立刻驱车前往米那宫酒店，就在金字塔附近。”</p>
@@ -20,23 +21,21 @@
 </div>
  <div class="entry-meta"><time datetime="2026-02-22T11:18:08+08:00">2026-02-22T11:18:08+08:00</time></div>
 </article>
- </section>
- </main>
+</section>
 <script>
-(function () {
-  document.addEventListener("click", function (event) {
-    var link = event.target.closest("[data-return-home]");
-    if (!link) return;
-
-    try {
-      var ref = document.referrer ? new URL(document.referrer) : null;
-      if (ref && ref.origin === window.location.origin && window.history.length > 1) {
-        event.preventDefault();
-        window.history.back();
-      }
-    } catch (error) {}
-  });
-})();
+function goBackHome(event) {
+  try {
+    const ref = document.referrer ? new URL(document.referrer) : null;
+    const sameSite = ref && ref.origin === window.location.origin;
+    if (sameSite && window.history.length > 1) {
+      event.preventDefault();
+      window.history.back();
+      return false;
+    }
+  } catch (e) {}
+  return true;
+}
 </script>
+</main>
 </body>
 </html>

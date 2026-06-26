@@ -8,9 +8,10 @@
  <link rel="stylesheet" href="/style.css">
 </head>
 <body>
- <main class="site">
- <a class="brand return-brand" href="/" data-return-home aria-label="return to flux">still typing...</a>
- <section class="feed" aria-label="flux">
+<main class="site">
+
+<a class="brand return-brand" href="/" onclick="return goBackHome(event)" aria-label="still typing">still typing...</a>
+<section class="feed" aria-label="single flux">
 <article class="entry" id="2026-06-21-011838">
  <h2 class="entry-title"><a href="/page/2026/06/2026-06-21-011838/">21 Jun, 2026 02:18</a></h2>
  <div class="entry-body"><p><img src="/flux/2026/06/2026-06-21-011838/assets/01-IMG_7326.png" alt="21 Jun, 2026 02:18" /></p>
@@ -18,23 +19,21 @@
 </div>
  <div class="entry-meta"><time datetime="2026-06-21T01:18:38+08:00">2026-06-21T01:18:38+08:00</time></div>
 </article>
- </section>
- </main>
+</section>
 <script>
-(function () {
-  document.addEventListener("click", function (event) {
-    var link = event.target.closest("[data-return-home]");
-    if (!link) return;
-
-    try {
-      var ref = document.referrer ? new URL(document.referrer) : null;
-      if (ref && ref.origin === window.location.origin && window.history.length > 1) {
-        event.preventDefault();
-        window.history.back();
-      }
-    } catch (error) {}
-  });
-})();
+function goBackHome(event) {
+  try {
+    const ref = document.referrer ? new URL(document.referrer) : null;
+    const sameSite = ref && ref.origin === window.location.origin;
+    if (sameSite && window.history.length > 1) {
+      event.preventDefault();
+      window.history.back();
+      return false;
+    }
+  } catch (e) {}
+  return true;
+}
 </script>
+</main>
 </body>
 </html>
