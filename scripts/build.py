@@ -191,7 +191,7 @@ def render_pager(current_page, total_pages):
         if parts[-1] != '<span class="pager-gap">…</span>':
             parts.append('<span class="pager-gap">…</span>')
 
-    if total_pages <= 9:
+    if total_pages <= 7:
         for page_number in range(1, total_pages + 1):
             add_page(page_number)
     else:
