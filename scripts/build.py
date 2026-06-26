@@ -168,6 +168,12 @@ function goBackHome(event) {
 def render_nav_bubble():
     return '''<div class="nav">??? 分享了一条链接：[ <a href="https://devlog.fivsevn.com/posts/">内容仓库</a> ]</div>'''
 
+
+def render_feed_header():
+    # Keep the first two bubbles identical on every feed page.
+    return f'''{render_brand()}
+{render_nav_bubble()}'''
+
 def render_pager(current_page, total_pages):
     if total_pages <= 1:
         return ""
@@ -190,8 +196,7 @@ def render_feed_page(page_items, current_page, total_pages):
     entries = [render_entry(fm, body, title_href=page_url(fm)) for fm, body in page_items]
     pager = render_pager(current_page, total_pages)
     return f'''{render_head("fivsevn flux", "Static flux mirror for fivsevn posts.")}
-{render_brand()}
-{render_nav_bubble()}
+{render_feed_header()}
 <section class="feed" aria-label="flux">
 {chr(10).join(entries)}
 {pager}
