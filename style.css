@@ -477,3 +477,8 @@ pre {
 .nav {
   clear: both;
 }
+
+/* Keep the intro link bubble separated from the first post bubble. */
+.nav + .feed {
+  margin-top: var(--message-gap);
+}
