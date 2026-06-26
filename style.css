@@ -225,6 +225,30 @@ pre { overflow-x: auto; padding: 1em; border: 1px solid var(--line); border-radi
 }
 .footer::before { background-image: var(--avatar-typing); }
 
+
+/* Pagination bubble: same message shell as footer, with typing avatar. */
+.pager {
+  color: var(--fg);
+}
+.pager-sleep {
+  color: var(--fg);
+  margin-right: 0.65em;
+}
+.pager a,
+.pager a:visited,
+.pager a:hover,
+.pager a:active {
+  color: var(--link);
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+  font-weight: 400;
+  margin: 0 0.18em;
+}
+.pager-current {
+  color: var(--fg);
+  margin: 0 0.18em;
+}
+
 @media (max-width: 640px) {
   :root {
     --bubble-max: 100%;
