@@ -9,7 +9,6 @@
 </head>
 <body>
  <main class="site">
- <a class="brand return-brand" href="/" data-return-home aria-label="return to flux">still typing...</a>
  <section class="feed" aria-label="flux">
 <article class="entry" id="2026-04-17-224403">
  <h2 class="entry-title"><a href="/page/2026/04/2026-04-17-224403/">17 April, 2026 22:44</a></h2>
@@ -21,21 +20,5 @@
 </article>
  </section>
  </main>
-<script>
-(function () {
-  document.addEventListener("click", function (event) {
-    var link = event.target.closest("[data-return-home]");
-    if (!link) return;
-
-    try {
-      var ref = document.referrer ? new URL(document.referrer) : null;
-      if (ref && ref.origin === window.location.origin && window.history.length > 1) {
-        event.preventDefault();
-        window.history.back();
-      }
-    } catch (error) {}
-  });
-})();
-</script>
 </body>
 </html>
