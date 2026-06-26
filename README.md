@@ -1,8 +1,8 @@
 # fivsevn-flux
 
-Static GitHub Pages archive for `flux.fivsevn.com`.
+Static backup timeline for `flux.fivsevn.com`.
 
-This repository mirrors published posts from `https://fivsevn.com/posts/` and renders them as a lightweight static version of the WordPress posts page. It is used to test a GitHub-based editing and publishing workflow.
+This repository stores and renders selected posts from `fivsevn.com` as self-contained static flux entries. It provides a lightweight fallback timeline outside the main site.
 
 Content is stored as flux packages under the `flux/` directory. Each package represents one post.
 
@@ -50,7 +50,10 @@ This keeps each post self-contained and reduces reliance on remote WordPress med
 
 The site index is generated from the packages under `flux/`.
 
+## Build
+
 ```bash
+python -m pip install -r requirements.txt
 python scripts/build.py
 ```
 
