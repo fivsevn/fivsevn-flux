@@ -118,6 +118,14 @@ def render_head(title, description):
 <body>'''
 
 
+def render_return_bubble():
+    return '<a class="brand return-brand" href="/" data-return-home aria-label="return to flux">still typing...</a>'
+
+
+def render_return_script():
+    return '<script>\n(function () {\n  document.addEventListener("click", function (event) {\n    var link = event.target.closest("[data-return-home]");\n    if (!link) return;\n\n    try {\n      var ref = document.referrer ? new URL(document.referrer) : null;\n      if (ref && ref.origin === window.location.origin && window.history.length > 1) {\n        event.preventDefault();\n        window.history.back();\n      }\n    } catch (error) {}\n  });\n})();\n</script>'
+
+
 items = []
 
 for p in FLUX.glob("**/index.md"):
@@ -177,10 +185,12 @@ for fm, body in items:
 
     post_doc = f'''{render_head(f"{title} · fivsevn flux", title)}
  <main class="site">
+ {render_return_bubble()}
  <section class="feed" aria-label="flux">
 {render_entry(fm, body, title_href=page_url(fm))}
  </section>
  </main>
+{render_return_script()}
 </body>
 </html>
 '''
