@@ -166,11 +166,7 @@ function goBackHome(event) {
 
 
 def render_nav_bubble():
-    return '''<div class="nav">
- <span>??? 分享了条链接：</span><br>
- <span>内容仓库 <a href="https://devlog.fivsevn.com/posts/">https://devlog.fivsevn.com/posts/</a></span>
-</div>'''
-
+    return '''<div class="nav">??? 分享了一条链接：[ <a href="https://devlog.fivsevn.com/posts/">内容仓库</a> ]</div>'''
 
 def render_pager(current_page, total_pages):
     if total_pages <= 1:

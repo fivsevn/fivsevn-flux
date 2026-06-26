@@ -177,7 +177,7 @@ b {
 /* Source/repo are also a message, using the dev avatar. */
 .nav {
   padding: 16px 20px;
-  margin-bottom: 0;
+  margin-bottom: var(--message-gap);
   color: var(--fg);
   font-size: 12px;
   line-height: 1.55;
@@ -435,7 +435,7 @@ pre {
 
   .nav {
     padding: 14px 16px;
-    margin-bottom: 0;
+    margin-bottom: 38px;
   }
 
   .brand + .nav {
