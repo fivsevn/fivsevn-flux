@@ -8,9 +8,10 @@
  <link rel="stylesheet" href="/style.css">
 </head>
 <body>
- <main class="site">
- <a class="brand return-brand" href="/" data-return-home aria-label="return to flux">still typing...</a>
- <section class="feed" aria-label="flux">
+<main class="site">
+
+<a class="brand return-brand" href="/" onclick="return goBackHome(event)" aria-label="still typing">still typing...</a>
+<section class="feed" aria-label="single flux">
 <article class="entry" id="2026-02-28-211801">
  <h2 class="entry-title"><a href="/page/2026/02/2026-02-28-211801/">28 February, 2026 21:18</a></h2>
  <div class="entry-body"><p>对于不少人来说，在互动过程中，“被理解的感觉”往往比“被理解”本身更有效。这里需要区分两个概念。所谓“被理解”，指的是理解的精度——对方是 100% 把握了你的意思，还是只抓住了 70% 。它是认知层面的准确度。而“被理解的感觉”并不是结构精度的问题，而是互动状态的问题：对方是否回应你，是在否定还是在肯定，是否在情绪上与你对齐，是否让你感到安全。这是一种心理上的安全感。</p>
@@ -23,23 +24,21 @@
 </div>
  <div class="entry-meta"><time datetime="2026-02-28T21:18:01+08:00">2026-02-28T21:18:01+08:00</time></div>
 </article>
- </section>
- </main>
+</section>
 <script>
-(function () {
-  document.addEventListener("click", function (event) {
-    var link = event.target.closest("[data-return-home]");
-    if (!link) return;
-
-    try {
-      var ref = document.referrer ? new URL(document.referrer) : null;
-      if (ref && ref.origin === window.location.origin && window.history.length > 1) {
-        event.preventDefault();
-        window.history.back();
-      }
-    } catch (error) {}
-  });
-})();
+function goBackHome(event) {
+  try {
+    const ref = document.referrer ? new URL(document.referrer) : null;
+    const sameSite = ref && ref.origin === window.location.origin;
+    if (sameSite && window.history.length > 1) {
+      event.preventDefault();
+      window.history.back();
+      return false;
+    }
+  } catch (e) {}
+  return true;
+}
 </script>
+</main>
 </body>
 </html>
