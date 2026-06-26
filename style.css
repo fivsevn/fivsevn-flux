@@ -17,9 +17,7 @@
   --avatar-dev: url("https://cdn.jsdelivr.net/gh/fivsevn/fivsevn-assets@main/avatar/avatar202511dev512.png");
 }
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 html {
   background: var(--bg);
@@ -40,14 +38,10 @@ body {
 }
 
 body,
-body * {
-  font-weight: 400;
-}
+body * { font-weight: 400; }
 
 strong,
-b {
-  font-weight: 400;
-}
+b { font-weight: 400; }
 
 .site {
   width: min(var(--content), calc(100vw - 64px));
@@ -56,20 +50,12 @@ b {
   padding: 56px 0 84px;
 }
 
-/* The top area is part of the message stream, not a standalone header. */
-.topline {
-  display: block;
-  margin: 0 0 var(--message-gap);
-  font-size: 12px;
-  line-height: 1.58;
-  font-weight: 400;
-}
+.topline { display: block; margin: 0 0 var(--message-gap); font-size: 12px; line-height: 1.58; font-weight: 400; }
 
 .brand,
 .nav,
 .entry,
-.footer,
-.pager {
+.footer {
   position: relative;
   margin-left: calc(var(--avatar-size) + var(--avatar-gap));
   background: var(--post-bg);
@@ -81,7 +67,6 @@ b {
 .brand,
 .nav,
 .footer,
-.pager,
 .entry {
   display: block;
   width: min(var(--bubble-max), calc(100% - var(--avatar-size) - var(--avatar-gap)));
@@ -95,8 +80,7 @@ b {
 .brand::before,
 .nav::before,
 .entry::before,
-.footer::before,
-.pager::before {
+.footer::before {
   content: "";
   position: absolute;
   top: 0;
@@ -110,7 +94,6 @@ b {
   border-radius: 0;
 }
 
-/* First fixed message: typing. */
 .brand {
   padding: 16px 20px;
   margin-bottom: var(--message-gap);
@@ -120,9 +103,7 @@ b {
   line-height: 0;
 }
 
-.brand::before {
-  background-image: var(--avatar-typing);
-}
+.brand::before { background-image: var(--avatar-typing); }
 
 .brand::after {
   content: "typing...";
@@ -135,60 +116,36 @@ b {
 }
 
 @keyframes typing-dots {
-  0%,
-  20% {
-    content: "typing";
-  }
-  40% {
-    content: "typing.";
-  }
-  60% {
-    content: "typing..";
-  }
-  80%,
-  100% {
-    content: "typing...";
-  }
+  0%, 20% { content: "typing"; }
+  40% { content: "typing."; }
+  60% { content: "typing.."; }
+  80%, 100% { content: "typing..."; }
 }
 
-/* Single-page return bubble: same typing message style, different text. */
 .brand.return-brand::after {
   content: "still typing...";
   animation: still-typing-dots 1.25s steps(1, end) infinite;
 }
 
 @keyframes still-typing-dots {
-  0%,
-  20% {
-    content: "still typing";
-  }
-  40% {
-    content: "still typing.";
-  }
-  60% {
-    content: "still typing..";
-  }
-  80%,
-  100% {
-    content: "still typing...";
-  }
+  0%, 20% { content: "still typing"; }
+  40% { content: "still typing."; }
+  60% { content: "still typing.."; }
+  80%, 100% { content: "still typing..."; }
 }
 
-/* Source/repo are also a message, using the dev avatar. */
 .nav {
   padding: 16px 20px;
-  margin-bottom: var(--message-gap);
+  margin-bottom: 0;
   color: var(--fg);
   font-size: 12px;
   line-height: 1.55;
   font-weight: 400;
   letter-spacing: 0.035em;
-  white-space: normal;
+  white-space: nowrap;
 }
 
-.nav::before {
-  background-image: var(--avatar-dev);
-}
+.nav::before { background-image: var(--avatar-dev); }
 
 .nav a,
 .nav a:visited {
@@ -199,6 +156,7 @@ b {
 
 .feed {
   display: block;
+  margin-top: var(--message-gap);
 }
 
 .entry {
@@ -207,9 +165,7 @@ b {
   padding: 21px 25px 24px;
 }
 
-.entry::before {
-  background-image: var(--avatar-main);
-}
+.entry::before { background-image: var(--avatar-main); }
 
 .entry-title {
   margin: 0 0 17px;
@@ -236,17 +192,10 @@ b {
   word-break: normal;
 }
 
-.entry-body > *:first-child {
-  margin-top: 0;
-}
+.entry-body > *:first-child { margin-top: 0; }
+.entry-body > *:last-child { margin-bottom: 0; }
 
-.entry-body > *:last-child {
-  margin-bottom: 0;
-}
-
-p {
-  margin: 0 0 1.05em;
-}
+p { margin: 0 0 1.05em; }
 
 ul,
 ol {
@@ -255,9 +204,7 @@ ol {
   padding-left: 1.75em;
 }
 
-li {
-  margin: 0.2em 0;
-}
+li { margin: 0.2em 0; }
 
 a,
 a:visited,
@@ -287,9 +234,7 @@ img {
   background: transparent;
 }
 
-figure {
-  margin: 1em 0;
-}
+figure { margin: 1em 0; }
 
 figcaption {
   color: var(--muted);
@@ -330,7 +275,6 @@ pre {
   letter-spacing: 0.035em;
 }
 
-/* Hide tag/comment metadata if those elements exist in the generated HTML. */
 .entry-tags,
 .entry-comments,
 .post-tags,
@@ -343,39 +287,6 @@ pre {
   display: none !important;
 }
 
-/* Pagination is the last message, using the same avatar as typing. */
-.pager {
-  margin-top: var(--message-gap);
-  padding: 17px 21px;
-  color: var(--fg);
-  font-size: 12px;
-  line-height: 1.58;
-  font-weight: 400;
-  letter-spacing: 0.035em;
-}
-
-.pager::before {
-  background-image: var(--avatar-typing);
-}
-
-.pager a,
-.pager a:visited,
-.pager-current,
-.pager-label {
-  margin-right: 0.7em;
-  color: var(--link);
-  text-decoration: none;
-  font-weight: 400;
-}
-
-.pager-label {
-  color: var(--fg);
-}
-
-.pager-current {
-  color: var(--fg);
-}
-
 .footer {
   margin-top: var(--message-gap);
   padding: 17px 21px;
@@ -386,8 +297,27 @@ pre {
   letter-spacing: 0.035em;
 }
 
-.footer::before {
-  background-image: var(--avatar-typing);
+.footer::before { background-image: var(--avatar-typing); }
+
+.pager {
+  white-space: nowrap;
+}
+
+.pager a,
+.pager a:visited {
+  color: var(--link);
+  text-decoration: none;
+  font-weight: 400;
+  margin-left: 0.65em;
+}
+
+.pager-current {
+  color: var(--fg);
+  margin-left: 0.65em;
+}
+
+.pager-sleep {
+  color: var(--fg);
 }
 
 @media (max-width: 640px) {
@@ -400,15 +330,12 @@ pre {
   body,
   .topline,
   .entry-body,
-  .footer,
-  .pager {
+  .footer {
     font-size: 11.5px;
     line-height: 1.62;
   }
 
-  .topline {
-    margin-bottom: 38px;
-  }
+  .topline { margin-bottom: 38px; }
 
   .site {
     width: min(100vw - 28px, var(--content));
@@ -420,7 +347,6 @@ pre {
   .brand,
   .nav,
   .footer,
-  .pager,
   .entry {
     width: calc(100% - var(--avatar-size) - var(--avatar-gap));
     max-width: none;
@@ -435,26 +361,20 @@ pre {
 
   .nav {
     padding: 14px 16px;
-    margin-bottom: 38px;
+    margin-bottom: 0;
+    white-space: normal;
   }
 
-  .brand + .nav {
-    margin-top: 38px;
-  }
+  .feed { margin-top: 38px; }
 
   .entry {
     margin-bottom: 38px;
     padding: 18px 18px 20px;
   }
 
-  .entry-title {
-    font-size: 12.5px;
-  }
+  .entry-title { font-size: 12.5px; }
 
-  .footer,
-  .pager {
-    padding: 15px 17px;
-  }
+  .footer { padding: 15px 17px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -467,18 +387,4 @@ pre {
     animation: none;
     content: "still typing...";
   }
-}
-
-/* Force utility messages to stack vertically like normal chat bubbles. */
-.brand + .nav {
-  margin-top: var(--message-gap);
-}
-
-.nav {
-  clear: both;
-}
-
-/* Keep the intro link bubble separated from the first post bubble. */
-.nav + .feed {
-  margin-top: var(--message-gap);
 }
