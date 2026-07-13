@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+ <meta charset="utf-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1">
+ <title>13 Jul, 2026 02:17 · fivsevn flux</title>
+ <meta name="description" content="13 Jul, 2026 02:17">
+ <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<main class="site">
+
+<a class="brand return-brand" href="/" onclick="return goBackHome(event)" aria-label="still typing">still typing...</a>
+<section class="feed" aria-label="single flux">
+<article class="entry" id="2026-07-13-011843">
+ <h2 class="entry-title"><a href="/page/2026/07/2026-07-13-011843/">13 Jul, 2026 02:17</a></h2>
+ <div class="entry-body"><p><img src="/flux/2026/07/2026-07-13-011843/assets/01-IMG_8105.jpeg" alt="13 Jul, 2026 02:17" /></p>
+</div>
+ <div class="entry-meta"><time datetime="2026-07-13T01:18:43+08:00">2026-07-13T01:18:43+08:00</time></div>
+</article>
+</section>
+<script>
+function goBackHome(event) {
+  try {
+    const ref = document.referrer ? new URL(document.referrer) : null;
+    const sameSite = ref && ref.origin === window.location.origin;
+    if (sameSite && window.history.length > 1) {
+      event.preventDefault();
+      window.history.back();
+      return false;
+    }
+  } catch (e) {}
+  return true;
+}
+</script>
+</main>
+</body>
+</html>
