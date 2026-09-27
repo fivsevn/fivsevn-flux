@@ -13,6 +13,26 @@
 <a class="brand" href="/" aria-label="typing">typing...</a>
 <div class="nav">??? 分享了一条链接：[ <a href="https://devlog.fivsevn.com/posts/">内容仓库</a> ]</div>
 <section class="feed" aria-label="flux">
+<article class="entry" id="2026-06-07-123738">
+ <h2 class="entry-title"><a href="/page/2026/06/2026-06-07-123738/">7 June, 2026 12:37</a></h2>
+ <div class="entry-body"><p>以前看到这个：</p>
+<p><a href="https://t.me/Z_Turns/1403">https://t.me/Z_Turns/1403</a></p>
+<blockquote>
+<p>Created by Nickilism
+在 Safari 中分享 URL 给这个 Shortcuts，会自动生成 Markdown 文件，再选择发给如 ChatGPT、Grok 等 Chatbot 来实现文章的总结。</p>
+</blockquote>
+<p>作者站点：</p>
+<ul>
+<li><a href="https://github.com/Neurogram-R">https://github.com/Neurogram-R</a></li>
+<li><a href="https://neurogram.notion.site/Neurogram-5dff7288cc914a85a7d8cf2b8d8706b1">https://neurogram.notion.site/Neurogram-5dff7288cc914a85a7d8cf2b8d8706b1</a></li>
+</ul>
+<p>这个快捷指令特别好。我主要用它来抓取原文，再交给 AI 做逐句翻译和整理。</p>
+<p>今天我改了一下内容抓取方式：原版用的是 iOS / Safari 自带的网页正文提取，也就是先把网页识别成 Article，再转成 Markdown；我改成了用 Jina Reader 提取正文，也就是把网页 URL 拼成 <a href="https://r.jina.ai/">https://r.jina.ai/</a>原链接，由 Jina Reader 返回 Markdown。</p>
+<p>这样改的原因是：文章比较长、网页结构比较复杂的时候，Safari 不一定能抓全正文；Jina Reader 通常更适合把网页转换成完整的 Markdown 文本。当然，它依赖外部服务，高频或批量使用时可能会遇到限制，必要时需要 API key 或付费方案。但我目前只是针对部分文章手动整理，用量不高，问题不大。</p>
+<p>我保留快捷指令这一层，是因为我想把交给 AI 的指令提前打包好。我的前置指令里包含 frontmatter 写法、翻译要求、格式规范等内容。这样从 Safari 分享网页后，快捷指令就能自动完成“抓取网页 → 组装提示词 → 输出 Markdown 文件”的流程，再把结果交给 ChatGPT、Grok 或其他工具处理。</p>
+</div>
+ <div class="entry-meta"><time datetime="2026-06-07T12:37:38+08:00">2026-06-07T12:37:38+08:00</time></div>
+</article>
 <article class="entry" id="2026-06-07-042054">
  <h2 class="entry-title"><a href="/page/2026/06/2026-06-07-042054/">07 Jun, 2026 05:05</a></h2>
  <div class="entry-body"><p><img src="/flux/2026/06/2026-06-07-042054/assets/01-IMG_6891.png" alt="07 Jun, 2026 05:05" /></p>
@@ -258,58 +278,6 @@ Lie to me S2E11</p>
 </blockquote>
 </div>
  <div class="entry-meta"><time datetime="2026-06-01T07:15:26+08:00">2026-06-01T07:15:26+08:00</time></div>
-</article>
-<article class="entry" id="2026-06-01-070018">
- <h2 class="entry-title"><a href="/page/2026/06/2026-06-01-070018/">1 June, 2026 06:54</a></h2>
- <div class="entry-body"><p>阿德勒心理学 岩井研究</p>
-<table>
-<thead>
-<tr>
-  <th>维度</th>
-  <th>称赞</th>
-  <th>赋予勇气</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-  <td>情况</td>
-  <td>仅限对方达成了自己期待的事时（有条件的）</td>
-  <td>既包括对方成功的时候，也包括对方失败的时候（无条件的）</td>
-</tr>
-<tr>
-  <td>关心</td>
-  <td>给予方的关心</td>
-  <td>被给予方的关心</td>
-</tr>
-<tr>
-  <td>态度</td>
-  <td>一种上级对下级的奖励态度</td>
-  <td>与对方共情的态度</td>
-</tr>
-<tr>
-  <td>对象</td>
-  <td>做出行为的人</td>
-  <td>行为本身</td>
-</tr>
-<tr>
-  <td>效果</td>
-  <td>助长对方与别人竞争的意识，使其变得很在意别人的评价</td>
-  <td>引导对方专注于自身的成长和进步，培养自立精神和责任感</td>
-</tr>
-<tr>
-  <td>印象</td>
-  <td>不走心，对方可能听不进去</td>
-  <td>发自内心，对方能听进心里去</td>
-</tr>
-<tr>
-  <td>持续性</td>
-  <td>仅限激发此时此刻的满足感，很难为未来提供动力</td>
-  <td>能为未来提供动力，持续性强</td>
-</tr>
-</tbody>
-</table>
-</div>
- <div class="entry-meta"><time datetime="2026-06-01T07:00:18+08:00">2026-06-01T07:00:18+08:00</time></div>
 </article>
 <nav class="pager" aria-label="pagination"><span class="pager-label">Zzz...</span> <a href="/">1</a> <a href="/feed/2/">2</a> <span class="pager-current" aria-current="page">3</span> <a href="/feed/4/">4</a> <a href="/feed/5/">5</a> <a href="/feed/6/">6</a> <span class="pager-gap">…</span> <a href="/feed/9/">9</a> <a href="/feed/4/" aria-label="older">»</a></nav>
 </section>
