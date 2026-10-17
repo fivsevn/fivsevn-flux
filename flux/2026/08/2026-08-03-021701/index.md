@@ -3,7 +3,7 @@ id: 2026-08-03-021701
 date: '2026-08-03T02:17:01+08:00'
 title: 03 Aug, 2026 03:16
 source: wordpress-live
-sync: auto
+sync: manual
 source_hash: 7205ed7a42b70edb
 wp_post_id: 4293
 wp_url: https://fivsevn.com/2026/08/03/asset-post-stream-img-9108-png/

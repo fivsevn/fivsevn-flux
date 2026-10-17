@@ -3,7 +3,7 @@ id: 2026-06-19-042052
 date: '2026-06-19T04:20:52+08:00'
 title: 19 Jun, 2026 04:20
 source: wordpress-live
-sync: auto
+sync: manual
 source_hash: d6188c81224c284d
 wp_post_id: 4065
 wp_url: https://fivsevn.com/2026/06/19/github-text-d52f234/

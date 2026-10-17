@@ -3,7 +3,7 @@ id: 2026-05-17-001658
 date: '2026-05-17T00:16:58+08:00'
 title: 17 May, 2026 00:16
 source: wordpress-live
-sync: auto
+sync: manual
 source_hash: 80de091641488f03
 wp_post_id: 2762
 wp_url: https://fivsevn.com/2026/05/17/17-may-2026-0016/

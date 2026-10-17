@@ -3,7 +3,7 @@ id: 2026-07-22-150135
 date: '2026-07-22T15:01:35+08:00'
 title: 22 Jul, 2026 16:00
 source: wordpress-live
-sync: auto
+sync: manual
 source_hash: 1b24cef9e0d13c42
 wp_post_id: 4277
 wp_url: https://fivsevn.com/2026/07/22/asset-post-stream-img-8629-jpeg/

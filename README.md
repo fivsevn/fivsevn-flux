@@ -1,87 +1,46 @@
-# fivsevn-flux
+# fivsevn flux
 
-Static backup timeline for `flux.fivsevn.com`.
+[flux.fivsevn.com](https://flux.fivsevn.com/) 是随手文字和图片的发布页面。自 2026-10-18 起，内容直接来自 GitHub，不再通过 WordPress。
 
-This repository stores and renders selected posts from `fivsevn.com` as self-contained static flux entries. It provides a lightweight fallback timeline outside the main site.
+## 发文字
 
-Content is stored as flux packages under the `flux/` directory. Each package represents one post.
+继续修改 [原来的 trigger](https://github.com/fivsevn-agy/fivsevn-devlog/blob/main/posts/_wordpress/trigger.md)，保留配置，替换正文，提交并推送到 `main`。路径中的 `_wordpress` 为兼容手机入口而保留，不代表仍向 WordPress 发文。
 
-```text
-flux/YYYY/MM/{id}/index.md
-flux/YYYY/MM/{id}/assets/
-```
+正文使用 Markdown，支持 `[文字](网址)`、标题、列表、引用、表格和图片；普通换行也保留。`wp_status: publish` 沿用原配置，表示在 flux 公开发布。`draft`、`pending`、`private` 只保存为草稿、不进入站点；仓库本身公开，这些字段不提供保密能力。当前不支持 `future` 定时发布。
 
-## Content
+每次 trigger 提交保存一条独立记录；相同提交重试不重复发文。显式填写 `slug` 时沿用原来“同 slug 只创建一次”的行为。修改旧帖应编辑 flux 对应文件，不重新提交 trigger。
 
-Each post package contains:
+## 发图片
 
-- `index.md` for the post content and metadata
-- `assets/` for images and other media used by that post
+继续用快捷指令选择 `fivsevn-assets/post/stream/`，通过 Working Copy 提交并推送。每张新图片生成一条记录，提交的 extended description 是配文，可以使用 Markdown。图片自动复制到 flux 文章包，之后显示不依赖 WordPress 或原图片 CDN。相同图片路径不会重复发文；要编辑旧帖，修改 flux 文章包。
 
-The `index.md` file is the editable source for each post.
+assets 的 foodie、fieldlog、bygone、YouTube 等流程仍按各自原规则运行。
 
-## Sync
+## 何时上线
 
-Published WordPress posts from `https://fivsevn.com/posts/` can be synchronized into this repository.
+[Publish flux](https://github.com/fivsevn/fivsevn-flux/actions/workflows/build.yml) 约每 5 分钟检查两个公开仓库，按先后顺序读取所有尚未处理的提交，保存记录、构建页面并直接部署 GitHub Pages。GitHub 定时任务可能延后；需要立即检查时可手动运行这个任务。
 
-Packages marked as:
+原 devlog 的任务只校验 Markdown。校验成功不等于 flux 已部署；以 Publish flux 的成功结果和实际页面为准。
 
-```yaml
-sync: auto
-```
+`.publishing/state.json` 保存两个来源的处理位置，和新内容一起提交。重试不覆盖已存在的 flux 记录。来源历史被重写、处理位置消失时停止并报错，不擅自重发旧内容。
 
-may be updated by the WordPress sync process.
+## 修改已发布内容
 
-Packages marked as:
+每条记录位于 `flux/YYYY/MM/{id}/index.md`，附件位于旁边的 `assets/`。直接修改对应 Markdown 并推送，自动构建上线。保留原 `id`、目录和 `date` 可保持网址与排列位置。`status: hidden` 撤下网页；公开 Git 仓库及历史仍保留文件。
 
-```yaml
-sync: manual
-```
+历史的 150 个文章包保留原网址和日期，全部由 flux 管理（`sync: manual`）。WordPress 导入工作流已移除，旧导入脚本已停用；以后修改或删除 WordPress 内容不会影响 flux。历史来源字段只用于追溯。
 
-are treated as repository-owned content and are not overwritten by normal sync.
+## 页面构建
 
-## Media
+`scripts/build.py` 把 Markdown 生成为首页、分页和单篇页。时间线保持 typing → 口袋 → 内容仓库链接 → 消息 → 分页 → 许可声明的顺序。`scripts/package_site.py` 只打包生成网页、公开附件和站点素材，不把脚本或草稿包发布到 Pages。
 
-Post media is stored locally in each package’s `assets/` directory when possible.
-
-This keeps each post self-contained and reduces reliance on remote WordPress media URLs.
-
-## Build
-
-The site index is generated from the packages under `flux/`.
-
-## Build
-
-```bash
+```sh
 python -m pip install -r requirements.txt
+python -m unittest discover -s tests -v
 python scripts/build.py
+python scripts/package_site.py
 ```
 
-The generated output is written to:
+本地检查无需运行导入脚本。`scripts/ingest_github.py` 会只读访问 GitHub，并在本地写入新文章包和处理位置；自动任务负责将这些变更一并提交。
 
-```text
-index.html
-```
-
-## Scripts
-
-```text
-scripts/sync-from-live.py   Sync published WordPress posts
-scripts/localize-media.py   Download and rewrite post media
-scripts/build.py            Generate the static index
-scripts/media_utils.py      Shared media helpers
-```
-
-## GitHub Actions
-
-GitHub Actions keep the repository synchronized with WordPress, localize post media, and rebuild `index.html`.
-
-Manual editing can be done directly in the post package files under `flux/`.
-
-## Domain
-
-The site is served from:
-
-```text
-flux.fivsevn.com
-```
+内容许可：CC BY-NC-SA 4.0。引用及第三方材料仍遵循其原有权利与许可。

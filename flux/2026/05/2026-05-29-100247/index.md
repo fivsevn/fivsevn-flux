@@ -3,7 +3,7 @@ id: 2026-05-29-100247
 date: '2026-05-29T10:02:47+08:00'
 title: 2026-05-29-100247
 source: wordpress-live
-sync: auto
+sync: manual
 source_hash: 094962393773aca0
 wp_post_id: 3064
 wp_url: https://fivsevn.com/2026/05/29/3064/

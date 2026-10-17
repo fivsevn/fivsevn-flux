@@ -3,7 +3,7 @@ id: 2026-04-23-172253
 date: '2026-04-23T17:22:53+08:00'
 title: 23 April, 2026 17:22
 source: wordpress-live
-sync: auto
+sync: manual
 source_hash: 6cc9a5de558910a1
 wp_post_id: 2638
 wp_url: https://fivsevn.com/2026/04/23/23-april-2026-1722/

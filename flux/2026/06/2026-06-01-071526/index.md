@@ -3,7 +3,7 @@ id: 2026-06-01-071526
 date: '2026-06-01T07:15:26+08:00'
 title: 1 June, 2026 07:15
 source: wordpress-live
-sync: auto
+sync: manual
 source_hash: 730f85c90c514187
 wp_post_id: 3214
 wp_url: https://fivsevn.com/2026/06/01/1-june-2026-0715/

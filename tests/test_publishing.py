@@ -1,0 +1,91 @@
+import importlib.util
+from pathlib import Path
+import shutil
+import subprocess
+import sys
+import tempfile
+import unittest
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / 'scripts'))
+import ingest_github as pub
+
+
+def commit(sha='a'*40, message='post', date='2026-10-18T00:00:00Z'):
+    return {'sha': sha, 'commit': {'committer': {'date': date}, 'message': message}}
+
+
+class PublisherTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.root = Path(self.tmp.name)
+        self.source = {'repository': 'owner/repo', 'path': 'posts/_wordpress/trigger.md', 'cursor': 'c'*40}
+    def tearDown(self):
+        self.tmp.cleanup()
+    def test_all_queued_snapshots_in_order(self):
+        rows = [commit('a'*40), commit('b'*40), commit('c'*40)]
+        self.assertEqual([x['sha'] for x in pub.pending_commits(self.source, lambda p: rows)], ['b'*40, 'a'*40])
+    def test_missing_cursor_fails_without_replaying(self):
+        with self.assertRaises(ValueError):
+            pub.pending_commits(self.source, lambda p: [commit()])
+    def test_markdown_preserved_and_retry_does_not_overwrite_edit(self):
+        body = '[文字](https://example.com)\n第二行\n\n- 一\n- 二'
+        keys = set()
+        self.assertTrue(pub.import_text(self.root, self.source, commit(), keys, lambda u: body.encode()))
+        path = next((self.root/'flux').glob('**/index.md'))
+        text = path.read_text().replace('第二行', '人工修改')
+        path.write_text(text)
+        self.assertFalse(pub.import_text(self.root, self.source, commit(), pub.existing_keys(self.root), lambda u: body.encode()))
+        self.assertEqual(path.read_text(), text)
+        self.assertIn("2026-10-18T08:00:00+08:00", text)
+    def test_historical_wordpress_slug_prevents_duplicate(self):
+        self.assertFalse(pub.import_text(self.root, self.source, commit(), {'github-text-aaaaaaa'}, lambda u: b'hello'))
+    def test_explicit_slug_preserves_create_only_behavior(self):
+        keys=set()
+        raw=b'---\nslug: fixed\n---\nhello'
+        self.assertTrue(pub.import_text(self.root, self.source, commit(), keys, lambda u: raw))
+        self.assertFalse(pub.import_text(self.root, self.source, commit('b'*40), keys, lambda u: raw))
+    def test_empty_and_invalid_inputs(self):
+        self.assertFalse(pub.import_text(self.root, self.source, commit(), set(), lambda u: b'---\nwp_status: publish\n---\n'))
+        for raw in [b'---\nbroken', b'---\n- list\n---\nhello', b'---\nwp_status: future\n---\nhello']:
+            with self.assertRaises(ValueError): pub.import_text(self.root, self.source, commit(), set(), lambda u: raw)
+    def test_draft_is_not_published(self):
+        pub.import_text(self.root, self.source, commit(), set(), lambda u: b'---\nwp_status: private\n---\nhello')
+        meta,_=pub.split_frontmatter(next((self.root/'flux').glob('**/index.md')).read_text())
+        self.assertEqual(meta['status'], 'draft')
+    def test_images_caption_scope_and_retry(self):
+        rows=[{'filename': 'post/stream/a.PNG', 'status':'added'}, {'filename':'foodie/b.png','status':'added'}, {'filename':'post/stream/deleted.png','status':'removed'}]
+        keys=set()
+        c=commit(message='feat\n\n配文 [链接](https://example.com)')
+        self.assertEqual(pub.import_images(self.root,self.source,c,keys,rows,lambda u:b'png-bytes'),1)
+        self.assertEqual(pub.import_images(self.root,self.source,c,pub.existing_keys(self.root),rows,lambda u:b'png-bytes'),0)
+        p=next((self.root/'flux').glob('**/index.md'))
+        self.assertIn('配文 [链接](https://example.com)',p.read_text())
+        self.assertEqual((p.parent/'assets/image.png').read_bytes(),b'png-bytes')
+    def test_media_failure_does_not_create_partial_entry(self):
+        rows=[{'filename':'post/stream/a.png','status':'added'}]
+        with self.assertRaises(ValueError): pub.import_images(self.root,self.source,commit(),set(),rows,lambda u:b'')
+        self.assertEqual(list((self.root/'flux').glob('**/index.md')),[])
+    def test_build_and_package_markdown_and_private_exclusion(self):
+        (self.root/'scripts').mkdir()
+        for name in ('build.py','package_site.py','ingest_github.py'): shutil.copy2(ROOT/'scripts'/name,self.root/'scripts'/name)
+        (self.root/'site-assets').mkdir()
+        (self.root/'style.css').write_text('')
+        (self.root/'CNAME').write_text('flux.fivsevn.com')
+        pub.import_text(self.root,self.source,commit(),set(),lambda u:'[链接](https://example.com)\n下一行\n\n- 第一\n- 第二\n\n> 引用'.encode())
+        pub.import_text(self.root,self.source,commit('b'*40),set(),lambda u:b'---\nwp_status: draft\n---\nDRAFT_SENTINEL')
+        subprocess.run([sys.executable,str(self.root/'scripts/build.py')],check=True,capture_output=True)
+        subprocess.run([sys.executable,str(self.root/'scripts/package_site.py')],check=True,capture_output=True)
+        html=(self.root/'index.html').read_text()
+        self.assertIn('<a href="https://example.com">链接</a>',html)
+        self.assertIn('<br />',html)
+        self.assertIn('<ul>',html)
+        self.assertIn('<blockquote>',html)
+        self.assertNotIn('DRAFT_SENTINEL',html)
+        self.assertLess(html.index('class="brand"'),html.index('class="pocket-bubble"'))
+        self.assertLess(html.index('class="pocket-bubble"'),html.index('class="nav"'))
+        self.assertIn('This content is licensed under',html)
+        self.assertEqual(len(list((self.root/'_site/page').glob('**/index.html'))),1)
+        self.assertFalse((self.root/'_site/scripts').exists())
+
+if __name__=='__main__': unittest.main()

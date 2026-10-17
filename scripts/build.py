@@ -22,6 +22,8 @@ markdown = mistune.create_markdown(
 )
 
 
+trigger_markdown = mistune.create_markdown(escape=False, hard_wrap=True, plugins=["strikethrough", "table", "url"])
+
 def split_frontmatter(text):
     if not text.startswith("---"):
         return {}, text
@@ -97,7 +99,8 @@ def render_entry(fm, body, title_href=None):
     title = fm.get("title") or ident
     date = fm.get("date", "")
 
-    html_body = markdown(body) if body else ""
+    renderer = trigger_markdown if fm.get("source") in {"github-trigger", "github-image"} else markdown
+    html_body = renderer(body) if body else ""
     html_body = rewrite_local_asset_paths(html_body, fm["_dir"])
 
     title_text = html.escape(str(title))
@@ -169,9 +172,18 @@ def render_nav_bubble():
     return '''<div class="nav">??? 分享了一条链接：[ <a href="https://devlog.fivsevn.com/posts/">内容仓库</a> ]</div>'''
 
 
+def render_pocket_bubble():
+    return '<div class="pocket-bubble"><a href="https://fivsevn.com/" aria-label="五月七日主页"><img src="/site-assets/pocket.webp" alt="布口袋" width="125"></a></div>'
+
+
+def render_license_bubble():
+    return '<footer class="entry license-bubble"><div class="entry-body">This content is licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>.</div></footer>'
+
+
 def render_feed_header():
-    # Keep the first two bubbles identical on every feed page.
+    # Every feed page follows the same chat-message sequence.
     return f'''{render_brand()}
+{render_pocket_bubble()}
 {render_nav_bubble()}'''
 
 def render_pager(current_page, total_pages):
@@ -228,13 +240,13 @@ def render_pager(current_page, total_pages):
 def render_feed_page(page_items, current_page, total_pages):
     entries = [render_entry(fm, body, title_href=page_url(fm)) for fm, body in page_items]
     pager = render_pager(current_page, total_pages)
-    return f'''{render_head("fivsevn flux", "Static flux mirror for fivsevn posts.")}
+    return f'''{render_head("fivsevn flux", "随手记录，持续更新。")}
 {render_feed_header()}
 <section class="feed" aria-label="flux">
 {chr(10).join(entries)}
 {pager}
 </section>
-{render_close()}'''
+{render_close(render_license_bubble())}'''
 
 
 items = []
@@ -242,7 +254,7 @@ items = []
 for p in FLUX.glob("**/index.md"):
     fm, body = split_frontmatter(p.read_text(encoding="utf-8"))
 
-    if fm.get("status", "published") in ["draft", "hidden"]:
+    if fm.get("status", "published") != "published":
         continue
 
     fm["_path"] = p.relative_to(ROOT).as_posix()
@@ -287,7 +299,7 @@ for fm, body in items:
 <section class="feed" aria-label="single flux">
 {render_entry(fm, body, title_href=page_url(fm))}
 </section>
-{render_close(render_return_script())}'''
+{render_close(render_license_bubble() + render_return_script())}'''
 
     (out_dir / "index.html").write_text(post_doc, encoding="utf-8")
 

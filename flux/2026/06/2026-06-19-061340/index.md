@@ -3,7 +3,7 @@ id: 2026-06-19-061340
 date: '2026-06-19T06:13:40+08:00'
 title: 19 Jun, 2026 07:12
 source: wordpress-live
-sync: auto
+sync: manual
 source_hash: 7898de1713a89a42
 wp_post_id: 4067
 wp_url: https://fivsevn.com/2026/06/19/asset-post-stream-img-7232-jpg/

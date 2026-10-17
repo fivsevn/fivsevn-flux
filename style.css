@@ -12,9 +12,9 @@
   --avatar-gap: 18px;
   --post-radius: 15px;
   --message-gap: 48px;
-  --avatar-main: url("https://cdn.jsdelivr.net/gh/fivsevn/fivsevn-assets@main/avatar/avatar202511main512.png");
-  --avatar-typing: url("https://cdn.jsdelivr.net/gh/fivsevn/fivsevn-assets@main/avatar/avatar202511nvesvif512.png");
-  --avatar-dev: url("https://cdn.jsdelivr.net/gh/fivsevn/fivsevn-assets@main/avatar/avatar202511dev512.png");
+  --avatar-main: url("/site-assets/avatar-main.png");
+  --avatar-typing: url("/site-assets/avatar-typing.png");
+  --avatar-dev: url("/site-assets/avatar-dev.png");
 }
 
 * {
@@ -66,6 +66,7 @@ b {
 }
 
 .brand,
+.pocket-bubble,
 .nav,
 .entry,
 .footer,
@@ -79,6 +80,7 @@ b {
 }
 
 .brand,
+.pocket-bubble,
 .nav,
 .footer,
 .pager,
@@ -93,6 +95,7 @@ b {
 }
 
 .brand::before,
+.pocket-bubble::before,
 .nav::before,
 .entry::before,
 .footer::before,
@@ -120,7 +123,8 @@ b {
   line-height: 0;
 }
 
-.brand::before {
+.brand::before,
+.pocket-bubble::before {
   background-image: var(--avatar-typing);
 }
 
@@ -481,4 +485,30 @@ pre {
 /* Keep the intro link bubble separated from the first post bubble. */
 .nav + .feed {
   margin-top: var(--message-gap);
+}
+
+/* The pocket is a standalone message, directly after typing. */
+.pocket-bubble {
+  padding: 16px 20px;
+  margin-bottom: var(--message-gap);
+}
+.pocket-bubble img {
+  width: 125px;
+  max-width: 100%;
+  height: auto;
+  margin: 0;
+}
+.pocket-bubble a { display: inline-block; max-width: 100%; }
+.license-bubble { margin-top: var(--message-gap); margin-bottom: 0; }
+.entry-body { min-width: 0; }
+.entry-body table { display: block; max-width: 100%; overflow-x: auto; }
+.entry-body iframe, .entry-body video { max-width: 100%; }
+@media (max-width: 640px) {
+  .pocket-bubble {
+    width: calc(100% - var(--avatar-size) - var(--avatar-gap));
+    max-width: none;
+    margin-left: calc(var(--avatar-size) + var(--avatar-gap));
+    padding: 14px 16px;
+    margin-bottom: 38px;
+  }
 }
