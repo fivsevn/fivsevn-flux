@@ -19,7 +19,7 @@ class PublisherTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.root = Path(self.tmp.name)
-        self.source = {'repository': 'owner/repo', 'path': 'posts/_wordpress/trigger.md', 'cursor': 'c'*40}
+        self.source = {'repository': 'owner/repo', 'path': 'posts/_flux/trigger.md', 'cursor': 'c'*40}
     def tearDown(self):
         self.tmp.cleanup()
     def test_all_queued_snapshots_in_order(self):
@@ -53,6 +53,19 @@ class PublisherTests(unittest.TestCase):
         pub.import_text(self.root, self.source, commit(), set(), lambda u: b'---\nwp_status: private\n---\nhello')
         meta,_=pub.split_frontmatter(next((self.root/'flux').glob('**/index.md')).read_text())
         self.assertEqual(meta['status'], 'draft')
+    def test_flux_status_and_optional_title_are_independent_of_date(self):
+        for i, (title, status) in enumerate([('', 'published'), ('我的标题: <随手记>', 'published'), ('草稿', 'draft')]):
+            import yaml
+            raw=('---\n'+yaml.safe_dump({'status':status,'title':title},allow_unicode=True)+'---\n正文').encode()
+            pub.import_text(self.root,self.source,commit(str(i)*40),set(),lambda u:raw)
+            path=next((self.root/'flux').glob(f'**/*-{str(i)*12}/index.md'))
+            meta,body=pub.split_frontmatter(path.read_text())
+            self.assertEqual(meta['title'],title or '18 Oct, 2026 08:00')
+            self.assertEqual(meta['date'],'2026-10-18T08:00:00+08:00')
+            self.assertEqual(meta['status'],status)
+            self.assertEqual(body,'正文')
+        with self.assertRaises(ValueError):
+            pub.import_text(self.root,self.source,commit(),set(),lambda u:b'---\nstatus: published\ntitle: [invalid]\n---\nhello')
     def test_images_caption_scope_and_retry(self):
         rows=[{'filename': 'post/stream/a.PNG', 'status':'added'}, {'filename':'foodie/b.png','status':'added'}, {'filename':'post/stream/deleted.png','status':'removed'}]
         keys=set()
@@ -87,5 +100,18 @@ class PublisherTests(unittest.TestCase):
         self.assertIn('This content is licensed under',html)
         self.assertEqual(len(list((self.root/'_site/page').glob('**/index.html'))),1)
         self.assertFalse((self.root/'_site/scripts').exists())
+        # Editing the upper title updates both views without moving the page or
+        # changing the lower publication timestamp.
+        path=next(p for p in (self.root/'flux').glob('**/index.md') if 'DRAFT_SENTINEL' not in p.read_text())
+        import yaml
+        meta,body=pub.split_frontmatter(path.read_text())
+        meta['title']='新标题 <测试>'
+        page_path=self.root/'page/2026/10'/meta['id']/'index.html'
+        path.write_text('---\n'+yaml.safe_dump(meta,allow_unicode=True)+'---\n'+body)
+        subprocess.run([sys.executable,str(self.root/'scripts/build.py')],check=True,capture_output=True)
+        for rendered in [(self.root/'index.html').read_text(),page_path.read_text()]:
+            self.assertIn('新标题 &lt;测试&gt;',rendered)
+            self.assertIn('2026-10-18T08:00:00+08:00',rendered)
+            self.assertIn('/page/2026/10/'+meta['id']+'/',rendered)
 
 if __name__=='__main__': unittest.main()
