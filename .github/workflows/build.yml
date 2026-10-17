@@ -1,51 +1,120 @@
-name: Build flux
+name: Publish flux
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
     paths:
       - 'flux/**'
-      - 'scripts/build.py'
+      - 'site-assets/**'
+      - 'scripts/**'
+      - 'tests/**'
+      - '.publishing/**'
       - 'style.css'
-      - 'README.md'
+      - 'requirements.txt'
       - '.github/workflows/build.yml'
+  schedule:
+    - cron: '2-57/5 * * * *'
   workflow_dispatch:
 
 permissions:
   contents: write
+  pages: write
+  id-token: write
 
 concurrency:
-  group: flux-build
-  cancel-in-progress: true
+  group: flux-publish
+  queue: max
+  cancel-in-progress: false
 
 jobs:
-  build:
+  publish:
     runs-on: ubuntu-latest
-
+    timeout-minutes: 15
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-
+          ref: main
+          fetch-depth: 1
+      - name: Apply prepared flux migration
+        if: hashFiles('flux-migration.zip') != ''
+        run: |
+          python3 - <<'PYMIGRATE'
+          from pathlib import Path
+          import zipfile,json
+          archive=Path('flux-migration.zip')
+          with zipfile.ZipFile(archive) as z:
+              for name in z.namelist():
+                  p=Path(name)
+                  if p.is_absolute() or '..' in p.parts: raise ValueError(name)
+              deleted=json.loads(z.read('_migration-delete.json'))
+              for name in z.namelist():
+                  if name!='_migration-delete.json' and not name.startswith('.github/'): z.extract(name,'.')
+              for name in deleted:
+                  p=Path(name)
+                  if p.is_absolute() or '..' in p.parts: raise ValueError(name)
+                  if not name.startswith('.github/'): p.unlink(missing_ok=True)
+          archive.unlink()
+          PYMIGRATE
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Switch flux to direct GitHub publishing and chat layout'
+          git push origin HEAD:main
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-
+          cache: pip
       - run: pip install -r requirements.txt
-
-      - name: Build generated pages
+      - name: Verify publishing and rendering
+        run: python -m unittest discover -s tests -v
+      - name: Read new trigger and image commits from GitHub
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python scripts/ingest_github.py
+      - name: Build timeline and entry pages
         run: python scripts/build.py
-
-      - name: Commit generated pages
+      - name: Package published files only
+        run: python scripts/package_site.py
+      - name: Commit entries and cursors together
+        id: changes
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-          git add -A index.html page feed
-
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add flux .publishing index.html page feed
           if git diff --cached --quiet; then
-            echo "No generated page changes."
+            echo 'changed=false' >> "$GITHUB_OUTPUT"
           else
-            git commit -m "build flux pages"
-            git push
+            git commit -m 'publish flux entries and pages'
+            git push origin HEAD:main
+            echo 'changed=true' >> "$GITHUB_OUTPUT"
           fi
+      - name: Check whether this artifact needs deployment
+        id: publish
+        run: |
+          if cmp -s .publishing/site.sha256 .publishing/deployed.sha256; then
+            echo 'needed=false' >> "$GITHUB_OUTPUT"
+          else
+            echo 'needed=true' >> "$GITHUB_OUTPUT"
+          fi
+      - name: Configure Pages
+        if: steps.publish.outputs.needed == 'true'
+        uses: actions/configure-pages@v5
+      - name: Upload Pages artifact
+        if: steps.publish.outputs.needed == 'true'
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+      - name: Deploy flux
+        if: steps.publish.outputs.needed == 'true'
+        id: deployment
+        uses: actions/deploy-pages@v4
+      - name: Record successful deployment
+        if: steps.publish.outputs.needed == 'true'
+        run: |
+          cp .publishing/site.sha256 .publishing/deployed.sha256
+          git add .publishing/deployed.sha256
+          git commit -m 'record successful flux deployment'
+          git push origin HEAD:main
