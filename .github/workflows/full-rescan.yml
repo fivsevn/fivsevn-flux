@@ -1,42 +1,10 @@
-name: Full rescan WordPress posts
-
+name: WordPress sync retired (full-rescan)
 on:
   workflow_dispatch:
-
 permissions:
-  contents: write
-  actions: write
-
-concurrency:
-  group: flux-full-rescan
-  cancel-in-progress: false
-
+  contents: read
 jobs:
-  full-rescan:
+  retired:
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-
-      - run: pip install -r requirements.txt
-
-      - name: Full rescan WordPress posts
-        run: python scripts/sync-from-live.py --limit 9999
-
-      - name: Localize media
-        run: python scripts/localize-media.py
-
-      - name: Commit full rescan result
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: full rescan wordpress posts
-          file_pattern: flux/**
-
-      - name: Trigger build workflow
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: gh workflow run build.yml --ref main
+      - run: echo "WordPress sync is retired. Flux publishes directly from GitHub."
