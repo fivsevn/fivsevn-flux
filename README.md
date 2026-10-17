@@ -1,53 +1,152 @@
 # fivsevn flux
 
-[flux.fivsevn.com](https://flux.fivsevn.com/) 是随手文字和图片的发布页面。自 2026-10-18 起，内容直接来自 GitHub，不再通过 WordPress。
+The content archive and static-site backend for [flux.fivsevn.com](https://flux.fivsevn.com/).
 
-## 发文字
+**Everyday publishing instructions live in the [devlog posts guide](https://github.com/fivsevn-agy/fivsevn-devlog/blob/main/posts/README.md).** This repository owns saved entries, their media, rendering, and deployment. The guide in devlog is the concise Chinese entry point; this README documents backend maintenance in English.
 
-修改 devlog 仓库里的 [`posts/_flux/trigger.md`](https://github.com/fivsevn-agy/fivsevn-devlog/blob/main/posts/_flux/trigger.md)，替换正文，提交并推送到 `main`。顶部配置为：
+## Repository layout
 
-```yaml
-status: published
-title: ""
+```text
+flux/YYYY/MM/{id}/
+  index.md                 Editable source for one saved entry
+  assets/                  Media owned by that entry, when present
+scripts/
+  ingest_github.py          Import new GitHub source commits
+  build.py                 Render the timeline and individual pages
+  package_site.py           Assemble the public Pages artifact
+site-assets/               Avatars and the pocket image
+style.css                  Shared presentation
+.publishing/
+  state.json               Source paths and processed commit cursors
+  site.sha256              Fingerprint of the current public artifact
+  deployed.sha256          Fingerprint of the last successful deployment
+.github/workflows/build.yml
+index.html                 Generated first timeline page
+feed/                      Generated timeline pagination
+page/                      Generated individual entry pages
+_site/                     Local deployment artifact; ignored by Git
 ```
 
-正文使用 Markdown，支持 `[文字](网址)`、标题、列表、引用、表格和图片；普通换行也保留。`status: published` 公开发布；`status: draft` 只保存为草稿、不进入站点。仓库本身公开，草稿字段不提供保密能力。无需 `category`、`timezone` 或 `wp_status`；旧状态字段仅为历史提交兼容而保留读取支持。当前不支持定时发布。
+Edit source packages under `flux/`. Generated HTML and `_site/` are rebuilt and must not be edited as source content.
 
-`title` 是上方可点击的标题，留空时自动用提交时间生成时间文字，例如 `18 Oct, 2026 06:40`；也可以填写 `title: "今天的随手记"`。下方的 `date` 是实际发布时间，独立保存，统一使用 `Asia/Shanghai`。下一条想恢复默认时间标题，清空 trigger 的 `title` 即可。
+## Locate an existing entry
 
-每次 trigger 提交保存一条独立记录；相同提交重试不重复发文。显式填写 `slug` 时沿用原来“同 slug 只创建一次”的行为。修改旧帖应编辑 flux 对应文件，不重新提交 trigger。
+Open its title on the live timeline. An individual URL such as:
 
-## 发图片
+```text
+https://flux.fivsevn.com/page/2026/10/2026-10-18-064929-e4ec7f5cb277/
+```
 
-继续用快捷指令选择 `fivsevn-assets/post/stream/`，通过 Working Copy 提交并推送。每张新图片生成一条记录，提交的 extended description 是配文，可以使用 Markdown。图片自动复制到 flux 文章包，之后显示不依赖 WordPress 或原图片 CDN。相同图片路径不会重复发文；要编辑旧帖，修改 flux 文章包。
+corresponds to:
 
-assets 的 foodie、fieldlog、bygone、YouTube 等流程仍按各自原规则运行。
+```text
+flux/2026/10/2026-10-18-064929-e4ec7f5cb277/index.md
+```
 
-## 何时上线
+Replace the URL's `page/` with `flux/` and append `index.md`. Use this mapping rather than the displayed title, which may have been customized. The example above is the retained `test` entry.
 
-[Publish flux](https://github.com/fivsevn/fivsevn-flux/actions/workflows/build.yml) 约每 5 分钟检查两个公开仓库，按先后顺序读取所有尚未处理的提交，保存记录、构建页面并直接部署 GitHub Pages。GitHub 定时任务可能延后；需要立即检查时可手动运行这个任务。
+## Edit an existing entry
 
-原 devlog 的任务只校验 Markdown。校验成功不等于 flux 已部署；以 Publish flux 的成功结果和实际页面为准。
+1. Pull the latest `main` before editing: the publishing workflow also commits to this branch.
+2. Open the matching `flux/YYYY/MM/{id}/index.md`.
+3. Change the Markdown after the closing `---` to edit the body, links, or image caption. Change the top-level `title` to edit the clickable heading.
+4. Keep the directory, `id`, and `date` unchanged. Keep source identity fields as well.
+5. Commit and push to `main`. Wait for [Publish flux](https://github.com/fivsevn/fivsevn-flux/actions/workflows/build.yml) to finish, then check both the timeline and the individual page.
 
-`.publishing/state.json` 保存两个来源的处理位置，和新内容一起提交。重试不覆盖已存在的 flux 记录。来源历史被重写、处理位置消失时停止并报错，不擅自重发旧内容。
+The upper heading is `title`; the lower publication timestamp is `date`. They are independent. Editing `title` changes the heading in both views without changing the URL, lower timestamp, or chronological position. The timestamp retains its existing ISO format, for example `2026-10-18T06:49:29+08:00`.
 
-## 修改已发布内容
+A blank title in the **new-post trigger** is filled with a time-based heading during import. An already saved entry has its title stored explicitly; to give it a different time-style heading later, edit that stored string. Do not clear a saved title expecting the trigger's defaulting behavior to run again.
 
-每条记录位于 `flux/YYYY/MM/{id}/index.md`，附件位于旁边的 `assets/`。直接修改对应 Markdown 并推送，自动构建上线。只改顶部 `title` 就能修改上方标题，时间线和独立页面同时更新。保留原 `id`、目录和 `date` 可保持网址、下方实际发布时间与排列位置。`status: hidden` 撤下网页；公开 Git 仓库及历史仍保留文件。
+Do not edit or resubmit the trigger to revise an old entry: a new trigger commit is a new publishing event. Do not edit generated files under `page/` or `feed/`.
 
-历史的 150 个文章包保留原网址和日期，全部由 flux 管理（`sync: manual`）。WordPress 导入工作流已停用，旧导入脚本已停用；以后修改或删除 WordPress 内容不会影响 flux。历史来源字段只用于追溯。
+### Replace or remove an image
 
-## 页面构建
+Place replacement files in that entry's `assets/` directory and update its relative Markdown link, for example `![](assets/replacement.webp)`. Remove an obsolete file only after checking that no other entry references it. Commit the Markdown and media changes together.
 
-`scripts/build.py` 把 Markdown 生成为首页、分页和单篇页。时间线保持 typing → 口袋 → 内容仓库链接 → 消息 → 分页 → 许可声明的顺序。`scripts/package_site.py` 只打包生成网页、公开附件和站点素材，不把脚本或草稿包发布到 Pages。
+The saved media belongs to this repository. Editing or deleting its original file in `fivsevn-assets` does not edit an existing flux entry; edit the saved package here.
+
+## Hide, restore, or delete an entry
+
+### Hide from the website while retaining the archive
+
+Set the saved entry's frontmatter to:
+
+```yaml
+status: hidden
+```
+
+Commit and push. After deployment, the entry is absent from the timeline and its individual page is no longer published. Its package and source identity remain in the repository, which also prevents normal source retries from recreating it. To restore it, change the value to `status: published` and push again; its original URL and publication timestamp are retained.
+
+Only `published` entries are included in the site; historical entries without a `status` field are also treated as published. Draft and hidden packages are excluded from the deployment artifact. The GitHub repository and its history remain public: hiding is a site-presentation setting, not private storage.
+
+### Delete the saved package
+
+1. Locate the package using the URL mapping above.
+2. Delete the entire `flux/YYYY/MM/{id}/` directory, including `index.md` and its owned `assets/`. Check for cross-entry references before removing media.
+3. Commit and push the deletion to `main`.
+4. Confirm Publish flux succeeds. The timeline is rebuilt, obsolete individual pages are removed, and the new Pages artifact omits the deleted package's media. Refresh the timeline and verify that the former individual URL returns a missing-page response.
+
+Do not delete just the generated `page/` directory: it would be recreated from the Markdown. Deleting the trigger or the original WordPress post does not delete a saved flux entry either.
+
+Deletion removes the package from the current branch and website; earlier Git commits still contain it. To undo an accidental deletion, restore that package from Git history and push it again. Do not rewind `.publishing/state.json` to restore content.
+
+The importer normally advances past already processed source commits, so a deletion is not undone by the next scheduled run. However, removing a package also removes its stored deduplication keys. A later commit modifying the same source image path, or reusing an explicit text slug, can create it again. Use `hidden` when you want to retain the identity and reliably keep an entry off the site.
+
+## Import sources and metadata
+
+| Source | Input | Saved result |
+| --- | --- | --- |
+| Text | `fivsevn-agy/fivsevn-devlog`, `posts/_flux/trigger.md` | One Markdown package per new trigger commit |
+| Images | `fivsevn/fivsevn-assets`, `post/stream/` | One package per new image path; the extended commit description becomes its Markdown caption |
+
+The importer reads committed snapshots on `main`, in chronological order. Source paths and processed commit positions are in `.publishing/state.json`. It only reads the source repositories; no WordPress access or cross-repository write token is needed.
+
+The text trigger accepts `status: published` or `status: draft` and an optional `title`. Missing or empty titles receive a heading derived from the source commit time. The lower `date` is recorded separately from that same commit time, using `Asia/Shanghai`. It is not recomputed when an existing package is edited. Scheduled publication dates are not supported.
+
+Ordinary Markdown, named links, lists, quotes, tables, images, and line breaks are preserved. An explicit `slug` retains create-once behavior; omit it for normal new posts. Legacy `wp_status` values are still understood for historical compatibility.
+
+Saved identity fields include `source_key`, `source_commit`, `source_repository`, and `publish_slug`; image entries also have `source_asset_path`. Older packages may contain `wp_id`, `wp_slug`, and other provenance fields. Preserve these fields during normal editing. They record origin and support deduplication; they do not activate WordPress synchronization.
+
+## Build and deployment
+
+The only maintained workflow is **Publish flux**, defined in `.github/workflows/build.yml`. It runs on relevant changes to this repository, on a five-minute schedule, and on manual dispatch. GitHub may delay scheduled runs. README-only edits do not require a site deployment.
+
+The workflow:
+
+1. Checks out current `main` and runs the publishing tests.
+2. Reads new source commits and saves complete entry packages.
+3. Builds the timeline, pagination, and individual pages.
+4. Packages public HTML, styles, site assets, and published-entry media into `_site/`.
+5. Commits source cursors, new content, and generated pages together.
+6. Deploys the artifact through GitHub Pages when its fingerprint differs from the last successful deployment.
+7. Records the deployed fingerprint only after success.
+
+The timeline uses 17 entries per page, ordered by `date`, newest first. Its visual order is typing bubble → pocket image → content-library link → entries → pagination → license bubble. Every entry title links to its individual page. Long links wrap within the message bubble.
+
+`build.py` recreates `page/` and `feed/` on every build; hiding or deleting a source entry therefore removes obsolete generated pages. `package_site.py` excludes scripts and non-published packages from the Pages artifact. GitHub Pages uses the Actions artifact rather than serving the repository root.
+
+### Local verification
 
 ```sh
 python -m pip install -r requirements.txt
 python -m unittest discover -s tests -v
 python scripts/build.py
 python scripts/package_site.py
+python -m http.server 8000 --directory _site
 ```
 
-本地检查无需运行导入脚本。`scripts/ingest_github.py` 会只读访问 GitHub，并在本地写入新文章包和处理位置；自动任务负责将这些变更一并提交。
+Building locally does not import or publish anything. Run `scripts/ingest_github.py` only when intentionally importing: it reads GitHub and writes local packages and cursors. The workflow is responsible for committing and deploying those changes.
 
-内容许可：CC BY-NC-SA 4.0。引用及第三方材料仍遵循其原有权利与许可。
+### Troubleshooting
+
+- **Trigger validation passed, but no live post:** the devlog check only validates input. Inspect Publish flux and the live page; allow for schedule and deployment delays, or dispatch Publish flux manually.
+- **Missing source cursor:** stop and inspect source history. Do not reset the cursor to an arbitrary commit, which could replay content or skip posts.
+- **Failed image download:** the importer does not save a partial package or advance past the failed import. Fix the source problem and rerun.
+- **Push rejected after a concurrent edit:** pull current `main` and rerun the workflow. Do not force-push over user edits.
+- **Deployment failed after content was committed:** rerun Publish flux. The successful-deployment fingerprint remains unchanged, so the artifact is retried.
+
+## WordPress migration
+
+Since 2026-10-18, flux publishes directly from GitHub. The 150 migrated packages retain their original URLs and dates. Subsequent posts, including the retained `test`, use the same archive structure. Old WordPress sync workflows and retired importer stubs have been removed. Changes or deletions in WordPress do not affect these saved packages.
+
+Content license: CC BY-NC-SA 4.0. Quoted and third-party material retains its original rights and licenses.
