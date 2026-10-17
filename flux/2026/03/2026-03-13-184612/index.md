@@ -3,7 +3,7 @@ id: 2026-03-13-184612
 date: '2026-03-13T18:46:12+08:00'
 title: 13 March, 2026 18:46
 source: wordpress-live
-sync: auto
+sync: manual
 source_hash: e6766f27b5d919af
 wp_post_id: 2464
 wp_url: https://fivsevn.com/2026/03/13/13-march-2026-1846/

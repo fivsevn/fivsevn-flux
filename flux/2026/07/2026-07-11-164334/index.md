@@ -3,7 +3,7 @@ id: 2026-07-11-164334
 date: '2026-07-11T16:43:34+08:00'
 title: 11 Jul, 2026 17:43
 source: wordpress-live
-sync: auto
+sync: manual
 source_hash: 4bc2c16137239d84
 wp_post_id: 4220
 wp_url: https://fivsevn.com/2026/07/11/asset-post-stream-img-7935-jpeg/

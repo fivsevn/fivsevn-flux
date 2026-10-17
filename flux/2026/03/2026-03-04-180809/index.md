@@ -3,7 +3,7 @@ id: 2026-03-04-180809
 date: '2026-03-04T18:08:09+08:00'
 title: 4 March, 2026 18:08
 source: wordpress-live
-sync: auto
+sync: manual
 source_hash: 02692e36f8334e9a
 wp_post_id: 2348
 wp_url: https://fivsevn.com/2026/03/04/4-march-2026-1808/

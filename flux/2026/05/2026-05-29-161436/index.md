@@ -3,7 +3,7 @@ id: 2026-05-29-161436
 date: '2026-05-29T16:14:36+08:00'
 title: 29 May, 2026 16:14
 source: wordpress-live
-sync: auto
+sync: manual
 source_hash: 6c5f7be4140d6777
 wp_post_id: 3076
 wp_url: https://fivsevn.com/2026/05/29/29-may-2026-1614/
@@ -16,4 +16,4 @@ media:
 
 ![](./assets/01-IMG_6887.jpg)
 
-前情提要：<https://fivsevn.com/2026/05/20/20-may-2026-2309-2/>
+前情提要：<https://flux.fivsevn.com/page/2026/05/2026-05-20-230953/>

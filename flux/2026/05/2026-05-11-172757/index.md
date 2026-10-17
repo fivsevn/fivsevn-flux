@@ -3,7 +3,7 @@ id: 2026-05-11-172757
 date: '2026-05-11T17:27:57+08:00'
 title: 11 May, 2026 17:27
 source: wordpress-live
-sync: auto
+sync: manual
 source_hash: 95d75e8d095389d1
 wp_post_id: 2686
 wp_url: https://fivsevn.com/2026/05/11/11-may-2026-1727/

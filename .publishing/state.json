@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "cutover": "2026-10-18",
+  "sources": {
+    "text": {
+      "repository": "fivsevn-agy/fivsevn-devlog",
+      "path": "posts/_wordpress/trigger.md",
+      "cursor": "e2551c946df1a22695a307cc31cf28c4fa449f4d"
+    },
+    "images": {
+      "repository": "fivsevn/fivsevn-assets",
+      "path": "post/stream",
+      "cursor": "219fb514ccfc9ea800c647f96dd0ad6f5bd72474"
+    }
+  }
+}

@@ -3,7 +3,7 @@ id: 2026-05-14-015615
 date: '2026-05-14T01:56:15+08:00'
 title: 14 May, 2026 01:56
 source: wordpress-live
-sync: auto
+sync: manual
 source_hash: d2d7b294c925e0f8
 wp_post_id: 2740
 wp_url: https://fivsevn.com/2026/05/14/14-may-2026-0156/

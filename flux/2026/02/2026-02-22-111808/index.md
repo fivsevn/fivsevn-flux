@@ -3,7 +3,7 @@ id: 2026-02-22-111808
 date: '2026-02-22T11:18:08+08:00'
 title: '[旧贴] Poirot Goes to Egypt'
 source: wordpress-live
-sync: auto
+sync: manual
 source_hash: 6ba054c0cfed8279
 wp_post_id: 2003
 wp_url: https://fivsevn.com/2026/02/22/%e6%97%a7%e8%b4%b4poirot-goes-to-egypt/

@@ -3,7 +3,7 @@ id: 2026-06-03-170504
 date: '2026-06-03T17:05:04+08:00'
 title: 3 June, 2026 17:05
 source: wordpress-live
-sync: auto
+sync: manual
 source_hash: 01e63f3ad034b54b
 wp_post_id: 3356
 wp_url: https://fivsevn.com/2026/06/03/3-june-2026-1705/

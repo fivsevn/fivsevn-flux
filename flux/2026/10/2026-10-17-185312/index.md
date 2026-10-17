@@ -3,7 +3,7 @@ id: 2026-10-17-185312
 date: '2026-10-17T18:53:12+08:00'
 title: 17 Oct, 2026 18:53
 source: wordpress-live
-sync: auto
+sync: manual
 source_hash: 94fc3ba8b3851ab8
 wp_post_id: 4430
 wp_url: https://fivsevn.com/2026/10/17/github-text-fa44183/
