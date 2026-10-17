@@ -38,31 +38,6 @@ jobs:
         with:
           ref: main
           fetch-depth: 1
-      - name: Apply prepared flux migration
-        if: hashFiles('flux-migration.zip') != ''
-        run: |
-          python3 - <<'PYMIGRATE'
-          from pathlib import Path
-          import zipfile,json
-          archive=Path('flux-migration.zip')
-          with zipfile.ZipFile(archive) as z:
-              for name in z.namelist():
-                  p=Path(name)
-                  if p.is_absolute() or '..' in p.parts: raise ValueError(name)
-              deleted=json.loads(z.read('_migration-delete.json'))
-              for name in z.namelist():
-                  if name!='_migration-delete.json' and not name.startswith('.github/'): z.extract(name,'.')
-              for name in deleted:
-                  p=Path(name)
-                  if p.is_absolute() or '..' in p.parts: raise ValueError(name)
-                  if not name.startswith('.github/'): p.unlink(missing_ok=True)
-          archive.unlink()
-          PYMIGRATE
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -A
-          git commit -m 'Switch flux to direct GitHub publishing and chat layout'
-          git push origin HEAD:main
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
