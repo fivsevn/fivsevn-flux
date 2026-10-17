@@ -120,9 +120,13 @@ def import_text(root: Path, source: dict, commit: dict, keys: set[str], read=fet
     meta, body = split_frontmatter(data)
     if not body.strip():
         return False
-    status = str(meta.get("wp_status") or "publish")
-    if status not in {"publish", "draft", "pending", "private"}:
-        raise ValueError("Use publish, draft, pending or private; scheduled publication is not supported")
+    status = str(meta.get("status") or meta.get("wp_status") or "published")
+    if status not in {"published", "publish", "draft", "pending", "private"}:
+        raise ValueError("Use status: published or draft; scheduled publication is not supported")
+    title = meta.get("title")
+    if title is not None and not isinstance(title, str):
+        raise ValueError('title must be text; use title: "" for the default time title')
+    title = (title or "").strip()
     slug = str(meta.get("slug") or f"github-text-{sha[:7]}")
     key = f"github:{source['repository']}:{sha}"
     if key in keys or slug in keys:
@@ -130,7 +134,8 @@ def import_text(root: Path, source: dict, commit: dict, keys: set[str], read=fet
     save_package(root, source_date(commit), sha[:12], {
         "source": "github-trigger", "source_key": key, "source_commit": sha,
         "source_repository": source["repository"], "publish_slug": slug,
-        "status": "published" if status == "publish" else "draft",
+        "status": "published" if status in {"published", "publish"} else "draft",
+        **({"title": title} if title else {}),
     }, body)
     keys.update((key, slug))
     return True
