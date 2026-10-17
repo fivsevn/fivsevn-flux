@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Import committed trigger snapshots and post/stream images, without WordPress.
+"""Import committed trigger snapshots and post/flux images, without WordPress.
 
 Each source has a durable commit cursor. Process every intervening commit oldest
 first, and use stable source identities so retries never duplicate or overwrite
@@ -56,7 +56,7 @@ def pending_commits(source: dict, read=api) -> list[dict]:
     """Never silently replay history if a cursor disappeared after a force push."""
     pending = []
     for page in range(1, 101):
-        query = urlencode({"sha": "main", "path": source["path"], "per_page": 100, "page": page})
+        query = urlencode({"sha": "main", "path": source.get("history_path", source["path"]), "per_page": 100, "page": page})
         commits = read(f"repos/{source['repository']}/commits?{query}")
         if not isinstance(commits, list):
             raise ValueError("Unexpected commit listing")
@@ -153,11 +153,17 @@ def import_images(root: Path, source: dict, commit: dict, keys: set[str], files:
     for item in files:
         path = item["filename"]
         parts = PurePosixPath(path)
-        if item["status"] == "removed" or not path.startswith("post/stream/") or parts.suffix.lower() not in EXTENSIONS or ".." in parts.parts:
+        if item["status"] == "removed" or not path.startswith(source["path"].rstrip("/") + "/") or parts.suffix.lower() not in EXTENSIONS or ".." in parts.parts:
             continue
         key = f"asset:{source['repository']}:{path}"
         slug = asset_slug(path)
-        if key in keys or slug in keys:
+        aliases = {key, slug}
+        # Historical WordPress slugs are stable identities, not current URLs.
+        # A directory rename must not republish the same image.
+        for prefix in source.get("previous_paths", []):
+            old_path = prefix.rstrip("/") + "/" + path[len(source["path"].rstrip("/")) + 1:]
+            aliases.update((f"asset:{source['repository']}:{old_path}", asset_slug(old_path)))
+        if aliases & keys:
             continue
         media = read(f"https://raw.githubusercontent.com/{source['repository']}/{sha}/{quote(path)}")
         if not media:

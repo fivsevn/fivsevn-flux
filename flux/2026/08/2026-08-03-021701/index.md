@@ -11,7 +11,7 @@ wp_slug: asset-post-stream-img-9108-png
 status: published
 media:
 - file: ./assets/01-IMG_9108.png
-  source: https://raw.githubusercontent.com/fivsevn/fivsevn-assets/main/post/stream/IMG_9108.PNG
+  source: https://raw.githubusercontent.com/fivsevn/fivsevn-assets/main/post/flux/IMG_9108.PNG
 ---
 
 ![03 Aug, 2026 03:16](./assets/01-IMG_9108.png)

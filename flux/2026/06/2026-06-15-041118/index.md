@@ -11,7 +11,7 @@ wp_slug: asset-post-stream-img-7154-jpg
 status: published
 media:
 - file: ./assets/01-IMG_7154.jpg
-  source: https://raw.githubusercontent.com/fivsevn/fivsevn-assets/main/post/stream/IMG_7154.jpg
+  source: https://raw.githubusercontent.com/fivsevn/fivsevn-assets/main/post/flux/IMG_7154.jpg
 ---
 
 ![15 Jun, 2026 05:10](./assets/01-IMG_7154.jpg)
