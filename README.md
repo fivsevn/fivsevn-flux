@@ -4,9 +4,16 @@
 
 ## 发文字
 
-继续修改 [原来的 trigger](https://github.com/fivsevn-agy/fivsevn-devlog/blob/main/posts/_wordpress/trigger.md)，保留配置，替换正文，提交并推送到 `main`。路径中的 `_wordpress` 为兼容手机入口而保留，不代表仍向 WordPress 发文。
+修改 devlog 仓库里的 [`posts/_flux/trigger.md`](https://github.com/fivsevn-agy/fivsevn-devlog/blob/main/posts/_flux/trigger.md)，替换正文，提交并推送到 `main`。顶部配置为：
 
-正文使用 Markdown，支持 `[文字](网址)`、标题、列表、引用、表格和图片；普通换行也保留。`wp_status: publish` 沿用原配置，表示在 flux 公开发布。`draft`、`pending`、`private` 只保存为草稿、不进入站点；仓库本身公开，这些字段不提供保密能力。当前不支持 `future` 定时发布。
+```yaml
+status: published
+title: ""
+```
+
+正文使用 Markdown，支持 `[文字](网址)`、标题、列表、引用、表格和图片；普通换行也保留。`status: published` 公开发布；`status: draft` 只保存为草稿、不进入站点。仓库本身公开，草稿字段不提供保密能力。无需 `category`、`timezone` 或 `wp_status`；旧状态字段仅为历史提交兼容而保留读取支持。当前不支持定时发布。
+
+`title` 是上方可点击的标题，留空时自动用提交时间生成时间文字，例如 `18 Oct, 2026 06:40`；也可以填写 `title: "今天的随手记"`。下方的 `date` 是实际发布时间，独立保存，统一使用 `Asia/Shanghai`。下一条想恢复默认时间标题，清空 trigger 的 `title` 即可。
 
 每次 trigger 提交保存一条独立记录；相同提交重试不重复发文。显式填写 `slug` 时沿用原来“同 slug 只创建一次”的行为。修改旧帖应编辑 flux 对应文件，不重新提交 trigger。
 
@@ -26,9 +33,9 @@ assets 的 foodie、fieldlog、bygone、YouTube 等流程仍按各自原规则�
 
 ## 修改已发布内容
 
-每条记录位于 `flux/YYYY/MM/{id}/index.md`，附件位于旁边的 `assets/`。直接修改对应 Markdown 并推送，自动构建上线。保留原 `id`、目录和 `date` 可保持网址与排列位置。`status: hidden` 撤下网页；公开 Git 仓库及历史仍保留文件。
+每条记录位于 `flux/YYYY/MM/{id}/index.md`，附件位于旁边的 `assets/`。直接修改对应 Markdown 并推送，自动构建上线。只改顶部 `title` 就能修改上方标题，时间线和独立页面同时更新。保留原 `id`、目录和 `date` 可保持网址、下方实际发布时间与排列位置。`status: hidden` 撤下网页；公开 Git 仓库及历史仍保留文件。
 
-历史的 150 个文章包保留原网址和日期，全部由 flux 管理（`sync: manual`）。WordPress 导入工作流已移除，旧导入脚本已停用；以后修改或删除 WordPress 内容不会影响 flux。历史来源字段只用于追溯。
+历史的 150 个文章包保留原网址和日期，全部由 flux 管理（`sync: manual`）。WordPress 导入工作流已停用，旧导入脚本已停用；以后修改或删除 WordPress 内容不会影响 flux。历史来源字段只用于追溯。
 
 ## 页面构建
 
