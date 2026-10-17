@@ -97,7 +97,7 @@ The importer normally advances past already processed source commits, so a delet
 | Source | Input | Saved result |
 | --- | --- | --- |
 | Text | `fivsevn-agy/fivsevn-devlog`, `posts/_flux/trigger.md` | One Markdown package per new trigger commit |
-| Images | `fivsevn/fivsevn-assets`, `post/stream/` | One package per new image path; the extended commit description becomes its Markdown caption |
+| Images | `fivsevn/fivsevn-assets`, `post/flux/` | One package per new image path; the extended commit description becomes its Markdown caption |
 
 The importer reads committed snapshots on `main`, in chronological order. Source paths and processed commit positions are in `.publishing/state.json`. It only reads the source repositories; no WordPress access or cross-repository write token is needed.
 
@@ -150,3 +150,11 @@ Building locally does not import or publish anything. Run `scripts/ingest_github
 Since 2026-10-18, flux publishes directly from GitHub. The 150 migrated packages retain their original URLs and dates. Subsequent posts, including the retained `test`, use the same archive structure. Old WordPress sync workflows and retired importer stubs have been removed. Changes or deletions in WordPress do not affect these saved packages.
 
 Content license: CC BY-NC-SA 4.0. Quoted and third-party material retains its original rights and licenses.
+
+## Image folder migration
+
+Image uploads now use `fivsevn-assets/post/flux/`. The importer reads commit history for the parent `post/` directory so the existing cursor survives the directory rename, but imports images only from the configured `post/flux/` prefix. `previous_paths` retains the former prefix solely for duplicate detection against historical source keys and WordPress slugs. Do not remove those identities or reset the cursor to replay old images.
+
+Historical media source URLs have been updated to the new folder. Published pages continue using package-local media; package IDs, page URLs, titles and publication timestamps are unchanged. Older WordPress URLs and slugs in provenance metadata remain historical records.
+
+The installed phone shortcut must be edited once: rename its menu item to `post/flux` and reselect that folder in its Save File action after pulling the assets repository in Working Copy. The signed shortcut in assets `docs/` remains a historical backup; do not reinstall its old folder binding. Re-signing that export requires an iCloud-signed-in Mac. Other shortcut branches are unchanged.

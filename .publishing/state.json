@@ -9,8 +9,12 @@
     },
     "images": {
       "repository": "fivsevn/fivsevn-assets",
-      "path": "post/stream",
-      "cursor": "219fb514ccfc9ea800c647f96dd0ad6f5bd72474"
+      "path": "post/flux",
+      "cursor": "219fb514ccfc9ea800c647f96dd0ad6f5bd72474",
+      "history_path": "post",
+      "previous_paths": [
+        "post/stream"
+      ]
     }
   },
   "last_checked_day": "2026-10-18"

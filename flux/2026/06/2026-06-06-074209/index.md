@@ -11,7 +11,7 @@ wp_slug: asset-post-stream-img-6858-gif
 status: published
 media:
 - file: ./assets/01-IMG_6858.gif
-  source: https://raw.githubusercontent.com/fivsevn/fivsevn-assets/main/post/stream/IMG_6858.GIF
+  source: https://raw.githubusercontent.com/fivsevn/fivsevn-assets/main/post/flux/IMG_6858.GIF
 ---
 
 ![06 Jun, 2026 08:42](./assets/01-IMG_6858.gif)

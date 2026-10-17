@@ -67,7 +67,8 @@ class PublisherTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             pub.import_text(self.root,self.source,commit(),set(),lambda u:b'---\nstatus: published\ntitle: [invalid]\n---\nhello')
     def test_images_caption_scope_and_retry(self):
-        rows=[{'filename': 'post/stream/a.PNG', 'status':'added'}, {'filename':'foodie/b.png','status':'added'}, {'filename':'post/stream/deleted.png','status':'removed'}]
+        self.source['path']='post/flux'
+        rows=[{'filename': 'post/flux/a.PNG', 'status':'added'}, {'filename':'foodie/b.png','status':'added'}, {'filename':'post/flux/deleted.png','status':'removed'}]
         keys=set()
         c=commit(message='feat\n\n配文 [链接](https://example.com)')
         self.assertEqual(pub.import_images(self.root,self.source,c,keys,rows,lambda u:b'png-bytes'),1)
@@ -76,9 +77,29 @@ class PublisherTests(unittest.TestCase):
         self.assertIn('配文 [链接](https://example.com)',p.read_text())
         self.assertEqual((p.parent/'assets/image.png').read_bytes(),b'png-bytes')
     def test_media_failure_does_not_create_partial_entry(self):
-        rows=[{'filename':'post/stream/a.png','status':'added'}]
+        self.source['path']='post/flux'
+        rows=[{'filename':'post/flux/a.png','status':'added'}]
         with self.assertRaises(ValueError): pub.import_images(self.root,self.source,commit(),set(),rows,lambda u:b'')
         self.assertEqual(list((self.root/'flux').glob('**/index.md')),[])
+    def test_renamed_images_keep_historical_identity(self):
+        self.source.update(path='post/flux', previous_paths=['post/stream'])
+        rows=[{'filename':'post/flux/old.PNG','previous_filename':'post/stream/old.PNG','status':'renamed'},
+              {'filename':'post/flux/new.png','status':'added'},
+              {'filename':'post/2026/unrelated.png','status':'added'}]
+        for key in ('asset-post-stream-old-png','asset:owner/repo:post/stream/old.PNG'):
+            with tempfile.TemporaryDirectory() as directory:
+                root=Path(directory)
+                self.assertEqual(pub.import_images(root,self.source,commit(),{key},rows,lambda u:b'new-image'),1)
+                entry=next((root/'flux').glob('**/index.md')).read_text()
+                self.assertIn('post/flux/new.png',entry)
+                self.assertNotIn('old.PNG',entry)
+    def test_folder_rename_keeps_cursor_in_parent_history(self):
+        from urllib.parse import parse_qs,urlparse
+        self.source.update(path='post/flux',history_path='post')
+        def read(url):
+            self.assertEqual(parse_qs(urlparse(url).query)['path'],['post'])
+            return [commit('d'*40),commit('c'*40)]
+        self.assertEqual([c['sha'] for c in pub.pending_commits(self.source,read)],['d'*40])
     def test_build_and_package_markdown_and_private_exclusion(self):
         (self.root/'scripts').mkdir()
         for name in ('build.py','package_site.py','ingest_github.py'): shutil.copy2(ROOT/'scripts'/name,self.root/'scripts'/name)
