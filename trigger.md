@@ -1,5 +1,5 @@
 ---
-status: draft
+status: published
 title: "发布链路验证（临时）"
 ---
 
