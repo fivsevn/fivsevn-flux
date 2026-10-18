@@ -25,7 +25,7 @@ def verify_once(base_url, expected, read=fetch):
     for path, digest in expected['files'].items():
         url = base_url.rstrip('/') + '/' + quote(path) + query
         if hashlib.sha256(read(url)).hexdigest() != digest:
-            raise ValueError(f'The public page does not match the deployed artifact: {path}')
+            raise ValueError(f'The public file does not match the deployed artifact: {path}')
 
 
 def main():
@@ -34,7 +34,7 @@ def main():
     for attempt in range(12):
         try:
             verify_once('https://' + domain, expected)
-            print(f'Confirmed live artifact {expected["site_sha256"]} and {len(expected["files"])} pages at {domain}.')
+            print(f'Confirmed live artifact {expected["site_sha256"]} and {len(expected["files"])} public files at {domain}.')
             return
         except (URLError, TimeoutError, ValueError) as error:
             if attempt == 11:

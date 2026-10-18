@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Import committed trigger snapshots and post/flux images, without WordPress.
+"""Import committed trigger snapshots and uploads/ images from this repository.
 
 Each source has a durable commit cursor. Process every intervening commit oldest
 first, and use stable source identities so retries never duplicate or overwrite
@@ -8,6 +8,7 @@ an edited flux entry. No source writes or cross-repository secrets are needed.
 from __future__ import annotations
 
 import json
+from io import BytesIO
 import os
 import re
 import tempfile
@@ -18,6 +19,7 @@ from urllib.request import Request, urlopen
 from zoneinfo import ZoneInfo
 
 import yaml
+from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
 STATE = ROOT / ".publishing/state.json"
@@ -145,6 +147,18 @@ def asset_slug(path: str) -> str:
     return "asset-" + path.lower().replace("/", "-").replace("_", "-").replace(".", "-")
 
 
+def validate_image(media: bytes, path: str):
+    if not media:
+        raise ValueError(f"Empty image: {path}")
+    try:
+        with Image.open(BytesIO(media)) as image:
+            if image.format not in {"JPEG", "PNG", "WEBP", "GIF"}:
+                raise ValueError(f"Unsupported image format in {path}; use JPG, PNG, WebP or GIF")
+            image.verify()
+    except (OSError, SyntaxError) as error:
+        raise ValueError(f"Invalid or damaged image: {path}") from error
+
+
 def import_images(root: Path, source: dict, commit: dict, keys: set[str], files: list[dict], read=fetch) -> int:
     count = 0
     sha = commit["sha"]
@@ -153,8 +167,12 @@ def import_images(root: Path, source: dict, commit: dict, keys: set[str], files:
     for item in files:
         path = item["filename"]
         parts = PurePosixPath(path)
-        if item["status"] == "removed" or not path.startswith(source["path"].rstrip("/") + "/") or parts.suffix.lower() not in EXTENSIONS or ".." in parts.parts:
+        if item["status"] == "removed" or not path.startswith(source["path"].rstrip("/") + "/") or ".." in parts.parts:
             continue
+        if parts.name in {"README.md", ".keep", ".gitkeep"}:
+            continue
+        if parts.suffix.lower() not in EXTENSIONS:
+            raise ValueError(f"Unsupported upload: {path}; use JPG/JPEG, PNG, WebP or GIF. Convert HEIC before uploading.")
         key = f"asset:{source['repository']}:{path}"
         slug = asset_slug(path)
         aliases = {key, slug}
@@ -163,11 +181,13 @@ def import_images(root: Path, source: dict, commit: dict, keys: set[str], files:
         for prefix in source.get("previous_paths", []):
             old_path = prefix.rstrip("/") + "/" + path[len(source["path"].rstrip("/")) + 1:]
             aliases.update((f"asset:{source['repository']}:{old_path}", asset_slug(old_path)))
+        for previous in source.get("previous_sources", []):
+            old_path = previous['path'].rstrip('/') + '/' + path[len(source['path'].rstrip('/')) + 1:]
+            aliases.update((f"asset:{previous['repository']}:{old_path}", asset_slug(old_path)))
         if aliases & keys:
             continue
         media = read(f"https://raw.githubusercontent.com/{source['repository']}/{sha}/{quote(path)}")
-        if not media:
-            raise ValueError(f"Empty image: {path}")
+        validate_image(media, path)
         import hashlib
         suffix = hashlib.sha256(path.encode()).hexdigest()[:12]
         filename = "image" + parts.suffix.lower()
@@ -196,8 +216,7 @@ def main():
             else:
                 total += import_images(ROOT, source, commit, keys, commit_files(source["repository"], commit["sha"]))
             source["cursor"] = commit["sha"]
-    # Daily activity keeps GitHub's public-repository schedule from expiring after
-    # 60 quiet days. This does not change any content or require a redeployment.
+    # Both inputs are now local push events; no scheduled or external polling.
     state["last_checked_day"] = datetime.now(ZoneInfo("Asia/Shanghai")).date().isoformat()
     # Content and cursor are committed together by the workflow, after all imports succeed.
     STATE.write_text(json.dumps(state, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

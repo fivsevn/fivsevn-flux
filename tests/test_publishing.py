@@ -9,6 +9,7 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
 import ingest_github as pub
+IMAGE_BYTES = (ROOT / 'site-assets/pocket.webp').read_bytes()
 
 
 def commit(sha='a'*40, message='post', date='2026-10-18T00:00:00Z'):
@@ -71,11 +72,11 @@ class PublisherTests(unittest.TestCase):
         rows=[{'filename': 'post/flux/a.PNG', 'status':'added'}, {'filename':'foodie/b.png','status':'added'}, {'filename':'post/flux/deleted.png','status':'removed'}]
         keys=set()
         c=commit(message='feat\n\n配文 [链接](https://example.com)')
-        self.assertEqual(pub.import_images(self.root,self.source,c,keys,rows,lambda u:b'png-bytes'),1)
-        self.assertEqual(pub.import_images(self.root,self.source,c,pub.existing_keys(self.root),rows,lambda u:b'png-bytes'),0)
+        self.assertEqual(pub.import_images(self.root,self.source,c,keys,rows,lambda u:IMAGE_BYTES),1)
+        self.assertEqual(pub.import_images(self.root,self.source,c,pub.existing_keys(self.root),rows,lambda u:IMAGE_BYTES),0)
         p=next((self.root/'flux').glob('**/index.md'))
         self.assertIn('配文 [链接](https://example.com)',p.read_text())
-        self.assertEqual((p.parent/'assets/image.png').read_bytes(),b'png-bytes')
+        self.assertEqual((p.parent/'assets/image.png').read_bytes(),IMAGE_BYTES)
     def test_media_failure_does_not_create_partial_entry(self):
         self.source['path']='post/flux'
         rows=[{'filename':'post/flux/a.png','status':'added'}]
@@ -89,7 +90,7 @@ class PublisherTests(unittest.TestCase):
         for key in ('asset-post-stream-old-png','asset:owner/repo:post/stream/old.PNG'):
             with tempfile.TemporaryDirectory() as directory:
                 root=Path(directory)
-                self.assertEqual(pub.import_images(root,self.source,commit(),{key},rows,lambda u:b'new-image'),1)
+                self.assertEqual(pub.import_images(root,self.source,commit(),{key},rows,lambda u:IMAGE_BYTES),1)
                 entry=next((root/'flux').glob('**/index.md')).read_text()
                 self.assertIn('post/flux/new.png',entry)
                 self.assertNotIn('old.PNG',entry)
