@@ -19,7 +19,7 @@ class PublisherTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.root = Path(self.tmp.name)
-        self.source = {'repository': 'owner/repo', 'path': 'posts/_flux/trigger.md', 'cursor': 'c'*40}
+        self.source = {'repository': 'owner/repo', 'path': 'trigger.md', 'cursor': 'c'*40}
     def tearDown(self):
         self.tmp.cleanup()
     def test_all_queued_snapshots_in_order(self):
@@ -108,6 +108,9 @@ class PublisherTests(unittest.TestCase):
         (self.root/'CNAME').write_text('flux.fivsevn.com')
         pub.import_text(self.root,self.source,commit(),set(),lambda u:'[链接](https://example.com)\n下一行\n\n- 第一\n- 第二\n\n> 引用'.encode())
         pub.import_text(self.root,self.source,commit('b'*40),set(),lambda u:b'---\nwp_status: draft\n---\nDRAFT_SENTINEL')
+        import json
+        (self.root/'.publishing').mkdir()
+        (self.root/'.publishing/state.json').write_text(json.dumps({'sources': {'text': {**self.source, 'cursor': 'a'*40}}}))
         subprocess.run([sys.executable,str(self.root/'scripts/build.py')],check=True,capture_output=True)
         subprocess.run([sys.executable,str(self.root/'scripts/package_site.py')],check=True,capture_output=True)
         html=(self.root/'index.html').read_text()
@@ -121,6 +124,10 @@ class PublisherTests(unittest.TestCase):
         self.assertIn('This content is licensed under',html)
         self.assertEqual(len(list((self.root/'_site/page').glob('**/index.html'))),1)
         self.assertFalse((self.root/'_site/scripts').exists())
+        receipt = json.loads((self.root/'_site/deployment.json').read_text())
+        self.assertEqual(receipt['site_sha256'], (self.root/'.publishing/site.sha256').read_text().strip())
+        self.assertEqual(len(receipt['files']), 2)
+        self.assertNotIn('DRAFT_SENTINEL', json.dumps(receipt))
         # Editing the upper title updates both views without moving the page or
         # changing the lower publication timestamp.
         path=next(p for p in (self.root/'flux').glob('**/index.md') if 'DRAFT_SENTINEL' not in p.read_text())

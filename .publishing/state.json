@@ -3,9 +3,9 @@
   "cutover": "2026-10-18",
   "sources": {
     "text": {
-      "repository": "fivsevn-agy/fivsevn-devlog",
-      "path": "posts/_flux/trigger.md",
-      "cursor": "af6de706fb101328c8e3b6a8de8983a7188aeff3"
+      "repository": "fivsevn/fivsevn-flux",
+      "path": "trigger.md",
+      "cursor": "07621c1f29f1fbee96b80ca4c31d4b5f7340e687"
     },
     "images": {
       "repository": "fivsevn/fivsevn-assets",
