@@ -10,10 +10,16 @@
     "images": {
       "repository": "fivsevn/fivsevn-flux",
       "path": "uploads",
-      "cursor": "7d429e0e9e68499dab5e8c47922e4a4bed469030",
+      "cursor": "9cde45471e022dd0e81783afea2271ee42130e73",
       "previous_sources": [
-        {"repository": "fivsevn/fivsevn-assets", "path": "post/flux"},
-        {"repository": "fivsevn/fivsevn-assets", "path": "post/stream"}
+        {
+          "repository": "fivsevn/fivsevn-assets",
+          "path": "post/flux"
+        },
+        {
+          "repository": "fivsevn/fivsevn-assets",
+          "path": "post/stream"
+        }
       ]
     }
   },
