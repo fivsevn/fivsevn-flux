@@ -145,7 +145,7 @@ Building locally does not import or publish anything. Run `scripts/ingest_github
 ### Troubleshooting
 
 - **No run after adding text or images:** confirm the change was pushed to `main` in this repository, under `trigger_text.md` or `trigger_imgs/`. The old devlog trigger and assets image folder are retired. The input commit must have a Publish flux run; no schedule is required.
-- **An image upload was rejected:** use a new timestamped filename and a valid JPG/JPEG, PNG, WebP, GIF, HEIC, or HEIF. Unsupported or damaged uploads fail visibly instead of advancing silently.
+- **An image upload was rejected:** use a new timestamped filename and a valid JPG/JPEG, PNG, WebP, GIF, HEIC, or HEIF. Unsupported or damaged uploads fail visibly instead of advancing silently. Replace a rejected image with a valid file at the same input path, or delete it, then push again. A rejected older snapshot is skipped only when a later committed replacement or deletion exists; valid queued snapshots are still imported normally.
 - **A Publish flux run failed:** open its failed step. Invalid input, import errors, failed pushes, deployment errors, and public verification errors produce a failed run. Fix the cause and rerun; committed source identities prevent duplicate imports.
 - **Missing source cursor:** stop and inspect source history. Do not reset the cursor to an arbitrary commit, which could replay content or skip posts.
 - **Failed image download:** the importer does not save a partial package or advance past the failed import. Fix the source problem and rerun.
@@ -160,7 +160,7 @@ Content license: CC BY-NC-SA 4.0. Quoted and third-party material retains its or
 
 ## Image uploads and phone shortcut
 
-The image inbox is [`trigger_imgs/`](trigger_imgs/) in **this repository**. The phone shortcut’s flux branch must select the `fivsevn-flux` repository and its `trigger_imgs/` folder in the Save File action. Pull the latest `main` in Working Copy first. Any existing commit/push actions in that branch must also target `fivsevn-flux`.
+The image inbox is [`trigger_imgs/`](trigger_imgs/) in **this repository**. The phone shortcut’s flux branch must select the `fivsevn-flux` repository and its `trigger_imgs/` folder in the Save File action. Configure the shortcut to pull the latest `main` through Working Copy before saving, then commit and push to `fivsevn-flux`. Daily use remains one shortcut invocation; this initial sync picks up the publishing bot’s commits and inbox cleanup.
 
 Use a new timestamped filename for each new image post, for example `20261018-093012-01.jpg`. Nested folders and Unicode filenames are supported. Supported extensions are `.jpg`, `.jpeg`, `.png`, `.webp`, `.gif`, `.heic`, and `.heif`, case-insensitively. The phone does not need to convert images or create article folders.
 
