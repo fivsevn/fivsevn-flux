@@ -55,12 +55,15 @@ def clear_verified(root):
         if digest(root / archived) != receipt['files'][archived.as_posix()]:
             raise ValueError(f'Saved image changed after verification: {archived}')
     total = 0
-    for original, _, _ in pending:
+    originals = {original for original, _, _ in pending}
+    for original in sorted(originals):
+        # Several posts may own identical uploads at a reused input path.
+        # Verify all their packages, but delete the physical inbox file once.
         # candidates() rechecks bytes against the archive before this process;
         # no other workflow process writes inputs while this step runs.
         total += original.stat().st_size
         original.unlink()
-    return len(pending), total
+    return len(originals), total
 
 
 if __name__ == '__main__':
