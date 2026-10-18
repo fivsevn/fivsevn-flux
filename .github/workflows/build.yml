@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'trigger.md'
+      - 'uploads/**'
       - 'flux/**'
       - 'site-assets/**'
       - 'scripts/**'
@@ -13,9 +14,6 @@ on:
       - 'style.css'
       - 'requirements.txt'
       - '.github/workflows/build.yml'
-  schedule:
-    # Backup polling for external image uploads; text commits publish directly.
-    - cron: '3,8,13,18,23,28,33,38,43,48,53,58 * * * *'
   workflow_dispatch:
 
 permissions:

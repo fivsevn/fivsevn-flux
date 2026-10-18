@@ -8,6 +8,7 @@ The content archive and static-site backend for [flux.fivsevn.com](https://flux.
 
 ```text
 trigger.md                 The only new-text publishing entry point
+uploads/                   Image originals saved by the phone shortcut
 flux/YYYY/MM/{id}/
   index.md                 Editable source for one saved entry
   assets/                  Media owned by that entry, when present
@@ -64,7 +65,7 @@ Do not edit or resubmit the trigger to revise an old entry: a new trigger commit
 
 Place replacement files in that entry's `assets/` directory and update its relative Markdown link, for example `![](assets/replacement.webp)`. Remove an obsolete file only after checking that no other entry references it. Commit the Markdown and media changes together.
 
-The saved media belongs to this repository. Editing or deleting its original file in `fivsevn-assets` does not edit an existing flux entry; edit the saved package here.
+The saved media belongs to this repository. Editing or deleting its original file in `uploads/` does not edit an existing flux entry; edit the saved package here.
 
 ## Hide, restore, or delete an entry
 
@@ -91,16 +92,16 @@ Do not delete just the generated `page/` directory: it would be recreated from t
 
 Deletion removes the package from the current branch and website; earlier Git commits still contain it. To undo an accidental deletion, restore that package from Git history and push it again. Do not rewind `.publishing/state.json` to restore content.
 
-The importer normally advances past already processed source commits, so a deletion is not undone by the next scheduled run. However, removing a package also removes its stored deduplication keys. A later commit modifying the same source image path, or reusing an explicit text slug, can create it again. Use `hidden` when you want to retain the identity and reliably keep an entry off the site.
+The importer normally advances past already processed source commits, so a deletion is not undone by the next run. However, removing a package also removes its stored deduplication keys. A later commit modifying the same source image path, or reusing an explicit text slug, can create it again. Use `hidden` when you want to retain the identity and reliably keep an entry off the site.
 
 ## Import sources and metadata
 
 | Source | Input | Saved result |
 | --- | --- | --- |
 | Text | This repository, `trigger.md` | One Markdown package per new trigger commit; push starts publication directly |
-| Images | `fivsevn/fivsevn-assets`, `post/flux/` | One package per new image path; the extended commit description becomes its Markdown caption |
+| Images | This repository, `uploads/` | One package per new image path; push starts publication directly; extended commit description supplies the caption |
 
-The importer reads committed snapshots on `main`, in chronological order. Source paths and processed commit positions are in `.publishing/state.json`. Text is authored here, and images are read from the assets repository. No WordPress access or cross-repository write token is needed. The former devlog trigger was retired after its last pending post was imported; its existing entry identities and URLs are retained.
+The importer reads committed snapshots on `main`, in chronological order. Source paths and processed commit positions are in `.publishing/state.json`. Both text and images are authored here. No WordPress access or cross-repository write token is needed. The former devlog trigger was retired after its last pending post was imported; its existing entry identities and URLs are retained.
 
 The text trigger accepts `status: published` or `status: draft` and an optional `title`. Missing or empty titles receive a heading derived from the source commit time. The lower `date` is recorded separately from that same commit time, using `Asia/Shanghai`. It is not recomputed when an existing package is edited. Scheduled publication dates are not supported.
 
@@ -110,7 +111,7 @@ Saved identity fields include `source_key`, `source_commit`, `source_repository`
 
 ## Build and deployment
 
-The only maintained workflow is **Publish flux**, defined in `.github/workflows/build.yml`. A push changing `trigger.md` starts it directly, as do changes to saved entries and build files. The five-minute schedule is only backup polling for external image uploads; GitHub may delay or drop scheduled events. Manual dispatch is available for recovery. README-only edits do not require a site deployment.
+The only maintained workflow is **Publish flux**, defined in `.github/workflows/build.yml`. A push changing `trigger.md` or `uploads/**` starts it directly, as do changes to saved entries and build files. There is no schedule and no polling of another repository. Manual dispatch is available for recovery. README-only edits do not require a site deployment.
 
 The workflow:
 
@@ -120,7 +121,7 @@ The workflow:
 4. Packages public HTML, styles, site assets, and published-entry media into `_site/`.
 5. Commits source cursors, new content, and generated pages together.
 6. Deploys the artifact through GitHub Pages when its fingerprint differs from the last successful deployment.
-7. Fetches the public deployment receipt, timeline, and latest imported published pages and checks them against the artifact.
+7. Fetches the public deployment receipt, timeline, latest imported published pages, and their actual image files and checks their bytes against the artifact.
 8. Records the deployed fingerprint only after these public checks pass. A green Publish flux run therefore confirms the deployed artifact, rather than just Markdown validation. The public `deployment.json` receipt contains source positions and checksums, never draft bodies.
 
 The timeline uses 17 entries per page, ordered by `date`, newest first. Its visual order is typing bubble → pocket image → content-library link → entries → pagination → license bubble. Every entry title links to its individual page. Long links wrap within the message bubble.
@@ -141,7 +142,8 @@ Building locally does not import or publish anything. Run `scripts/ingest_github
 
 ### Troubleshooting
 
-- **No run after editing text:** confirm the change was pushed to `main` in **this repository’s `trigger.md`**. The old devlog trigger is retired. The trigger commit must have a Publish flux run; no schedule is required.
+- **No run after adding text or images:** confirm the change was pushed to `main` in this repository, under `trigger.md` or `uploads/`. The old devlog trigger and assets image folder are retired. The input commit must have a Publish flux run; no schedule is required.
+- **An image upload was rejected:** use a new filename and a valid JPG/JPEG, PNG, WebP, or GIF. Convert HEIC before uploading. Unsupported or damaged uploads fail visibly instead of advancing silently.
 - **A Publish flux run failed:** open its failed step. Invalid input, import errors, failed pushes, deployment errors, and public verification errors produce a failed run. Fix the cause and rerun; committed source identities prevent duplicate imports.
 - **Missing source cursor:** stop and inspect source history. Do not reset the cursor to an arbitrary commit, which could replay content or skip posts.
 - **Failed image download:** the importer does not save a partial package or advance past the failed import. Fix the source problem and rerun.
@@ -154,10 +156,14 @@ Since 2026-10-18, flux publishes directly from GitHub. The 150 migrated packages
 
 Content license: CC BY-NC-SA 4.0. Quoted and third-party material retains its original rights and licenses.
 
-## Image folder migration
+## Image uploads and phone shortcut
 
-Image uploads now use `fivsevn-assets/post/flux/`. The importer reads commit history for the parent `post/` directory so the existing cursor survives the directory rename, but imports images only from the configured `post/flux/` prefix. `previous_paths` retains the former prefix solely for duplicate detection against historical source keys and WordPress slugs. Do not remove those identities or reset the cursor to replay old images.
+The image inbox is [`uploads/`](uploads/) in **this repository**. The phone shortcut’s flux branch must select the `fivsevn-flux` repository and its `uploads/` folder in the Save File action. Pull the latest `main` in Working Copy first. Any existing commit/push actions in that branch must also target `fivsevn-flux`.
 
-Historical media source URLs have been updated to the new folder. Published pages continue using package-local media; package IDs, page URLs, titles and publication timestamps are unchanged. Older WordPress URLs and slugs in provenance metadata remain historical records.
+Use a new filename for each new image post. Nested folders and Unicode filenames are supported. Supported extensions are `.jpg`, `.jpeg`, `.png`, `.webp`, and `.gif`, case-insensitively. Convert HEIC to JPEG first. Image bytes are checked without recompression; animations and transparency are preserved. Unsupported files and damaged images fail the run.
 
-The installed phone shortcut must be edited once: rename its menu item to `post/flux` and reselect that folder in its Save File action after pulling the assets repository in Working Copy. The signed shortcut in assets `docs/` remains a historical backup; do not reinstall its old folder binding. Re-signing that export requires an iCloud-signed-in Mac. Other shortcut branches are unchanged.
+A commit may contain multiple images. Each new image path creates a separate post; all images in that commit receive the same Markdown caption from the extended commit description (the part after the summary line). With no extended description, the post contains only the image. Modifying an already imported upload path does not republish or edit its saved post; edit the saved package under `flux/` instead.
+
+On 2026-10-18, the 19 originals previously in `fivsevn-assets/post/flux/` were moved byte-for-byte to `uploads/`. Every original was checked against its existing package media. The migration commit is the initial image cursor, so moving these originals does not create new posts. `previous_sources` retains both retired assets prefixes solely for historical duplicate detection. Existing post IDs, titles, dates, URLs, bodies, and package media are retained; mutable original-source links now point here.
+
+The retired `post/flux/` folder has been removed from assets after verifying this migration. No flux runtime input or image request depends on assets. The old signed shortcut export in assets `docs/` remains a historical backup; do not reinstall its old folder binding. Other shortcut branches are unchanged.

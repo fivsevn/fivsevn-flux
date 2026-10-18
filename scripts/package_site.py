@@ -40,6 +40,10 @@ for path in (ROOT / 'flux').glob('**/index.md'):
            and meta.get('source_commit') == source['cursor'] for source in sources.values()):
         page = Path('page', *path.parent.relative_to(ROOT / 'flux').parts, 'index.html')
         receipt['files'][page.as_posix()] = hashlib.sha256((OUT / page).read_bytes()).hexdigest()
+        for asset in (path.parent / 'assets').rglob('*'):
+            if asset.is_file():
+                relative = asset.relative_to(ROOT)
+                receipt['files'][relative.as_posix()] = hashlib.sha256((OUT / relative).read_bytes()).hexdigest()
 digest = hashlib.sha256()
 for path in sorted(OUT.rglob('*')):
     if path.is_file():

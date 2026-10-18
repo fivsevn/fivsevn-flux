@@ -11,7 +11,7 @@ wp_slug: asset-post-stream-img-8544-jpg
 status: published
 media:
 - file: ./assets/01-IMG_8544.jpg
-  source: https://raw.githubusercontent.com/fivsevn/fivsevn-assets/main/post/flux/IMG_8544.jpg
+  source: https://raw.githubusercontent.com/fivsevn/fivsevn-flux/main/uploads/IMG_8544.jpg
 ---
 
 ![20 Jul, 2026 01:34](./assets/01-IMG_8544.jpg)

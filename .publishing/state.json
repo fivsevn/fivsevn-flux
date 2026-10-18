@@ -8,12 +8,12 @@
       "cursor": "2e615daf088fff1d47a736ecc2092f75b9d2e1ba"
     },
     "images": {
-      "repository": "fivsevn/fivsevn-assets",
-      "path": "post/flux",
-      "cursor": "dd3c6535683fffc9372b2f73e482a1076b64afe6",
-      "history_path": "post",
-      "previous_paths": [
-        "post/stream"
+      "repository": "fivsevn/fivsevn-flux",
+      "path": "uploads",
+      "cursor": "7d429e0e9e68499dab5e8c47922e4a4bed469030",
+      "previous_sources": [
+        {"repository": "fivsevn/fivsevn-assets", "path": "post/flux"},
+        {"repository": "fivsevn/fivsevn-assets", "path": "post/stream"}
       ]
     }
   },
