@@ -62,6 +62,19 @@ class ImageUploadTests(unittest.TestCase):
         _, body = pub.split_frontmatter(next((self.root/'flux').glob('**/index.md')).read_text())
         self.assertEqual(body, '![](assets/image.png)')
 
+    def test_phone_jpeg_with_mpo_metadata_is_preserved(self):
+        output = BytesIO()
+        first = Image.new('RGB', (2, 2), (75, 110, 90))
+        second = Image.new('RGB', (2, 2), (45, 60, 50))
+        first.save(output, format='MPO', save_all=True, append_images=[second])
+        payload = output.getvalue()
+        with Image.open(BytesIO(payload)) as image:
+            self.assertEqual(image.format, 'MPO')
+        files = [{'filename': 'uploads/phone.jpeg', 'status': 'added'}]
+        self.assertEqual(pub.import_images(self.root, self.source, self.commit, set(), files, lambda _: payload), 1)
+        saved = next((self.root/'flux').glob('**/assets/image.jpeg'))
+        self.assertEqual(saved.read_bytes(), payload)
+
     def test_migrated_sources_keep_their_old_identity(self):
         self.source['previous_sources'] = [
             {'repository': 'owner/assets', 'path': 'post/flux'},
