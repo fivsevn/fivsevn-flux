@@ -31,13 +31,14 @@ receipt = {
                 for kind, source in sources.items()},
     'files': {'index.html': hashlib.sha256((OUT / 'index.html').read_bytes()).hexdigest()},
 }
-# Check the actual page for each most recently imported published snapshot too.
+# Check every published snapshot from the last import batch and its media.
 for path in (ROOT / 'flux').glob('**/index.md'):
     meta, _ = split_frontmatter(path.read_text(encoding='utf-8'))
     if meta.get('status', 'published') != 'published':
         continue
     if any(meta.get('source_repository') == source['repository']
-           and meta.get('source_commit') == source['cursor'] for source in sources.values()):
+           and meta.get('source_commit') in source.get('verification_commits', [source['cursor']])
+           for source in sources.values()):
         page = Path('page', *path.parent.relative_to(ROOT / 'flux').parts, 'index.html')
         receipt['files'][page.as_posix()] = hashlib.sha256((OUT / page).read_bytes()).hexdigest()
         for asset in (path.parent / 'assets').rglob('*'):

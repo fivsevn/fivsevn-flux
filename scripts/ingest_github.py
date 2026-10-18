@@ -217,6 +217,10 @@ def main():
             else:
                 total += import_images(ROOT, source, commit, keys, commit_files(source["repository"], commit["sha"]))
             source["cursor"] = commit["sha"]
+        if commits:
+            # Keep every imported snapshot in the receipt, including earlier
+            # commits that arrived in the same push. Retain this list on retry.
+            source["verification_commits"] = [commit["sha"] for commit in commits]
     # Both inputs are now local push events; no scheduled or external polling.
     state["last_checked_day"] = datetime.now(ZoneInfo("Asia/Shanghai")).date().isoformat()
     # Content and cursor are committed together by the workflow, after all imports succeed.
