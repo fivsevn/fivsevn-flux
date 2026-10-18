@@ -240,7 +240,7 @@ def render_pager(current_page, total_pages):
 def render_feed_page(page_items, current_page, total_pages):
     entries = [render_entry(fm, body, title_href=page_url(fm)) for fm, body in page_items]
     pager = render_pager(current_page, total_pages)
-    return f'''{render_head("fivsevn flux", "随手记录，持续更新。")}
+    return f'''{render_head("flux.fivsevn", "五月七日的思考札记")}
 {render_feed_header()}
 <section class="feed" aria-label="flux">
 {chr(10).join(entries)}
@@ -295,7 +295,7 @@ for fm, body in items:
     ident = fm.get("id") or fm["_dir"].split("/")[-1]
     title = str(fm.get("title") or ident)
 
-    post_doc = f'''{render_head(f"{title} · fivsevn flux", title)}
+    post_doc = f'''{render_head(f"{title} · flux.fivsevn", title)}
 {render_return_bubble()}
 <section class="feed" aria-label="single flux">
 {render_entry(fm, body, title_href=page_url(fm))}
