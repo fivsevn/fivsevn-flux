@@ -214,7 +214,7 @@ def convert_image(media: bytes, path: str) -> bytes:
         raise ValueError(f"Invalid or damaged image: {path}") from error
 
 
-def import_images(root: Path, source: dict, commit: dict, keys: set[str], files: list[dict], read=fetch) -> int:
+def import_images(root: Path, source: dict, commit: dict, keys: set[str], files: list[dict], read=fetch, superseded: set[str] = frozenset()) -> int:
     count = 0
     sha = commit["sha"]
     # Match the existing shortcut: the extended commit description is the caption.
@@ -227,6 +227,9 @@ def import_images(root: Path, source: dict, commit: dict, keys: set[str], files:
         if parts.name in {"README.md", ".keep", ".gitkeep"}:
             continue
         if parts.suffix.lower() not in EXTENSIONS:
+            if path in superseded:
+                print(f"Skipped a replaced or removed unsupported upload: {path}")
+                continue
             raise ValueError(f"Unsupported upload: {path}; use JPG/JPEG, PNG, WebP, GIF or HEIC/HEIF.")
         key = f"asset:{source['repository']}:{path}"
         slug = asset_slug(path)
@@ -242,7 +245,13 @@ def import_images(root: Path, source: dict, commit: dict, keys: set[str], files:
         if aliases & keys:
             continue
         media = read(f"https://raw.githubusercontent.com/{source['repository']}/{sha}/{quote(path)}")
-        converted = convert_image(media, path)
+        try:
+            converted = convert_image(media, path)
+        except ValueError:
+            if path not in superseded:
+                raise
+            print(f"Skipped a replaced or removed invalid upload: {path}")
+            continue
         suffix = hashlib.sha256(path.encode()).hexdigest()[:12]
         filename = "image.webp"
         body = f"![](assets/{filename})"
@@ -267,8 +276,14 @@ def main():
     for kind, source in state["sources"].items():
         commits = pending_commits(source)
         consumed = []
-        for commit in commits:
-            files = commit_files(source["repository"], commit["sha"])
+        batches = [(commit, commit_files(source["repository"], commit["sha"])) for commit in commits]
+        last_change = {}
+        for index, (_, files) in enumerate(batches):
+            for item in files:
+                last_change[item["filename"]] = index
+                if item.get("previous_filename"):
+                    last_change[item["previous_filename"]] = index
+        for index, (commit, files) in enumerate(batches):
             if kind == "text":
                 if not any(item["filename"] == source["path"] and item["status"] != "removed" for item in files):
                     continue
@@ -278,7 +293,8 @@ def main():
                 if not any(item["filename"].startswith(source["path"] + "/")
                            and item["status"] != "removed" for item in files):
                     continue
-                total += import_images(ROOT, source, commit, keys, files)
+                superseded = {item["filename"] for item in files if last_change[item["filename"]] > index}
+                total += import_images(ROOT, source, commit, keys, files, superseded=superseded)
             source["cursor"] = commit["sha"]
             consumed.append(commit["sha"])
         if consumed:

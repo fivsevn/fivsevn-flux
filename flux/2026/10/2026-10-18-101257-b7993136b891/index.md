@@ -8,7 +8,7 @@ source_key: github:fivsevn/fivsevn-flux:b7993136b89105e705096e5ad80171b1221488c8
 source_commit: b7993136b89105e705096e5ad80171b1221488c8
 source_repository: fivsevn/fivsevn-flux
 publish_slug: github-text-b799313
-status: published
+status: hidden
 ---
 
 改名后的文字入口测试。

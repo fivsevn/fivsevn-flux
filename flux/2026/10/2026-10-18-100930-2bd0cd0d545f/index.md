@@ -9,7 +9,7 @@ source_commit: 48e2caf1f19145b2916eee1a212dcd769618e4e3
 source_repository: fivsevn/fivsevn-flux
 source_asset_path: trigger_imgs/20261018-101000-01.jpg
 publish_slug: asset-trigger-imgs-20261018-101000-01-jpg
-status: published
+status: hidden
 upload:
   path: trigger_imgs/20261018-101000-01.jpg
   sha256: e9d443afb66f4f819fed4e7d40f0b4072bb33b5f3f05ef660d740ccf3ba37985

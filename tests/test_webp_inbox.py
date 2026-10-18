@@ -122,6 +122,42 @@ class InboxTests(unittest.TestCase):
         self.assertEqual(inbox.clear_verified(self.root), (0, 0))
         self.assertTrue(self.original.exists())
 
+    def test_replaced_or_deleted_invalid_images_can_be_consumed_without_a_post(self):
+        for filename, payload in [('bad.png', b'broken'), ('wrong.mov', b'video')]:
+            path = 'trigger_imgs/' + filename
+            files = [{'filename': path, 'status': 'added'}]
+            self.assertEqual(pub.import_images(self.root, self.source, self.commit, set(), files,
+                             lambda _: payload, superseded={path}), 0)
+            self.assertEqual(len(list((self.root / 'flux').glob('**/index.md'))), 1)
+            self.assertTrue(self.original.exists())
+
+    def test_valid_queued_images_are_retained_even_if_a_later_commit_changes_the_path(self):
+        path = 'trigger_imgs/queued.png'
+        files = [{'filename': path, 'status': 'added'}]
+        self.assertEqual(pub.import_images(self.root, self.source, self.commit, set(), files,
+                         lambda _: self.raw, superseded={path}), 1)
+
+    def test_invalid_snapshot_followed_by_valid_replacement_recovers_the_queue(self):
+        original_root, original_state = pub.ROOT, pub.STATE
+        pub.ROOT, pub.STATE = self.root, self.state
+        real_import = pub.import_images
+        files = [{'filename': 'trigger_imgs/replaced.png', 'status': 'modified'}]
+        replacement = {**self.commit, 'sha': 'b'*40}
+        def import_snapshot(root, source, commit, keys, files, **options):
+            return real_import(root, source, commit, keys, files,
+                               read=lambda _: self.raw if commit['sha'] == 'b'*40 else b'broken', **options)
+        try:
+            with patch.object(pub, 'pending_commits', return_value=[self.commit, replacement]), \
+                 patch.object(pub, 'commit_files', return_value=files), \
+                 patch.object(pub, 'import_images', side_effect=import_snapshot):
+                pub.main()
+            source = json.loads(self.state.read_text())['sources']['images']
+            self.assertEqual(source['cursor'], 'b'*40)
+            new = [pub.split_frontmatter(p.read_text())[0] for p in (self.root / 'flux').glob('**/index.md')]
+            self.assertEqual(sum(meta.get('source_asset_path') == 'trigger_imgs/replaced.png' for meta in new), 1)
+            self.assertTrue(any(meta['source_commit'] == 'b'*40 for meta in new))
+        finally: pub.ROOT, pub.STATE = original_root, original_state
+
     def test_cleanup_and_build_commits_do_not_change_cursor_or_receipt_batch(self):
         original_root, original_state = pub.ROOT, pub.STATE
         pub.ROOT, pub.STATE = self.root, self.state
