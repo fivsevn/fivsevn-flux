@@ -176,8 +176,11 @@ def convert_image(media: bytes, path: str) -> bytes:
                     image.load()
                 return media
             animated = fmt in {"GIF", "PNG"} and getattr(image, "is_animated", False)
-            options = {"method": 6, "lossless": fmt in {"PNG", "GIF"},
-                       "quality": 100 if fmt in {"PNG", "GIF"} else 85}
+            # For lossless WebP, quality controls encoder effort, not pixels.
+            # Maximum effort makes ordinary multi-frame phone GIFs very slow.
+            options = {"method": 4 if fmt in {"PNG", "GIF"} else 6,
+                       "lossless": fmt in {"PNG", "GIF"},
+                       "quality": 75 if fmt in {"PNG", "GIF"} else 85}
             if image.info.get("icc_profile"):
                 options["icc_profile"] = image.info["icc_profile"]
             if animated:
@@ -190,7 +193,7 @@ def convert_image(media: bytes, path: str) -> bytes:
                     frames.append(image.convert("RGBA"))
                     durations.append(image.info.get("duration", 100) or 100)
                 options.update(save_all=True, append_images=frames[1:], duration=durations,
-                               minimize_size=True)
+                               minimize_size=False)
                 primary = frames[0]
             else:
                 primary = ImageOps.exif_transpose(image)
