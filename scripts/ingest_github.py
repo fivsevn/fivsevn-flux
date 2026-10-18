@@ -152,7 +152,8 @@ def validate_image(media: bytes, path: str):
         raise ValueError(f"Empty image: {path}")
     try:
         with Image.open(BytesIO(media)) as image:
-            if image.format not in {"JPEG", "PNG", "WEBP", "GIF"}:
+            # Phone JPEGs may carry an MPO gain-map/secondary image container.
+            if image.format not in {"JPEG", "MPO", "PNG", "WEBP", "GIF"}:
                 raise ValueError(f"Unsupported image format in {path}; use JPG, PNG, WebP or GIF")
             image.verify()
     except (OSError, SyntaxError) as error:
