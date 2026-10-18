@@ -8,7 +8,7 @@ source_key: github:fivsevn/fivsevn-flux:ae817ab2673102b9203da26f467ff386e3bcce18
 source_commit: ae817ab2673102b9203da26f467ff386e3bcce18
 source_repository: fivsevn/fivsevn-flux
 publish_slug: github-text-ae817ab
-status: published
+status: hidden
 ---
 
 发布链路验证（临时）
