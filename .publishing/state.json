@@ -5,16 +5,16 @@
     "text": {
       "repository": "fivsevn/fivsevn-flux",
       "path": "trigger_text.md",
-      "cursor": "71e6aa7b1f5f854877d05d4c1b45749ff37e410b",
+      "cursor": "a3325716a941ebb70b7b54f8ec41badb7b39baf6",
       "history_path": "",
       "verification_commits": [
-        "71e6aa7b1f5f854877d05d4c1b45749ff37e410b"
+        "a3325716a941ebb70b7b54f8ec41badb7b39baf6"
       ]
     },
     "images": {
       "repository": "fivsevn/fivsevn-flux",
       "path": "trigger_imgs",
-      "cursor": "71e6aa7b1f5f854877d05d4c1b45749ff37e410b",
+      "cursor": "157eacaff44757064b84238a8bf34d275f58bae3",
       "previous_sources": [
         {
           "repository": "fivsevn/fivsevn-assets",
@@ -26,7 +26,8 @@
         }
       ],
       "verification_commits": [
-        "71e6aa7b1f5f854877d05d4c1b45749ff37e410b"
+        "a3325716a941ebb70b7b54f8ec41badb7b39baf6",
+        "157eacaff44757064b84238a8bf34d275f58bae3"
       ],
       "history_path": "",
       "previous_paths": [
