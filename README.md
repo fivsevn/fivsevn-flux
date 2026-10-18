@@ -89,7 +89,7 @@ _site/                          Local deployment artifact; ignored by Git
 >
 > **Originals:** `trigger_imgs/` is temporary. Automation removes a matching original only after the saved package has been committed, deployed, and verified at the public domain. A failed conversion, deployment, or verification leaves it in the inbox. A newer file with different bytes is retained. Deleting an inbox copy does not erase it from Git history.
 >
-> **Further instructions:** The [image inbox guide](trigger_imgs/README.md) includes conversion details, recovery steps, and the package layout.
+> **Quick reference:** The [image inbox guide](trigger_imgs/README.md) is a concise Chinese upload checklist. This root README contains the detailed English publishing and maintenance instructions.
 
 ### Image conversion
 
