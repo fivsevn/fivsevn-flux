@@ -9,7 +9,7 @@ source_commit: 3d4c23a3970dd7d53d14e8b4d2afb69efba0ba7a
 source_repository: fivsevn/fivsevn-flux
 source_asset_path: uploads/pipeline-test/动态图.GIF
 publish_slug: asset-uploads-pipeline-test-动态图-gif
-status: published
+status: hidden
 ---
 
 ![](assets/image.gif)

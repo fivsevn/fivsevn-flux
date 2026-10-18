@@ -9,7 +9,7 @@ source_commit: 8500cd9ee6593ae9d2fba16ae0097a6d264766d7
 source_repository: fivsevn/fivsevn-flux
 source_asset_path: uploads/pipeline-test/phone-hdr.jpeg
 publish_slug: asset-uploads-pipeline-test-phone-hdr-jpeg
-status: published
+status: hidden
 ---
 
 ![](assets/image.jpeg)

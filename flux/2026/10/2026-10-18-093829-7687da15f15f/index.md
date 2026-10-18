@@ -9,7 +9,7 @@ source_commit: 7d7110e8e631594340fe392e1deb7302c72ef724
 source_repository: fivsevn/fivsevn-flux
 source_asset_path: uploads/pipeline-test/phone-image.webp
 publish_slug: asset-uploads-pipeline-test-phone-image-webp
-status: published
+status: hidden
 ---
 
 ![](assets/image.webp)
