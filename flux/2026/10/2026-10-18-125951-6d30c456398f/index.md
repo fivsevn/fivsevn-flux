@@ -9,7 +9,7 @@ source_commit: 157eacaff44757064b84238a8bf34d275f58bae3
 source_repository: fivsevn/fivsevn-flux
 source_asset_path: trigger_imgs/IMG_7202.jpg
 publish_slug: github-image-157eacaff447-9b739584ad4e
-status: published
+status: hidden
 upload:
   path: trigger_imgs/IMG_7202.jpg
   uploaded_at: '2026-10-18T12:59:51+08:00'
