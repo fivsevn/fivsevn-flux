@@ -4,6 +4,7 @@ import shutil
 import hashlib
 import json
 from ingest_github import split_frontmatter
+from image_inbox import candidates
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / '_site'
@@ -45,6 +46,11 @@ for path in (ROOT / 'flux').glob('**/index.md'):
             if asset.is_file():
                 relative = asset.relative_to(ROOT)
                 receipt['files'][relative.as_posix()] = hashlib.sha256((OUT / relative).read_bytes()).hexdigest()
+# Inbox cleanup also needs proof for previously archived (migrated) pictures.
+if sources.get('images'):
+    for _, archived, page in candidates(ROOT):
+        for public in (archived, page):
+            receipt['files'][public.as_posix()] = hashlib.sha256((OUT / public).read_bytes()).hexdigest()
 digest = hashlib.sha256()
 for path in sorted(OUT.rglob('*')):
     if path.is_file():

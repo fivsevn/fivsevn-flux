@@ -11,7 +11,12 @@ wp_slug: asset-post-stream-img-7154-jpg
 status: published
 media:
 - file: ./assets/01-IMG_7154.jpg
-  source: https://raw.githubusercontent.com/fivsevn/fivsevn-flux/main/uploads/IMG_7154.jpg
+  source: https://raw.githubusercontent.com/fivsevn/fivsevn-flux/7d429e0e9e68499dab5e8c47922e4a4bed469030/uploads/IMG_7154.jpg
+upload:
+  path: trigger_imgs/IMG_7154.jpg
+  sha256: 72cb0c86c5a6c3bf7bfae23a0e67c6dcd2a57196938270889a829fbdffef6e05
+  file: ./assets/01-IMG_7154.jpg
+  file_sha256: 72cb0c86c5a6c3bf7bfae23a0e67c6dcd2a57196938270889a829fbdffef6e05
 ---
 
 ![15 Jun, 2026 05:10](./assets/01-IMG_7154.jpg)

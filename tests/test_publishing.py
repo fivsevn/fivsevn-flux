@@ -20,7 +20,7 @@ class PublisherTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.root = Path(self.tmp.name)
-        self.source = {'repository': 'owner/repo', 'path': 'trigger.md', 'cursor': 'c'*40}
+        self.source = {'repository': 'owner/repo', 'path': 'trigger_text.md', 'cursor': 'c'*40}
     def tearDown(self):
         self.tmp.cleanup()
     def test_all_queued_snapshots_in_order(self):
@@ -76,7 +76,7 @@ class PublisherTests(unittest.TestCase):
         self.assertEqual(pub.import_images(self.root,self.source,c,pub.existing_keys(self.root),rows,lambda u:IMAGE_BYTES),0)
         p=next((self.root/'flux').glob('**/index.md'))
         self.assertIn('配文 [链接](https://example.com)',p.read_text())
-        self.assertEqual((p.parent/'assets/image.png').read_bytes(),IMAGE_BYTES)
+        self.assertEqual((p.parent/'assets/image.webp').read_bytes(),IMAGE_BYTES)
     def test_media_failure_does_not_create_partial_entry(self):
         self.source['path']='post/flux'
         rows=[{'filename':'post/flux/a.png','status':'added'}]
@@ -103,7 +103,7 @@ class PublisherTests(unittest.TestCase):
         self.assertEqual([c['sha'] for c in pub.pending_commits(self.source,read)],['d'*40])
     def test_build_and_package_markdown_and_private_exclusion(self):
         (self.root/'scripts').mkdir()
-        for name in ('build.py','package_site.py','ingest_github.py'): shutil.copy2(ROOT/'scripts'/name,self.root/'scripts'/name)
+        for name in ('build.py','package_site.py','ingest_github.py','image_inbox.py'): shutil.copy2(ROOT/'scripts'/name,self.root/'scripts'/name)
         (self.root/'site-assets').mkdir()
         (self.root/'style.css').write_text('')
         (self.root/'CNAME').write_text('flux.fivsevn.com')
