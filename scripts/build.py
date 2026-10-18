@@ -262,7 +262,8 @@ for p in FLUX.glob("**/index.md"):
 
     items.append((fm, body.strip()))
 
-items.sort(key=lambda x: x[0].get("date", ""), reverse=True)
+items.sort(key=lambda x: (str(x[0].get("date", "")),
+                          str(x[0].get("id") or x[0]["_dir"])), reverse=True)
 
 if PAGE.exists():
     shutil.rmtree(PAGE)

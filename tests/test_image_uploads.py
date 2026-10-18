@@ -109,15 +109,18 @@ class ImageUploadTests(unittest.TestCase):
         (self.root/'style.css').write_text('')
         (self.root/'CNAME').write_text('example.com')
         (self.root/'.publishing').mkdir()
-        source = {**self.source, 'cursor': self.commit['sha']}
+        source = {**self.source, 'cursor': 'b'*40, 'verification_commits': ['a'*40, 'b'*40]}
         (self.root/'.publishing/state.json').write_text(json.dumps({'sources': {'images': source}}))
         files = [{'filename': 'uploads/new.png', 'status': 'added'}]
         pub.import_images(self.root, self.source, self.commit, set(), files, lambda _: image_bytes())
+        second = {**self.commit, 'sha': 'b'*40}
+        pub.import_images(self.root, self.source, second, set(),
+                          [{'filename': 'uploads/second.png', 'status': 'added'}], lambda _: image_bytes())
         for script in ('build.py', 'package_site.py'):
             subprocess.run([sys.executable, str(self.root/'scripts'/script)], check=True, capture_output=True)
         site = self.root/'_site'
         receipt = json.loads((site/'deployment.json').read_text())
-        self.assertEqual(len(receipt['files']), 3)
+        self.assertEqual(len(receipt['files']), 5)
         image = next(p for p in receipt['files'] if '/assets/' in p)
         self.assertEqual(receipt['files'][image], hashlib.sha256(image_bytes()).hexdigest())
         def read(url):
@@ -127,6 +130,19 @@ class ImageUploadTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'does not match'):
             verify_once('https://example.com', receipt, read)
         self.assertFalse((site/'uploads').exists())
+
+    def test_same_second_posts_have_stable_order_across_checkouts(self):
+        html = []
+        for number, order in enumerate([['a', 'b'], ['b', 'a']]):
+            root = self.root/str(number)
+            (root/'scripts').mkdir(parents=True)
+            shutil.copy2(ROOT/'scripts/build.py', root/'scripts/build.py')
+            for suffix in order:
+                snapshot = {**self.commit, 'sha': suffix*40}
+                pub.import_text(root, self.source, snapshot, set(), lambda _: b'text')
+            subprocess.run([sys.executable, str(root/'scripts/build.py')], check=True, capture_output=True)
+            html.append((root/'index.html').read_text())
+        self.assertEqual(html[0], html[1])
 
     def test_both_inputs_are_direct_local_pushes(self):
         import yaml
