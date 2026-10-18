@@ -4,6 +4,7 @@ on:
   push:
     branches: [main]
     paths:
+      - 'trigger.md'
       - 'flux/**'
       - 'site-assets/**'
       - 'scripts/**'
@@ -13,7 +14,8 @@ on:
       - 'requirements.txt'
       - '.github/workflows/build.yml'
   schedule:
-    - cron: '2-57/5 * * * *'
+    # Backup polling for external image uploads; text commits publish directly.
+    - cron: '3,8,13,18,23,28,33,38,43,48,53,58 * * * *'
   workflow_dispatch:
 
 permissions:
@@ -89,7 +91,11 @@ jobs:
       - name: Record successful deployment
         if: steps.publish.outputs.needed == 'true'
         run: |
+          python scripts/verify_live.py
           cp .publishing/site.sha256 .publishing/deployed.sha256
           git add .publishing/deployed.sha256
           git commit -m 'record successful flux deployment'
           git push origin HEAD:main
+      - name: Verify the live deployment when no upload was needed
+        if: steps.publish.outputs.needed == 'false'
+        run: python scripts/verify_live.py

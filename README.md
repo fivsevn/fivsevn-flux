@@ -7,6 +7,7 @@ The content archive and static-site backend for [flux.fivsevn.com](https://flux.
 ## Repository layout
 
 ```text
+trigger.md                 The only new-text publishing entry point
 flux/YYYY/MM/{id}/
   index.md                 Editable source for one saved entry
   assets/                  Media owned by that entry, when present
@@ -96,10 +97,10 @@ The importer normally advances past already processed source commits, so a delet
 
 | Source | Input | Saved result |
 | --- | --- | --- |
-| Text | `fivsevn-agy/fivsevn-devlog`, `posts/_flux/trigger.md` | One Markdown package per new trigger commit |
+| Text | This repository, `trigger.md` | One Markdown package per new trigger commit; push starts publication directly |
 | Images | `fivsevn/fivsevn-assets`, `post/flux/` | One package per new image path; the extended commit description becomes its Markdown caption |
 
-The importer reads committed snapshots on `main`, in chronological order. Source paths and processed commit positions are in `.publishing/state.json`. It only reads the source repositories; no WordPress access or cross-repository write token is needed.
+The importer reads committed snapshots on `main`, in chronological order. Source paths and processed commit positions are in `.publishing/state.json`. Text is authored here, and images are read from the assets repository. No WordPress access or cross-repository write token is needed. The former devlog trigger was retired after its last pending post was imported; its existing entry identities and URLs are retained.
 
 The text trigger accepts `status: published` or `status: draft` and an optional `title`. Missing or empty titles receive a heading derived from the source commit time. The lower `date` is recorded separately from that same commit time, using `Asia/Shanghai`. It is not recomputed when an existing package is edited. Scheduled publication dates are not supported.
 
@@ -109,7 +110,7 @@ Saved identity fields include `source_key`, `source_commit`, `source_repository`
 
 ## Build and deployment
 
-The only maintained workflow is **Publish flux**, defined in `.github/workflows/build.yml`. It runs on relevant changes to this repository, on a five-minute schedule, and on manual dispatch. GitHub may delay scheduled runs. README-only edits do not require a site deployment.
+The only maintained workflow is **Publish flux**, defined in `.github/workflows/build.yml`. A push changing `trigger.md` starts it directly, as do changes to saved entries and build files. The five-minute schedule is only backup polling for external image uploads; GitHub may delay or drop scheduled events. Manual dispatch is available for recovery. README-only edits do not require a site deployment.
 
 The workflow:
 
@@ -119,7 +120,8 @@ The workflow:
 4. Packages public HTML, styles, site assets, and published-entry media into `_site/`.
 5. Commits source cursors, new content, and generated pages together.
 6. Deploys the artifact through GitHub Pages when its fingerprint differs from the last successful deployment.
-7. Records the deployed fingerprint only after success.
+7. Fetches the public deployment receipt, timeline, and latest imported published pages and checks them against the artifact.
+8. Records the deployed fingerprint only after these public checks pass. A green Publish flux run therefore confirms the deployed artifact, rather than just Markdown validation. The public `deployment.json` receipt contains source positions and checksums, never draft bodies.
 
 The timeline uses 17 entries per page, ordered by `date`, newest first. Its visual order is typing bubble → pocket image → content-library link → entries → pagination → license bubble. Every entry title links to its individual page. Long links wrap within the message bubble.
 
@@ -139,7 +141,8 @@ Building locally does not import or publish anything. Run `scripts/ingest_github
 
 ### Troubleshooting
 
-- **Trigger validation passed, but no live post:** the devlog check only validates input. Inspect Publish flux and the live page; allow for schedule and deployment delays, or dispatch Publish flux manually.
+- **No run after editing text:** confirm the change was pushed to `main` in **this repository’s `trigger.md`**. The old devlog trigger is retired. The trigger commit must have a Publish flux run; no schedule is required.
+- **A Publish flux run failed:** open its failed step. Invalid input, import errors, failed pushes, deployment errors, and public verification errors produce a failed run. Fix the cause and rerun; committed source identities prevent duplicate imports.
 - **Missing source cursor:** stop and inspect source history. Do not reset the cursor to an arbitrary commit, which could replay content or skip posts.
 - **Failed image download:** the importer does not save a partial package or advance past the failed import. Fix the source problem and rerun.
 - **Push rejected after a concurrent edit:** pull current `main` and rerun the workflow. Do not force-push over user edits.

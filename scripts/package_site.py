@@ -2,6 +2,7 @@
 from pathlib import Path
 import shutil
 import hashlib
+import json
 from ingest_github import split_frontmatter
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -22,11 +23,32 @@ for path in (ROOT / 'flux').glob('**/index.md'):
     if assets.exists():
         shutil.copytree(assets, OUT / assets.relative_to(ROOT))
 (OUT / '.nojekyll').touch()
+state_path = ROOT / '.publishing/state.json'
+sources = json.loads(state_path.read_text())['sources'] if state_path.exists() else {}
+receipt = {
+    'version': 1,
+    'sources': {kind: {key: source[key] for key in ('repository', 'path', 'cursor')}
+                for kind, source in sources.items()},
+    'files': {'index.html': hashlib.sha256((OUT / 'index.html').read_bytes()).hexdigest()},
+}
+# Check the actual page for each most recently imported published snapshot too.
+for path in (ROOT / 'flux').glob('**/index.md'):
+    meta, _ = split_frontmatter(path.read_text(encoding='utf-8'))
+    if meta.get('status', 'published') != 'published':
+        continue
+    if any(meta.get('source_repository') == source['repository']
+           and meta.get('source_commit') == source['cursor'] for source in sources.values()):
+        page = Path('page', *path.parent.relative_to(ROOT / 'flux').parts, 'index.html')
+        receipt['files'][page.as_posix()] = hashlib.sha256((OUT / page).read_bytes()).hexdigest()
 digest = hashlib.sha256()
 for path in sorted(OUT.rglob('*')):
     if path.is_file():
         digest.update(path.relative_to(OUT).as_posix().encode() + b'\0')
         digest.update(path.read_bytes())
+# Include source positions even for drafts, so their receipt is deployed as well.
+digest.update(json.dumps(receipt, sort_keys=True).encode())
+receipt['site_sha256'] = digest.hexdigest()
+(OUT / 'deployment.json').write_text(json.dumps(receipt, sort_keys=True) + '\n')
 (ROOT / '.publishing').mkdir(exist_ok=True)
 (ROOT / '.publishing/site.sha256').write_text(digest.hexdigest() + '\n')
 print('Packaged published pages and media for GitHub Pages.')
