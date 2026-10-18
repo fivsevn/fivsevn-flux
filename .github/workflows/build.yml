@@ -4,8 +4,8 @@ on:
   push:
     branches: [main]
     paths:
-      - 'trigger.md'
-      - 'uploads/**'
+      - 'trigger_text.md'
+      - 'trigger_imgs/**'
       - 'flux/**'
       - 'site-assets/**'
       - 'scripts/**'
@@ -97,3 +97,11 @@ jobs:
       - name: Verify the live deployment when no upload was needed
         if: steps.publish.outputs.needed == 'false'
         run: python scripts/verify_live.py
+      - name: Clear verified originals from the image inbox
+        run: |
+          python scripts/image_inbox.py
+          git add -u trigger_imgs
+          if ! git diff --cached --quiet; then
+            git commit -m 'clear published image inbox'
+            git push origin HEAD:main
+          fi

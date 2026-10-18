@@ -34,6 +34,7 @@ def main():
     for attempt in range(12):
         try:
             verify_once('https://' + domain, expected)
+            (ROOT / '_site/.verified.sha256').write_text(expected['site_sha256'] + '\n')
             print(f'Confirmed live artifact {expected["site_sha256"]} and {len(expected["files"])} public files at {domain}.')
             return
         except (URLError, TimeoutError, ValueError) as error:
