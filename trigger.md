@@ -1,11 +1,16 @@
 ---
-status: published
-title: ""
-
-# status: published（发布） / draft（草稿）
-# title 留空：自动用提交时间生成标题；也可以填写自定义标题
-# 标题和下方实际发布时间独立，统一使用北京时间
-# YAML 配置不会显示在网页上，正文写在配置区结束线后面
+status: draft
+title: "发布链路验证（临时）"
 ---
 
-吃早午饭
+发布链路验证（临时）
+第二行：中文、标点与换行。
+
+[主页](https://fivsevn.com/)
+
+- 第一项
+- 第二项
+
+> 引用测试
+
+![布口袋](https://flux.fivsevn.com/site-assets/pocket.webp)
