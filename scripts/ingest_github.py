@@ -219,7 +219,18 @@ def import_images(root: Path, source: dict, commit: dict, keys: set[str], files:
     sha = commit["sha"]
     # Match the existing shortcut: the extended commit description is the caption.
     caption = commit["commit"]["message"].partition("\n")[2].strip()
-    for item in files:
+    identity = source.get("identity", "legacy-path")
+    if identity not in {"legacy-path", "commit-path"}:
+        raise ValueError(f"Unknown image identity policy: {identity}")
+    date = source_date(commit)
+    # Sort the committed paths, so retry/API ordering cannot renumber a batch.
+    uploads = sorted((item for item in files
+                      if item["status"] != "removed"
+                      and item["filename"].startswith(source["path"].rstrip("/") + "/")
+                      and ".." not in PurePosixPath(item["filename"]).parts
+                      and PurePosixPath(item["filename"]).name not in {"README.md", ".keep", ".gitkeep"}),
+                     key=lambda item: item["filename"])
+    for number, item in enumerate(uploads, start=1):
         path = item["filename"]
         parts = PurePosixPath(path)
         if item["status"] == "removed" or not path.startswith(source["path"].rstrip("/") + "/") or ".." in parts.parts:
@@ -231,17 +242,22 @@ def import_images(root: Path, source: dict, commit: dict, keys: set[str], files:
                 print(f"Skipped a replaced or removed unsupported upload: {path}")
                 continue
             raise ValueError(f"Unsupported upload: {path}; use JPG/JPEG, PNG, WebP, GIF or HEIC/HEIF.")
-        key = f"asset:{source['repository']}:{path}"
-        slug = asset_slug(path)
-        aliases = {key, slug}
-        # Historical WordPress slugs are stable identities, not current URLs.
-        # A directory rename must not republish the same image.
-        for prefix in source.get("previous_paths", []):
-            old_path = prefix.rstrip("/") + "/" + path[len(source["path"].rstrip("/")) + 1:]
-            aliases.update((f"asset:{source['repository']}:{old_path}", asset_slug(old_path)))
-        for previous in source.get("previous_sources", []):
-            old_path = previous['path'].rstrip('/') + '/' + path[len(source['path'].rstrip('/')) + 1:]
-            aliases.update((f"asset:{previous['repository']}:{old_path}", asset_slug(old_path)))
+        if identity == "commit-path":
+            key = f"asset-event:{source['repository']}:{sha}:{path}"
+            slug = f"github-image-{sha[:12]}-{hashlib.sha256(path.encode()).hexdigest()[:12]}"
+            aliases = {key, slug}
+        else:
+            key = f"asset:{source['repository']}:{path}"
+            slug = asset_slug(path)
+            aliases = {key, slug}
+            # Historical WordPress slugs are stable identities, not current URLs.
+            # A directory rename must not republish the same image.
+            for prefix in source.get("previous_paths", []):
+                old_path = prefix.rstrip("/") + "/" + path[len(source["path"].rstrip("/")) + 1:]
+                aliases.update((f"asset:{source['repository']}:{old_path}", asset_slug(old_path)))
+            for previous in source.get("previous_sources", []):
+                old_path = previous['path'].rstrip('/') + '/' + path[len(source['path'].rstrip('/')) + 1:]
+                aliases.update((f"asset:{previous['repository']}:{old_path}", asset_slug(old_path)))
         if aliases & keys:
             continue
         media = read(f"https://raw.githubusercontent.com/{source['repository']}/{sha}/{quote(path)}")
@@ -252,16 +268,17 @@ def import_images(root: Path, source: dict, commit: dict, keys: set[str], files:
                 raise
             print(f"Skipped a replaced or removed invalid upload: {path}")
             continue
-        suffix = hashlib.sha256(path.encode()).hexdigest()[:12]
-        filename = "image.webp"
+        suffix = hashlib.sha256((sha + ":" + path if identity == "commit-path" else path).encode()).hexdigest()[:12]
+        filename = date.strftime("%Y%m%d-%H%M%S") + f"-{number:02d}.webp" if identity == "commit-path" else "image.webp"
         body = f"![](assets/{filename})"
         if caption:
             body += "\n\n" + caption
-        save_package(root, source_date(commit), suffix, {
+        save_package(root, date, suffix, {
             "source": "github-image", "source_key": key, "source_commit": sha,
             "source_repository": source["repository"], "source_asset_path": path,
             "publish_slug": slug, "status": "published",
-            "upload": {"path": path, "sha256": hashlib.sha256(media).hexdigest(),
+            "upload": {"path": path, "uploaded_at": date.isoformat(timespec="seconds"),
+                       "sha256": hashlib.sha256(media).hexdigest(),
                        "file": "assets/" + filename, "file_sha256": hashlib.sha256(converted).hexdigest()},
         }, body, (filename, converted))
         keys.update((key, slug))
