@@ -14,7 +14,7 @@
     "images": {
       "repository": "fivsevn/fivsevn-flux",
       "path": "trigger_imgs",
-      "cursor": "157eacaff44757064b84238a8bf34d275f58bae3",
+      "cursor": "c162b169db044a92377ed7c38e7bd22037607072",
       "previous_sources": [
         {
           "repository": "fivsevn/fivsevn-assets",
@@ -26,8 +26,7 @@
         }
       ],
       "verification_commits": [
-        "a3325716a941ebb70b7b54f8ec41badb7b39baf6",
-        "157eacaff44757064b84238a8bf34d275f58bae3"
+        "c162b169db044a92377ed7c38e7bd22037607072"
       ],
       "history_path": "",
       "previous_paths": [
