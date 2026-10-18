@@ -2,174 +2,291 @@
 
 The content archive and static-site backend for [flux.fivsevn.com](https://flux.fivsevn.com/).
 
-**Everyday publishing instructions live in the [devlog posts guide](https://github.com/fivsevn-agy/fivsevn-devlog/blob/main/posts/README.md).** This repository owns saved entries, their media, rendering, and deployment. The guide in devlog is the concise Chinese entry point; this README documents backend maintenance in English.
+Publish new text through [`trigger_text.md`](trigger_text.md) and new images through [`trigger_imgs/`](trigger_imgs/). This repository saves each entry with its media, builds the website, and deploys it through GitHub Pages. The [devlog posts guide](https://github.com/fivsevn-agy/fivsevn-devlog/blob/main/posts/README.md) provides concise everyday instructions in Chinese; this guide covers publishing and maintenance in English.
 
 ## Repository layout
 
 ```text
-trigger_text.md                 The only new-text publishing entry point
-trigger_imgs/                   Temporary image inbox saved by the phone shortcut
+trigger_text.md                 New-text publishing input
+trigger_imgs/                   Temporary image inbox for the phone shortcut
+  README.md                     Image-upload instructions; not a post
 flux/YYYY/MM/{id}/
-  index.md                 Editable source for one saved entry
-  assets/                  Media owned by that entry, when present
+  index.md                      Editable source for one saved entry
+  assets/                       Media owned by that entry, when present
 scripts/
-  ingest_github.py          Import new GitHub source commits
-  build.py                 Render the timeline and individual pages
-  package_site.py           Assemble the public Pages artifact
-  image_inbox.py            Clear originals after verified publication
-site-assets/               Avatars and the pocket image
-style.css                  Shared presentation
+  ingest_github.py               Import new GitHub source commits
+  build.py                      Render the timeline and individual pages
+  package_site.py               Assemble the public Pages artifact
+  verify_live.py                Check the public deployment and media bytes
+  image_inbox.py                Clear originals after verified publication
+site-assets/                    Avatars and the pocket image
+style.css                       Shared presentation
 .publishing/
-  state.json               Source paths and processed commit cursors
-  site.sha256              Fingerprint of the current public artifact
-  deployed.sha256          Fingerprint of the last successful deployment
-.github/workflows/build.yml
-index.html                 Generated first timeline page
-feed/                      Generated timeline pagination
-page/                      Generated individual entry pages
-_site/                     Local deployment artifact; ignored by Git
+  state.json                    Source paths and processed commit cursors
+  site.sha256                   Fingerprint of the current public artifact
+  deployed.sha256               Fingerprint of the last successful deployment
+.github/workflows/build.yml     Publish flux workflow
+index.html                      Generated first timeline page
+feed/                           Generated timeline pagination
+page/                           Generated individual entry pages
+_site/                          Local deployment artifact; ignored by Git
 ```
 
-Edit source packages under `flux/`. Generated HTML and `_site/` are rebuilt and must not be edited as source content.
+> **Source files:** Edit saved packages under `flux/`. Generated HTML in `index.html`, `page/`, `feed/`, and `_site/` is rebuilt from source.
+>
+> **Publishing scope:** Both inputs belong to `fivsevn/fivsevn-flux`. The retired devlog text trigger and the assets repository's former flux image folder are no longer publishing inputs.
+
+## Publish a new text entry
+
+1. Pull the latest `main` from this repository.
+2. Open [`trigger_text.md`](trigger_text.md). Keep its frontmatter and instruction comments. Set the status and optional title at the top:
+
+   ```yaml
+   status: published
+   title: ""
+   ```
+
+3. Replace the body after the closing `---` with the new entry. Use Markdown for links, lists, quotes, tables, and images. For example, write a named link as `[link text](https://example.com/)`.
+4. Commit and push the changed file to this repository's `main` branch.
+5. Wait for [Publish flux](https://github.com/fivsevn/fivsevn-flux/actions/workflows/build.yml) to succeed. Check the timeline and open the entry's title to inspect its individual page.
+
+> **Title:** Leave `title: ""` empty for a heading generated from the source commit time in `Asia/Shanghai`. Set `title: "Your title"` for a custom heading. Clear it again before the next post if you want to return to a time-based heading.
+>
+> **Publication time:** The lower timestamp is saved separately as `date`, using the source commit time in `Asia/Shanghai`. Editing a saved title does not change that timestamp, the entry URL, or its chronological position. Scheduled publication dates are not supported.
+>
+> **Drafts:** Use `status: draft` to save a package without publishing it on the website. The repository and its Git history are public, including draft text. Publish an imported draft by changing the saved package to `status: published`.
+>
+> **New entry versus edit:** Each changed trigger commit with a nonempty body is a new publishing event. To revise an existing entry, edit its saved package under `flux/`. A commit must actually change the file; committing identical contents creates no new input.
+>
+> **Instruction comments:** Lines beginning with `#` inside the frontmatter are instructions, not post content. Keep them above the closing `---`. A trigger with an empty body creates no package. Updating only its instruction comments still counts as changing the trigger, so maintenance must account for that commit before running the importer.
+>
+> **Advanced compatibility:** Omit `slug` for normal posting. An explicit slug has create-once behavior, so reusing it can prevent a later trigger from creating a new entry. Historical `wp_status` values remain supported for compatibility.
+
+## Publish images from the phone shortcut
+
+### Configure the shortcut once
+
+1. Open the shortcut's flux branch and select **fivsevn-flux** as the Working Copy repository.
+2. Add or retain a pull/sync action before saving, so Working Copy first pulls the latest `main`.
+3. Set the Save File destination to this repository's [`trigger_imgs/`](trigger_imgs/) folder. Keep the original phone filename.
+4. Set the commit and push actions to the same repository and its `main` branch.
+5. If the shortcut offers a caption, put it in the commit's **extended description**, below the summary line.
+
+### Use the shortcut each day
+
+1. Select the image or images and run the shortcut. Let it pull, save, commit, and push.
+2. Enter a caption in the extended commit description if needed; leave it empty for an image-only post.
+3. Wait for [Publish flux](https://github.com/fivsevn/fivsevn-flux/actions/workflows/build.yml) to succeed, then check the timeline, individual page, and displayed image.
+4. On the next upload, let the shortcut pull again so it receives the publishing bot's commits and inbox cleanup.
+
+> **Accepted files:** JPG/JPEG, PNG, WebP, GIF, HEIC, and HEIF are supported, with case-insensitive extensions. Unicode filenames and nested folders are supported. The phone does not need to add timestamps, convert formats, or create entry folders.
+>
+> **Batch behavior:** Each image upload commit and path creates one separate entry. Multiple images in one commit receive the same Markdown caption from its extended description. The summary line is not the caption. With no extended description, each entry contains only its image.
+>
+> **Automatic filenames:** Saved media uses `assets/YYYYMMDD-HHMMSS-NN.webp` inside the entry package, for example `20261018-103012-01.webp`. The time comes from the upload commit in `Asia/Shanghai`; it does not use the EXIF capture date or workflow start time. Paths are sorted to assign stable batch numbers, so retries keep the same names.
+>
+> **Reusing a phone filename:** After the previous upload is processed and its inbox original is cleared, the same filename can be uploaded again, including with identical bytes. A new upload commit is a new entry. Retrying the same commit and path does not duplicate it. To replace an image in an existing entry, edit that entry's saved package.
+>
+> **Originals:** `trigger_imgs/` is temporary. Automation removes a matching original only after the saved package has been committed, deployed, and verified at the public domain. A failed conversion, deployment, or verification leaves it in the inbox. A newer file with different bytes is retained. Deleting an inbox copy does not erase it from Git history.
+>
+> **Further instructions:** The [image inbox guide](trigger_imgs/README.md) includes conversion details, recovery steps, and the package layout.
+
+### Image conversion
+
+| Input | Saved WebP behavior |
+| --- | --- |
+| JPEG and HEIC/HEIF photos | Quality 85, original display dimensions, corrected orientation, retained ICC color profile |
+| PNG graphics | Lossless WebP, retaining transparency; animated PNG frames and timing are retained |
+| GIF animations | Lossless animated WebP, retaining frames, timing, transparency, and loop behavior |
+| Existing WebP | Validated and retained without another lossy encode |
+
+> **Auxiliary images:** Phone MPO/HEIF auxiliary images, such as HDR gain maps, are not treated as animation. The primary display photo is published.
+>
+> **File size:** WebP is not guaranteed to be smaller for every input. Historical package images are not recompressed in bulk. Original uploads remain recoverable from Git history.
 
 ## Locate an existing entry
 
-Open its title on the live timeline. An individual URL such as:
+1. Open the entry's title on the live timeline.
+2. Read its individual URL. A URL in this form:
 
-```text
-https://flux.fivsevn.com/page/2026/10/2026-10-18-064929-e4ec7f5cb277/
-```
+   ```text
+   https://flux.fivsevn.com/page/YYYY/MM/{id}/
+   ```
 
-corresponds to:
+   maps to this source file:
 
-```text
-flux/2026/10/2026-10-18-064929-e4ec7f5cb277/index.md
-```
+   ```text
+   flux/YYYY/MM/{id}/index.md
+   ```
 
-Replace the URL's `page/` with `flux/` and append `index.md`. Use this mapping rather than the displayed title, which may have been customized. The example above is the retained `test` entry.
+3. Replace the URL's `page/` with `flux/` and append `index.md` to find the saved package in this repository.
+
+> **Stable identity:** Use the URL and package ID to find an entry. Its displayed title may have been customized.
 
 ## Edit an existing entry
 
-1. Pull the latest `main` before editing: the publishing workflow also commits to this branch.
-2. Open the matching `flux/YYYY/MM/{id}/index.md`.
-3. Change the Markdown after the closing `---` to edit the body, links, or image caption. Change the top-level `title` to edit the clickable heading.
-4. Keep the directory, `id`, and `date` unchanged. Keep source identity fields as well.
-5. Commit and push to `main`. Wait for [Publish flux](https://github.com/fivsevn/fivsevn-flux/actions/workflows/build.yml) to finish, then check both the timeline and the individual page.
+1. Pull the latest `main`; the publishing workflow also commits to this branch.
+2. Locate the entry's `flux/YYYY/MM/{id}/index.md` using the URL mapping above.
+3. Edit the Markdown after the closing `---` to change the body, links, or caption. Edit the top-level `title` to change the clickable heading.
+4. Commit and push the saved-package changes to `main`.
+5. Wait for Publish flux to succeed, then check both the timeline and individual page.
 
-The upper heading is `title`; the lower publication timestamp is `date`. They are independent. Editing `title` changes the heading in both views without changing the URL, lower timestamp, or chronological position. The timestamp retains its existing ISO format, for example `2026-10-18T06:49:29+08:00`.
-
-A blank title in the **new-post trigger** is filled with a time-based heading during import. An already saved entry has its title stored explicitly; to give it a different time-style heading later, edit that stored string. Do not clear a saved title expecting the trigger's defaulting behavior to run again.
-
-Do not edit or resubmit the trigger to revise an old entry: a new trigger commit is a new publishing event. Do not edit generated files under `page/` or `feed/`.
+> **Preserve identity:** Keep the directory, `id`, `date`, and source identity fields unchanged during ordinary edits. Saved identity fields include `source_key`, `source_commit`, `source_repository`, and `publish_slug`; image entries also include `source_asset_path` and an `upload` checksum record. Older packages may contain `wp_id`, `wp_slug`, and other provenance fields. These support origin tracking and deduplication; they do not activate WordPress synchronization.
+>
+> **Saved titles:** An imported entry stores its title explicitly. To give an existing entry a different time-style heading, edit that stored string. Clearing a saved title does not invoke the new-trigger default again.
+>
+> **Publishing input:** Resubmitting the trigger creates a new publishing event. Generated `page/` and `feed/` files are not the source for edits.
 
 ### Replace or remove an image
 
-Place replacement files in that entry's `assets/` directory and update its relative Markdown link, for example `![](assets/replacement.webp)`. Remove an obsolete file only after checking that no other entry references it. Commit the Markdown and media changes together.
+1. Locate the saved entry package and inspect its image links.
+2. Add a replacement file to that package's `assets/` directory and update the relative Markdown link, for example `![](assets/replacement.webp)`. To remove an image, remove its Markdown reference.
+3. Check whether any other entry references an obsolete file before deleting it.
+4. Commit the Markdown and media changes together, push to `main`, and check the deployed page and image.
 
-The saved media belongs to this repository. Editing or deleting its original file in `trigger_imgs/` does not edit an existing flux entry; edit the saved package here.
+> **Saved media:** Editing or deleting the original in `trigger_imgs/` does not revise an existing entry. Edit the copy owned by the saved package. Files placed directly in a saved package are not processed by the upload converter; prepare them in the desired format before adding them there.
 
 ## Hide, restore, or delete an entry
 
-### Hide from the website while retaining the archive
+### Hide an entry while retaining its package
 
-Set the saved entry's frontmatter to:
+1. Open the saved entry's `index.md` and set its frontmatter to `status: hidden`.
+2. Commit and push to `main`, then wait for Publish flux to finish.
+3. Confirm the entry is absent from the timeline and its individual page is no longer published.
 
-```yaml
-status: hidden
-```
+> **Visibility:** Only `published` entries are included in the site; historical packages without a `status` field are also treated as published. Draft and hidden packages are excluded from the deployment artifact. Hiding is a website setting; the repository and Git history remain public.
+>
+> **Retained identity:** A hidden package keeps its source identity, preventing normal source retries from recreating it. Use this method when you want to keep an entry off the website and retain its archive.
 
-Commit and push. After deployment, the entry is absent from the timeline and its individual page is no longer published. Its package and source identity remain in the repository, which also prevents normal source retries from recreating it. To restore it, change the value to `status: published` and push again; its original URL and publication timestamp are retained.
+### Restore a hidden entry or publish a saved draft
 
-Only `published` entries are included in the site; historical entries without a `status` field are also treated as published. Draft and hidden packages are excluded from the deployment artifact. The GitHub repository and its history remain public: hiding is a site-presentation setting, not private storage.
+1. Change the saved package's status to `status: published`.
+2. Commit and push to `main`.
+3. Wait for Publish flux to succeed and check the original individual URL and timeline.
+
+> **Original date and URL:** Restoring a package retains its ID, URL, and stored publication timestamp.
 
 ### Delete the saved package
 
 1. Locate the package using the URL mapping above.
-2. Delete the entire `flux/YYYY/MM/{id}/` directory, including `index.md` and its owned `assets/`. Check for cross-entry references before removing media.
-3. Commit and push the deletion to `main`.
-4. Confirm Publish flux succeeds. The timeline is rebuilt, obsolete individual pages are removed, and the new Pages artifact omits the deleted package's media. Refresh the timeline and verify that the former individual URL returns a missing-page response.
+2. Check that its media is not referenced by another entry.
+3. Delete the entire `flux/YYYY/MM/{id}/` directory, including `index.md` and its owned `assets/`, then commit and push the deletion.
+4. Wait for Publish flux to succeed. Confirm the timeline no longer lists it and the former individual URL returns a missing-page response.
 
-Do not delete just the generated `page/` directory: it would be recreated from the Markdown. Deleting the trigger or the original WordPress post does not delete a saved flux entry either.
-
-Deletion removes the package from the current branch and website; earlier Git commits still contain it. To undo an accidental deletion, restore that package from Git history and push it again. Do not rewind `.publishing/state.json` to restore content.
-
-The importer normally advances past already processed source commits, so a deletion is not undone by the next run. However, removing a package also removes its stored deduplication keys. A later commit modifying the same source image path, or reusing an explicit text slug, can create it again. Use `hidden` when you want to retain the identity and reliably keep an entry off the site.
-
-## Import sources and metadata
-
-| Source | Input | Saved result |
-| --- | --- | --- |
-| Text | This repository, `trigger_text.md` | One Markdown package per new trigger commit; push starts publication directly |
-| Images | This repository, `trigger_imgs/` | One package per image upload commit and path; push starts publication directly; extended commit description supplies the caption |
-
-The importer reads committed snapshots on `main`, in chronological order. `history_path: ""` scans repository history so input renames retain a reachable cursor; only changes to the configured input are consumed. Build commits and inbox cleanup deletions do not change source cursors or republish posts. Source paths and processed commit positions are in `.publishing/state.json`. Both text and images are authored here. No WordPress access or cross-repository write token is needed. The former devlog trigger was retired after its last pending post was imported; its existing entry identities and URLs are retained.
-
-The text trigger accepts `status: published` or `status: draft` and an optional `title`. Missing or empty titles receive a heading derived from the source commit time. The lower `date` is recorded separately from that same commit time, using `Asia/Shanghai`. It is not recomputed when an existing package is edited. Scheduled publication dates are not supported.
-
-Ordinary Markdown, named links, lists, quotes, tables, images, and line breaks are preserved. An explicit `slug` retains create-once behavior; omit it for normal new posts. Legacy `wp_status` values are still understood for historical compatibility.
-
-Saved identity fields include `source_key`, `source_commit`, `source_repository`, and `publish_slug`; image entries also have `source_asset_path` and an `upload` checksum record. Older packages may contain `wp_id`, `wp_slug`, and other provenance fields. Preserve these fields during normal editing. They record origin and support deduplication; they do not activate WordPress synchronization.
+> **Delete the source:** Removing only a generated `page/` directory has no lasting effect because it is rebuilt from Markdown. Deleting the trigger or the original WordPress post does not delete a saved flux entry.
+>
+> **Git history:** Deletion removes the package from the current branch and website. Earlier commits still contain it. To undo an accidental deletion, restore the whole package from Git history and push again. Do not rewind `.publishing/state.json` to restore content.
+>
+> **Later uploads:** The importer normally advances past processed commits, so the next run does not undo a deletion. Removing the package also removes its stored deduplication keys, however. A new upload commit or reuse of a previously stored explicit text slug can create an entry again.
 
 ## Build and deployment
 
-The only maintained workflow is **Publish flux**, defined in `.github/workflows/build.yml`. A push changing `trigger_text.md` or `trigger_imgs/**` starts it directly, as do changes to saved entries and build files. There is no schedule and no polling of another repository. Manual dispatch is available for recovery. README-only edits do not require a site deployment.
+The maintained workflow is [**Publish flux**](https://github.com/fivsevn/fivsevn-flux/actions/workflows/build.yml), defined in [`.github/workflows/build.yml`](.github/workflows/build.yml).
 
-The workflow:
+### Check a publication
 
-1. Checks out current `main` and runs the publishing tests.
-2. Reads new source commits, converts new images to WebP, and saves complete entry packages.
-3. Builds the timeline, pagination, and individual pages.
-4. Packages public HTML, styles, site assets, and published-entry media into `_site/`.
-5. Commits source cursors, new content, and generated pages together.
-6. Deploys the artifact through GitHub Pages when its fingerprint differs from the last successful deployment.
-7. Fetches the public deployment receipt, timeline, latest imported published pages, and their actual image files and checks their bytes against the artifact.
-8. Records the deployed fingerprint only after these public checks pass. A green Publish flux run therefore confirms the deployed artifact, rather than just Markdown validation. The public `deployment.json` receipt contains source positions and checksums, never draft bodies.
-9. Deletes a processed inbox original only when its saved page and image were included in the successful public verification and the original still matches the imported checksum. Failed conversions, deployments, or verification leave the originals intact. Cleanup commits do not start another workflow.
+1. Push the text, images, saved-package changes, or build changes to this repository's `main`.
+2. Open Publish flux and locate the run for that input commit.
+3. Check that importing, building, deployment, public verification, and inbox cleanup finish successfully.
+4. Open the public timeline and the relevant individual page. For an image entry, check the actual displayed image too.
 
-The timeline uses 17 entries per page, ordered by `date`, newest first. Its visual order is typing bubble → pocket image → content-library link → entries → pagination → license bubble. Every entry title links to its individual page. Long links wrap within the message bubble.
+> **Direct trigger:** Changes to `trigger_text.md` or `trigger_imgs/**` start the workflow directly, as do saved-entry and build-file changes listed in the workflow. There is no schedule or cross-repository polling. Root README-only edits do not require deployment; `trigger_imgs/README.md` matches the inbox path filter and can start a run, but is ignored as image content.
+>
+> **Recovery:** Use the workflow's manual dispatch to run it again when needed. No WordPress access or cross-repository write token is required.
 
-`build.py` recreates `page/` and `feed/` on every build; hiding or deleting a source entry therefore removes obsolete generated pages. `package_site.py` excludes scripts and non-published packages from the Pages artifact. GitHub Pages uses the Actions artifact rather than serving the repository root.
+### What the workflow does
+
+1. Check out current `main` and run the publishing tests.
+2. Read new source commits in chronological order, convert uploaded images to WebP, and save complete entry packages.
+3. Build the timeline, pagination, and individual pages.
+4. Package public HTML, styles, site assets, and published-entry media into `_site/`.
+5. Commit source cursors, new content, and generated pages together.
+6. Deploy the artifact through GitHub Pages when its fingerprint differs from the last successful deployment.
+7. Fetch the public deployment receipt, timeline, latest imported published pages, and their actual image files; compare their bytes with the artifact.
+8. Record the deployed fingerprint only after public verification succeeds. If no new deployment is needed, verify the existing public deployment instead.
+9. Remove a processed inbox original only when its saved page and image passed public verification and the original still matches the imported checksum.
+
+> **Success signal:** A green run includes verification of the public artifact. The public `deployment.json` receipt contains source positions and checksums, never draft bodies. Failed runs retain the inbox originals; cleanup commits do not start another workflow.
+>
+> **Timeline:** Each page contains 17 entries, newest first by `date`. The visual order is typing bubble → pocket image → content-library link → entries → pagination → license bubble. Every entry title links to its individual page; long links wrap within the bubble.
+>
+> **Generated output:** `build.py` recreates `page/` and `feed/`, removing obsolete pages after an entry is hidden or deleted. `package_site.py` excludes scripts and non-published packages. GitHub Pages serves the Actions artifact rather than the repository root.
 
 ### Local verification
 
-```sh
-python -m pip install -r requirements.txt
-python -m unittest discover -s tests -v
-python scripts/build.py
-python scripts/package_site.py
-python -m http.server 8000 --directory _site
-```
+1. Install the dependencies:
 
-Building locally does not import or publish anything. Run `scripts/ingest_github.py` only when intentionally importing: it reads GitHub and writes local packages and cursors. The workflow is responsible for committing and deploying those changes.
+   ```sh
+   python -m pip install -r requirements.txt
+   ```
 
-### Troubleshooting
+2. Run the publishing and rendering tests:
 
-- **No run after adding text or images:** confirm the change was pushed to `main` in this repository, under `trigger_text.md` or `trigger_imgs/`. The old devlog trigger and assets image folder are retired. The input commit must have a Publish flux run; no schedule is required.
-- **An image upload was rejected:** use a valid JPG/JPEG, PNG, WebP, GIF, HEIC, or HEIF. Unsupported or damaged uploads fail visibly instead of advancing silently. Replace a rejected image with a valid file at the same input path, or delete it, then push again. A rejected older snapshot is skipped only when a later committed replacement or deletion exists; valid queued snapshots are still imported normally.
-- **A Publish flux run failed:** open its failed step. Invalid input, import errors, failed pushes, deployment errors, and public verification errors produce a failed run. Fix the cause and rerun; committed source identities prevent duplicate imports.
-- **Missing source cursor:** stop and inspect source history. Do not reset the cursor to an arbitrary commit, which could replay content or skip posts.
-- **Failed image download:** the importer does not save a partial package or advance past the failed import. Fix the source problem and rerun.
-- **Push rejected after a concurrent edit:** pull current `main` and rerun the workflow. Do not force-push over user edits.
-- **Deployment failed after content was committed:** rerun Publish flux. The successful-deployment fingerprint remains unchanged, so the artifact is retried.
+   ```sh
+   python -m unittest discover -s tests -v
+   ```
 
-## WordPress migration
+3. Build and package the existing saved entries:
 
-Since 2026-10-18, flux publishes directly from GitHub. The 150 migrated packages retain their original URLs and dates. Subsequent posts, including the retained `test`, use the same archive structure. Old WordPress sync workflows and retired importer stubs have been removed. Changes or deletions in WordPress do not affect these saved packages.
+   ```sh
+   python scripts/build.py
+   python scripts/package_site.py
+   ```
+
+4. Serve the artifact locally and open `http://localhost:8000/`:
+
+   ```sh
+   python -m http.server 8000 --directory _site
+   ```
+
+> **Local effects:** Building does not import or publish anything. Run `scripts/ingest_github.py` only when intentionally importing: it reads GitHub and writes local packages and cursors. The workflow commits and deploys those changes.
+
+## Troubleshooting
+
+### No run after a text or image upload
+
+1. Confirm the commit was pushed to `main` in **fivsevn/fivsevn-flux**.
+2. Check that the changed path is `trigger_text.md` or a file under `trigger_imgs/`.
+3. Open Publish flux and find the input commit's run. If the input is committed but no run is available, start the workflow manually and inspect its result.
+
+> **Retired inputs:** The old devlog trigger and assets image folder are inactive. Waiting for a scheduled check will not publish from them.
+
+### An image upload was rejected
+
+1. Open the failed import step and identify the rejected path.
+2. Replace the damaged or unsupported image with a valid JPG/JPEG, PNG, WebP, GIF, HEIC, or HEIF at that input path, or delete the rejected file.
+3. Commit and push the correction, then check the new run.
+
+> **Queued snapshots:** A rejected older snapshot is skipped only when a later committed replacement or deletion exists. Valid queued snapshots are still imported normally. Failed downloads do not save partial packages or advance past the failed import.
+
+### A run failed during import, push, or deployment
+
+1. Open the failed step in Publish flux and read the specific error.
+2. Correct invalid input or the reported source problem. If a push was rejected after a concurrent edit, pull the latest `main` and resolve the edit before retrying.
+3. Rerun Publish flux and check both the public page and any image after it succeeds.
+
+> **Retries:** Committed source identities prevent duplicate imports. If content was committed but deployment failed, the successful-deployment fingerprint remains unchanged so deployment is retried. Do not force-push over another edit.
+
+### A source cursor is missing
+
+1. Stop retrying the import and inspect the recent repository history for a rewrite or missing commit.
+2. Compare the configured cursor in `.publishing/state.json` with the reachable source history before preparing a repair.
+
+> **Cursor repair:** Do not reset a cursor to an arbitrary commit. It can replay published content or skip unprocessed entries. The cursor records processing progress, not a content backup.
+
+## Import records and migration history
+
+| Source | Input | Saved result |
+| --- | --- | --- |
+| Text | `trigger_text.md` in this repository | One package per new trigger commit with a nonempty body |
+| Images | `trigger_imgs/` in this repository | One package per image upload commit and path; the extended commit description supplies its caption |
+
+> **History scanning:** `.publishing/state.json` stores input paths and processed commit positions. `history_path: ""` scans repository history so input renames retain a reachable cursor; only changes to the configured input are consumed. Build commits and inbox cleanup deletions are not new posts.
+>
+> **WordPress cutover:** Since 2026-10-18, flux publishes directly from GitHub. The 150 migrated packages retain their original URLs and dates. The former devlog trigger was retired after its last pending post was imported. Old WordPress synchronization workflows and retired importer stubs were removed; later WordPress changes or deletions do not affect saved flux packages.
+>
+> **Historical images:** The 19 migrated originals already have identical copies in historical packages. Immutable origin links and cleanup checksums identify their duplicate inbox copies. Historical images, IDs, dates, titles, bodies, and URLs remain unchanged. Legacy path identities retain `previous_sources` and `previous_paths`; new uploads use `identity: commit-path` so reusing an old phone filename can create an intentional new entry.
+>
+> **Assets repository:** The retired `post/flux/` folder was removed from assets after migration verification. Flux runtime inputs and image requests no longer depend on it. The old signed shortcut export in assets `docs/` is a historical backup with obsolete folder bindings; other shortcut branches are unchanged.
 
 Content license: CC BY-NC-SA 4.0. Quoted and third-party material retains its original rights and licenses.
-
-## Image uploads and phone shortcut
-
-The image inbox is [`trigger_imgs/`](trigger_imgs/) in **this repository**. The phone shortcut’s flux branch must select the `fivsevn-flux` repository and its `trigger_imgs/` folder in the Save File action. Configure the shortcut to pull the latest `main` through Working Copy before saving, then commit and push to `fivsevn-flux`. Daily use remains one shortcut invocation; this initial sync picks up the publishing bot’s commits and inbox cleanup.
-
-Keep original phone filenames; no manual timestamp or renaming step is needed. Nested folders and Unicode filenames are supported. Supported extensions are `.jpg`, `.jpeg`, `.png`, `.webp`, `.gif`, `.heic`, and `.heif`, case-insensitively. The phone does not need to convert images or create article folders.
-
-The automation converts new uploads to `assets/YYYYMMDD-HHMMSS-NN.webp` inside their saved package, using the upload commit time in `Asia/Shanghai` and a sorted batch sequence (for example `20261018-103012-01.webp`). The timestamp comes from the committed upload, so it stays unchanged on retry; it does not use EXIF capture dates or workflow start time. JPEG and HEIC photos use WebP quality 85 at their original display dimensions, with orientation corrected and ICC color profiles retained. PNG graphics and GIF animations use lossless WebP; animated frames and timings, transparency, and loop behavior are retained. Existing WebP uploads are validated and retained without another lossy encode. Phone MPO/HEIF auxiliary images such as HDR gain maps are not treated as animation; the primary display photo is published. Original files remain recoverable from Git history. WebP is not guaranteed to be smaller for every possible input.
-
-A commit may contain multiple images. Each image upload commit and path creates a separate post; all images in that commit receive the same Markdown caption from the extended commit description (the part after the summary line). With no extended description, the post contains only the image. After the previous upload is processed and its inbox file is cleared, the same original filename can be uploaded again for a new post, even with identical image bytes. Retries of the same commit and path cannot create duplicates. A new upload commit, including one changing a previously used input path, creates a new post; edit the saved package under `flux/` to revise an existing post instead.
-
-`trigger_imgs/` is temporary. Only after the saved package is committed, deployed, and verified at the public domain does automation remove its matching inbox original. A retry uses the saved identity and cannot duplicate the post. A newer or manually changed file with a different checksum is retained. Pull current `main` before the next upload so Working Copy sees the cleanup. Deleting from the current branch does not erase the original upload from Git history.
-
-The 19 migrated originals already have identical copies in historical entry packages. Their immutable origin links and cleanup checksums are recorded, and only their duplicate inbox copies are cleared after public verification. Historical package images, IDs, dates, titles, bodies, and URLs remain unchanged. The historical migration used path identities and retains `previous_sources` and `previous_paths` for that compatibility. New uploads use `identity: commit-path`, so an original phone filename matching an old image does not block a deliberately new upload. All future input is `trigger_imgs/`; text uses `trigger_text.md`.
-
-The retired `post/flux/` folder has been removed from assets after verifying this migration. No flux runtime input or image request depends on assets. The old signed shortcut export in assets `docs/` remains a historical backup; do not reinstall its old folder binding. Other shortcut branches are unchanged.
