@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+ <meta charset="utf-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1">
+ <title>发布链路验证（临时） · fivsevn flux</title>
+ <meta name="description" content="发布链路验证（临时）">
+ <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<main class="site">
+
+<a class="brand return-brand" href="/" onclick="return goBackHome(event)" aria-label="still typing">still typing...</a>
+<section class="feed" aria-label="single flux">
+<article class="entry" id="2026-10-18-092126-ae817ab26731">
+ <h2 class="entry-title"><a href="/page/2026/10/2026-10-18-092126-ae817ab26731/">发布链路验证（临时）</a></h2>
+ <div class="entry-body"><p>发布链路验证（临时）<br />
+第二行：中文、标点与换行。</p>
+<p><a href="https://fivsevn.com/">主页</a></p>
+<ul>
+<li>第一项</li>
+<li>第二项</li>
+</ul>
+<blockquote>
+<p>引用测试</p>
+</blockquote>
+<p><img src="https://flux.fivsevn.com/site-assets/pocket.webp" alt="布口袋" /></p>
+</div>
+ <div class="entry-meta"><time datetime="2026-10-18T09:21:26+08:00">2026-10-18T09:21:26+08:00</time></div>
+</article>
+</section>
+<footer class="entry license-bubble"><div class="entry-body">This content is licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>.</div></footer><script>
+function goBackHome(event) {
+  try {
+    const ref = document.referrer ? new URL(document.referrer) : null;
+    const sameSite = ref && ref.origin === window.location.origin;
+    if (sameSite && window.history.length > 1) {
+      event.preventDefault();
+      window.history.back();
+      return false;
+    }
+  } catch (e) {}
+  return true;
+}
+</script>
+</main>
+</body>
+</html>
