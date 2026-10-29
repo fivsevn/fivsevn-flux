@@ -1,4 +1,4 @@
-# fivsevn flux
+# flux.fivsevn
 
 The content archive and static-site backend for [flux.fivsevn.com](https://flux.fivsevn.com/).
 
