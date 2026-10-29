@@ -69,7 +69,7 @@ class PublisherTests(unittest.TestCase):
             pub.import_text(self.root,self.source,commit(),set(),lambda u:b'---\nstatus: published\ntitle: [invalid]\n---\nhello')
     def test_images_caption_scope_and_retry(self):
         self.source['path']='post/flux'
-        rows=[{'filename': 'post/flux/a.PNG', 'status':'added'}, {'filename':'foodie/b.png','status':'added'}, {'filename':'post/flux/deleted.png','status':'removed'}]
+        rows=[{'filename': 'post/flux/a.PNG', 'status':'added'}, {'filename':'stills/b.png','status':'added'}, {'filename':'post/flux/deleted.png','status':'removed'}]
         keys=set()
         c=commit(message='feat\n\n配文 [链接](https://example.com)')
         self.assertEqual(pub.import_images(self.root,self.source,c,keys,rows,lambda u:IMAGE_BYTES),1)
