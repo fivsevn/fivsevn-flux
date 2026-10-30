@@ -106,7 +106,7 @@ class PublisherTests(unittest.TestCase):
     def test_build_artifact_markdown_and_private_exclusion(self):
         (self.root/'scripts').mkdir()
         copy_builder(self.root)
-        (self.root/'site-assets').mkdir()
+        (self.root/'site-assets').mkdir(exist_ok=True)
         (self.root/'style.css').write_text('')
         (self.root/'CNAME').write_text('flux.fivsevn.com')
         pub.import_text(self.root,self.source,commit(),set(),lambda u:'[链接](https://example.com)\n下一行\n\n- 第一\n- 第二\n\n> 引用'.encode())
