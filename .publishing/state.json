@@ -14,7 +14,7 @@
     "images": {
       "repository": "fivsevn/fivsevn-flux",
       "path": "trigger_imgs",
-      "cursor": "87330847028da943fb9746479000308f8711b4e6",
+      "cursor": "964c54d3535ef80fa4faee444c7353412cab7c22",
       "previous_sources": [
         {
           "repository": "fivsevn/fivsevn-assets",
@@ -26,7 +26,8 @@
         }
       ],
       "verification_commits": [
-        "87330847028da943fb9746479000308f8711b4e6"
+        "fdff5cd7a29cc05e934c094d1f0a7bc5d9b52928",
+        "964c54d3535ef80fa4faee444c7353412cab7c22"
       ],
       "history_path": "",
       "previous_paths": [
@@ -35,5 +36,5 @@
       "identity": "commit-path"
     }
   },
-  "last_checked_day": "2026-10-28"
+  "last_checked_day": "2026-10-30"
 }
