@@ -11,6 +11,7 @@ from PIL import Image
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
 import ingest_github as pub
+from support import copy_builder, read_saved
 import image_inbox as inbox
 
 
@@ -25,7 +26,7 @@ class ImageNamingTests(unittest.TestCase):
     def tearDown(self): self.tmp.cleanup()
 
     def entries(self, root=None):
-        return [(path, *pub.split_frontmatter(path.read_text())) for path in ((root or self.root) / 'flux').glob('**/index.md')]
+        return [(path, *read_saved(path.read_text())) for path in ((root or self.root) / 'flux').glob('**/index.md')]
 
     def test_original_names_become_upload_time_and_batch_sequence(self):
         files = [{'filename': 'trigger_imgs/说明/IMG_0001.PNG', 'status': 'added'},
@@ -67,7 +68,7 @@ class ImageNamingTests(unittest.TestCase):
         files = [{'filename': 'trigger_imgs/IMG_0001.PNG', 'status': 'added'}]
         self.assertEqual(pub.import_images(self.root, self.source, self.commit, keys, files, lambda _: self.raw), 1)
 
-    def test_reused_identical_inbox_original_is_verified_for_both_packages_and_deleted_once(self):
+    def test_reused_identical_inbox_original_is_verified_for_latest_event(self):
         (self.root / 'trigger_imgs').mkdir()
         original = self.root / 'trigger_imgs/IMG_0001.PNG'; original.write_bytes(self.raw)
         files = [{'filename': 'trigger_imgs/IMG_0001.PNG', 'status': 'added'}]
@@ -77,7 +78,9 @@ class ImageNamingTests(unittest.TestCase):
         (self.root / '.publishing/state.json').write_text(json.dumps({'sources': {'images': self.source}}))
         receipt = {'site_sha256': 'verified', 'files': {}}
         candidates = inbox.candidates(self.root)
-        self.assertEqual(len(candidates), 2)
+        self.assertEqual(len(candidates), 1)
+        latest_meta, _ = read_saved((self.root / candidates[0][1]).parent.parent.joinpath('index.md').read_text())
+        self.assertEqual(latest_meta['source_commit'], 'b' * 40)
         for _, asset, page in candidates:
             for public, payload in [(asset, (self.root / asset).read_bytes()), (page, b'<html>published</html>')]:
                 path = self.root / '_site' / public; path.parent.mkdir(parents=True, exist_ok=True); path.write_bytes(payload)

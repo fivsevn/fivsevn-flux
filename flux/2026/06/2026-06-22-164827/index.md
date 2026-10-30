@@ -1,14 +1,50 @@
 ---
 id: 2026-06-22-164827
-date: '2026-06-22T16:48:27+08:00'
 title: 22 Jun, 2026 16:48
-source: wordpress-live
-sync: manual
-source_hash: f0e6cd279e9f5ff0
-wp_post_id: 4094
-wp_url: https://fivsevn.com/2026/06/22/github-text-ce2618f/
-wp_slug: github-text-ce2618f
+
+module: posts
+submodule: flux
+topic: null
+
+type: log
 status: published
+canonical: true
+
+summary: null
+
+parents: []
+related: []
+
+tags: []
+
+audience:
+- public
+languages:
+- zh
+
+maturity: evolving
+confidence: null
+
+visibility: public
+source_of_truth: site
+
+filename_policy: entrypoint
+
+created: '2026-06-22'
+updated: '2026-06-22'
+metadata_updated: '2026-10-30'
+
+extra:
+  source: wordpress-live
+  sync: manual
+  source_hash: f0e6cd279e9f5ff0
+  wp_post_id: 4094
+  wp_url: https://fivsevn.com/2026/06/22/github-text-ce2618f/
+  wp_slug: github-text-ce2618f
+  profile: site-post-v1
+  published_at: '2026-06-22T16:48:27+08:00'
+  author: 五月七日
+  alt: 22 Jun, 2026 16:48
 ---
 
 相关文章：https://charitydotwtf.substack.com/p/ai-demands-more-engineering-discipline

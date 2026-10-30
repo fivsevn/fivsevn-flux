@@ -1,14 +1,50 @@
 ---
 id: 2026-06-01-141727
-date: '2026-06-01T14:17:27+08:00'
 title: 1 June, 2026 14:17
-source: wordpress-live
-sync: manual
-source_hash: bef4faf2392f81bd
-wp_post_id: 3287
-wp_url: https://fivsevn.com/2026/06/01/1-june-2026-1417/
-wp_slug: 1-june-2026-1417
+
+module: posts
+submodule: flux
+topic: null
+
+type: log
 status: published
+canonical: true
+
+summary: null
+
+parents: []
+related: []
+
+tags: []
+
+audience:
+- public
+languages:
+- zh
+
+maturity: evolving
+confidence: null
+
+visibility: public
+source_of_truth: site
+
+filename_policy: entrypoint
+
+created: '2026-06-01'
+updated: '2026-06-01'
+metadata_updated: '2026-10-30'
+
+extra:
+  source: wordpress-live
+  sync: manual
+  source_hash: bef4faf2392f81bd
+  wp_post_id: 3287
+  wp_url: https://fivsevn.com/2026/06/01/1-june-2026-1417/
+  wp_slug: 1-june-2026-1417
+  profile: site-post-v1
+  published_at: '2026-06-01T14:17:27+08:00'
+  author: 五月七日
+  alt: 1 June, 2026 14:17
 ---
 
 阿德勒心理学

@@ -2,3 +2,5 @@ mistune>=3.0,<4
 PyYAML>=6.0,<7
 Pillow>=11,<14
 pillow-heif>=1.3,<2
+jsonschema>=4.23,<5
+referencing>=0.35,<1

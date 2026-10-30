@@ -1,14 +1,50 @@
 ---
 id: 2026-05-11-163757
-date: '2026-05-11T16:37:57+08:00'
 title: 11 May, 2026 16:37
-source: wordpress-live
-sync: manual
-source_hash: d00aa9603355cbf1
-wp_post_id: 2682
-wp_url: https://fivsevn.com/2026/05/11/11-may-2026-1637/
-wp_slug: 11-may-2026-1637
+
+module: posts
+submodule: flux
+topic: null
+
+type: log
 status: published
+canonical: true
+
+summary: null
+
+parents: []
+related: []
+
+tags: []
+
+audience:
+- public
+languages:
+- zh
+
+maturity: evolving
+confidence: null
+
+visibility: public
+source_of_truth: site
+
+filename_policy: entrypoint
+
+created: '2026-05-11'
+updated: '2026-05-11'
+metadata_updated: '2026-10-30'
+
+extra:
+  source: wordpress-live
+  sync: manual
+  source_hash: d00aa9603355cbf1
+  wp_post_id: 2682
+  wp_url: https://fivsevn.com/2026/05/11/11-may-2026-1637/
+  wp_slug: 11-may-2026-1637
+  profile: site-post-v1
+  published_at: '2026-05-11T16:37:57+08:00'
+  author: 五月七日
+  alt: 11 May, 2026 16:37
 ---
 
 一旦有高低差存在，水就会产生流向。

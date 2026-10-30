@@ -20,9 +20,9 @@ from urllib.parse import quote, urlencode
 from urllib.request import Request, urlopen
 from zoneinfo import ZoneInfo
 
-import yaml
 from PIL import Image, ImageOps
 from pillow_heif import register_heif_opener
+from site_post_metadata import CORE_FIELDS, dump_frontmatter, metadata_view, normalize_metadata, read_frontmatter, validate_metadata
 
 register_heif_opener(thumbnails=False)
 
@@ -46,17 +46,8 @@ def api(path: str):
 
 
 def split_frontmatter(text: str):
-    text = text.replace("\r\n", "\n").lstrip("\ufeff")
-    lines = text.splitlines(keepends=True)
-    if not lines or lines[0].strip() != "---":
-        return {}, text
-    end = next((i for i in range(1, len(lines)) if lines[i].strip() == "---"), None)
-    if end is None:
-        raise ValueError("Unclosed trigger frontmatter")
-    meta = yaml.safe_load("".join(lines[1:end])) or {}
-    if not isinstance(meta, dict):
-        raise ValueError("Trigger frontmatter must be a mapping")
-    return meta, "".join(lines[end + 1:]).strip()
+    meta, body = read_frontmatter(text)
+    return meta, body.strip()
 
 
 def pending_commits(source: dict, read=api) -> list[dict]:
@@ -99,6 +90,7 @@ def existing_keys(root: Path) -> set[str]:
     keys = set()
     for path in (root / "flux").glob("**/index.md"):
         meta, _ = split_frontmatter(path.read_text(encoding="utf-8"))
+        meta = metadata_view(meta)
         for field in ("source_key", "wp_slug", "publish_slug"):
             if meta.get(field):
                 keys.add(str(meta[field]))
@@ -115,12 +107,15 @@ def save_package(root: Path, date: datetime, suffix: str, meta: dict, body: str,
     fields = {"id": ident, "date": date.isoformat(timespec="seconds"),
               "title": f"{date.day} {date.strftime('%b, %Y %H:%M')}",
               "sync": "manual", **meta}
+    fields = normalize_metadata(fields, site="flux", post_id=ident,
+                                published_at=date.isoformat(timespec="seconds"))
+    validate_metadata(fields, site="flux")
     with tempfile.TemporaryDirectory(prefix=".pending-", dir=parent) as staging:
         staging = Path(staging)
         if media:
             (staging / "assets").mkdir()
             (staging / "assets" / media[0]).write_bytes(media[1])
-        (staging / "index.md").write_text("---\n" + yaml.safe_dump(fields, allow_unicode=True, sort_keys=False) + "---\n\n" + body.strip() + "\n", encoding="utf-8")
+        (staging / "index.md").write_text(dump_frontmatter(fields) + "\n" + body.strip() + "\n", encoding="utf-8")
         staging.rename(target)
     return target
 
@@ -132,8 +127,11 @@ def import_text(root: Path, source: dict, commit: dict, keys: set[str], read=fet
     if not body.strip():
         return False
     status = str(meta.get("status") or meta.get("wp_status") or "published")
-    if status not in {"published", "publish", "draft", "pending", "private"}:
-        raise ValueError("Use status: published or draft; scheduled publication is not supported")
+    if status not in {"published", "publish", "active", "draft", "hidden", "pending", "private"}:
+        raise ValueError("Use published, draft, hidden, or private; scheduled publication is not supported")
+    visibility = str(meta.get("visibility") or ("private" if status == "private" else "public"))
+    if visibility not in {"public", "private", "internal"}:
+        raise ValueError("Unknown content visibility")
     title = meta.get("title")
     if title is not None and not isinstance(title, str):
         raise ValueError('title must be text; use title: "" for the default time title')
@@ -142,10 +140,14 @@ def import_text(root: Path, source: dict, commit: dict, keys: set[str], read=fet
     key = f"github:{source['repository']}:{sha}"
     if key in keys or slug in keys:
         return False
+    controls = {key: value for key, value in meta.items()
+                if key in CORE_FIELDS and key not in {"id", "extra", "legacy"}}
     save_package(root, source_date(commit), sha[:12], {
+        **controls,
         "source": "github-trigger", "source_key": key, "source_commit": sha,
         "source_repository": source["repository"], "publish_slug": slug,
-        "status": "published" if status in {"published", "publish"} else "draft",
+        "status": "draft" if status == "pending" else status,
+        "visibility": visibility,
         **({"title": title} if title else {}),
     }, body)
     keys.update((key, slug))
@@ -281,6 +283,10 @@ def import_images(root: Path, source: dict, commit: dict, keys: set[str], files:
                        "sha256": hashlib.sha256(media).hexdigest(),
                        "file": "assets/" + filename, "file_sha256": hashlib.sha256(converted).hexdigest()},
         }, body, (filename, converted))
+        # A later event owns a reused inbox path, even if its saved post is hidden.
+        # Persist this with the post and cursor; archive deletion must not restore
+        # an older post's claim over a newer original with identical bytes.
+        source.setdefault("latest_uploads", {})[path] = sha
         keys.update((key, slug))
         count += 1
     return count
@@ -322,7 +328,7 @@ def main():
     state["last_checked_day"] = datetime.now(ZoneInfo("Asia/Shanghai")).date().isoformat()
     # Content and cursor are committed together by the workflow, after all imports succeed.
     STATE.write_text(json.dumps(state, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    print(f"Imported {total} new entries from GitHub. WordPress was not contacted.")
+    print(f"Imported {total} new Flux entries from committed GitHub inputs.")
 
 
 if __name__ == "__main__":

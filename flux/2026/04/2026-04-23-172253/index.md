@@ -1,14 +1,50 @@
 ---
 id: 2026-04-23-172253
-date: '2026-04-23T17:22:53+08:00'
 title: 23 April, 2026 17:22
-source: wordpress-live
-sync: manual
-source_hash: 6cc9a5de558910a1
-wp_post_id: 2638
-wp_url: https://fivsevn.com/2026/04/23/23-april-2026-1722/
-wp_slug: 23-april-2026-1722
+
+module: posts
+submodule: flux
+topic: null
+
+type: log
 status: published
+canonical: true
+
+summary: null
+
+parents: []
+related: []
+
+tags: []
+
+audience:
+- public
+languages:
+- zh
+
+maturity: evolving
+confidence: null
+
+visibility: public
+source_of_truth: site
+
+filename_policy: entrypoint
+
+created: '2026-04-23'
+updated: '2026-04-23'
+metadata_updated: '2026-10-30'
+
+extra:
+  source: wordpress-live
+  sync: manual
+  source_hash: 6cc9a5de558910a1
+  wp_post_id: 2638
+  wp_url: https://fivsevn.com/2026/04/23/23-april-2026-1722/
+  wp_slug: 23-april-2026-1722
+  profile: site-post-v1
+  published_at: '2026-04-23T17:22:53+08:00'
+  author: 五月七日
+  alt: 23 April, 2026 17:22
 ---
 
 阿内特

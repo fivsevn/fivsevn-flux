@@ -1,19 +1,22 @@
 #!/usr/bin/env python3
 from pathlib import Path
 from urllib.parse import urlparse
+import argparse
+import hashlib
 import html
+import json
 import re
 import shutil
 
 import mistune
-import yaml
+
+from ingest_github import split_frontmatter
+from image_inbox import candidates
+from site_post_metadata import is_published, metadata_view, published_datetime, validate_metadata
 
 
 ROOT = Path(__file__).resolve().parents[1]
-FLUX = ROOT / "flux"
-PAGE = ROOT / "page"
-FEED = ROOT / "feed"
-PER_PAGE = 17
+PER_PAGE = 11
 
 
 markdown = mistune.create_markdown(
@@ -23,16 +26,6 @@ markdown = mistune.create_markdown(
 
 
 trigger_markdown = mistune.create_markdown(escape=False, hard_wrap=True, plugins=["strikethrough", "table", "url"])
-
-def split_frontmatter(text):
-    if not text.startswith("---"):
-        return {}, text
-
-    m = re.match(r"^---\s*\n(.*?)\n---\s*\n?(.*)$", text, re.S)
-    if not m:
-        return {}, text
-
-    return yaml.safe_load(m.group(1)) or {}, m.group(2)
 
 
 def rewrite_local_asset_paths(rendered_html, item_dir):
@@ -137,6 +130,7 @@ def render_head(title, description):
 
 def render_close(extra=""):
     return f'''{extra}
+<script src="/site-assets/navigation.js"></script>
 </main>
 </body>
 </html>
@@ -147,8 +141,8 @@ def render_brand():
     return '<a class="brand" href="/" aria-label="typing">typing...</a>'
 
 
-def render_return_bubble():
-    return '<a class="brand return-brand" href="/" onclick="return goBackHome(event)" aria-label="still typing">still typing...</a>'
+def render_return_bubble(href="/"):
+    return f'<a class="brand return-brand" href="{html.escape(href, quote=True)}" onclick="return goBackHome(event)" aria-label="still typing">still typing...</a>'
 
 
 def render_return_script():
@@ -249,59 +243,123 @@ def render_feed_page(page_items, current_page, total_pages):
 {render_close(render_license_bubble())}'''
 
 
-items = []
+def read_posts(root):
+    items = []
+    seen = set()
+    for source in sorted((root / "flux").glob("**/index.md")):
+        canonical, body = split_frontmatter(source.read_text(encoding="utf-8"))
+        validate_metadata(canonical, site="flux", schema_dir=root / "schemas")
+        if canonical["id"] in seen:
+            raise ValueError(f"Duplicate post ID: {canonical['id']}")
+        seen.add(canonical["id"])
+        if not is_published(canonical):
+            continue
+        meta = metadata_view(canonical)
+        if meta["id"] != source.parent.name:
+            raise ValueError(f"Post ID does not match its package: {source}")
+        meta["_path"] = source.relative_to(root).as_posix()
+        meta["_dir"] = source.parent.relative_to(root).as_posix()
+        meta["_published"] = published_datetime(canonical)
+        items.append((meta, body.strip()))
+    return sorted(items, key=lambda item: (item[0]["_published"], item[0]["id"]), reverse=True)
 
-for p in FLUX.glob("**/index.md"):
-    fm, body = split_frontmatter(p.read_text(encoding="utf-8"))
 
-    if fm.get("status", "published") != "published":
-        continue
+def navigation_script(items):
+    # Old feed bookmarks may place an anchor on a different page after pagination changes.
+    pages = {meta["id"]: feed_url(index // PER_PAGE + 1) for index, (meta, _) in enumerate(items)}
+    return """(() => {
+  const pages = """ + json.dumps(pages, ensure_ascii=False, separators=(",", ":")) + """;
+  if (location.pathname !== "/" && !/^\\/feed\\/\\d+\\/$/.test(location.pathname)) return;
+  let id;
+  try { id = decodeURIComponent(location.hash.slice(1)); } catch (_) { return; }
+  const page = Object.prototype.hasOwnProperty.call(pages, id) ? pages[id] : null;
+  if (page && page !== location.pathname) location.replace(page + location.search + "#" + encodeURIComponent(id));
+})();\n"""
 
-    fm["_path"] = p.relative_to(ROOT).as_posix()
-    fm["_dir"] = p.parent.relative_to(ROOT).as_posix()
 
-    items.append((fm, body.strip()))
+def make_receipt(root, output, items):
+    state_path = root / ".publishing/state.json"
+    sources = json.loads(state_path.read_text())["sources"] if state_path.exists() else {}
+    receipt = {
+        "version": 1,
+        "sources": {kind: {key: source[key] for key in ("repository", "path", "cursor")}
+                    for kind, source in sources.items()},
+        "files": {"index.html": hashlib.sha256((output / "index.html").read_bytes()).hexdigest()},
+    }
+    for meta, _ in items:
+        if any(meta.get("source_repository") == source["repository"]
+               and meta.get("source_commit") in source.get("verification_commits", [source["cursor"]])
+               for source in sources.values()):
+            page = Path(page_rel_dir(meta)) / "index.html"
+            receipt["files"][page.as_posix()] = hashlib.sha256((output / page).read_bytes()).hexdigest()
+            for asset in (root / meta["_dir"] / "assets").rglob("*"):
+                if asset.is_file():
+                    relative = asset.relative_to(root)
+                    receipt["files"][relative.as_posix()] = hashlib.sha256((output / relative).read_bytes()).hexdigest()
+    if sources.get("images"):
+        for _, archived, page in candidates(root):
+            for public in (archived, page):
+                receipt["files"][public.as_posix()] = hashlib.sha256((output / public).read_bytes()).hexdigest()
+    digest = hashlib.sha256()
+    for path in sorted(output.rglob("*")):
+        if path.is_file():
+            digest.update(path.relative_to(output).as_posix().encode() + b"\0")
+            digest.update(path.read_bytes())
+    digest.update(json.dumps(receipt, sort_keys=True).encode())
+    receipt["site_sha256"] = digest.hexdigest()
+    (output / "deployment.json").write_text(json.dumps(receipt, sort_keys=True) + "\n")
+    return receipt
 
-items.sort(key=lambda x: (str(x[0].get("date", "")),
-                          str(x[0].get("id") or x[0]["_dir"])), reverse=True)
 
-if PAGE.exists():
-    shutil.rmtree(PAGE)
-
-if FEED.exists():
-    shutil.rmtree(FEED)
-
-# Feed pages.
-total_pages = max(1, (len(items) + PER_PAGE - 1) // PER_PAGE)
-
-for page_number in range(1, total_pages + 1):
-    start = (page_number - 1) * PER_PAGE
-    end = start + PER_PAGE
-    page_items = items[start:end]
-    doc = render_feed_page(page_items, page_number, total_pages)
-
-    if page_number == 1:
-        (ROOT / "index.html").write_text(doc, encoding="utf-8")
-    else:
-        out_dir = FEED / str(page_number)
-        out_dir.mkdir(parents=True, exist_ok=True)
-        (out_dir / "index.html").write_text(doc, encoding="utf-8")
-
-# Single pages: same bubble, one post per page.
-for fm, body in items:
-    out_dir = ROOT / page_rel_dir(fm)
-    out_dir.mkdir(parents=True, exist_ok=True)
-
-    ident = fm.get("id") or fm["_dir"].split("/")[-1]
-    title = str(fm.get("title") or ident)
-
-    post_doc = f'''{render_head(f"{title} · flux.fivsevn", title)}
-{render_return_bubble()}
+def build(root=ROOT, output=None):
+    root = Path(root).resolve()
+    output = Path(output or root / "_site").resolve()
+    if output == root or root.is_relative_to(output) or output.is_relative_to(root / "flux"):
+        raise ValueError("Unsafe build output path")
+    items = read_posts(root)
+    if output.exists():
+        shutil.rmtree(output)
+    output.mkdir(parents=True)
+    for name in ("style.css", "CNAME"):
+        if (root / name).is_file():
+            shutil.copy2(root / name, output / name)
+    if (root / "site-assets").exists():
+        shutil.copytree(root / "site-assets", output / "site-assets")
+    (output / "site-assets").mkdir(exist_ok=True)
+    (output / "site-assets/navigation.js").write_text(navigation_script(items), encoding="utf-8")
+    (output / ".nojekyll").touch()
+    total_pages = max(1, (len(items) + PER_PAGE - 1) // PER_PAGE)
+    for number in range(1, total_pages + 1):
+        document = render_feed_page(items[(number - 1) * PER_PAGE:number * PER_PAGE], number, total_pages)
+        relative = Path("index.html") if number == 1 else Path("feed", str(number), "index.html")
+        destination = output / relative
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_text(document, encoding="utf-8")
+    for index, (meta, body) in enumerate(items):
+        destination = output / page_rel_dir(meta)
+        destination.mkdir(parents=True, exist_ok=True)
+        title = str(meta.get("title") or meta["id"])
+        return_url = feed_url(index // PER_PAGE + 1) + "#" + meta["id"]
+        document = f"""{render_head(f"{title} · flux.fivsevn", title)}
+{render_return_bubble(return_url)}
 <section class="feed" aria-label="single flux">
-{render_entry(fm, body, title_href=page_url(fm))}
+{render_entry(meta, body, title_href=page_url(meta))}
 </section>
-{render_close(render_license_bubble() + render_return_script())}'''
+{render_close(render_license_bubble() + render_return_script())}"""
+        (destination / "index.html").write_text(document, encoding="utf-8")
+        assets = root / meta["_dir"] / "assets"
+        if assets.exists():
+            if any(path.is_symlink() for path in assets.rglob("*")):
+                raise ValueError(f"Package assets must not follow symlinks: {assets}")
+            shutil.copytree(assets, output / assets.relative_to(root))
+    receipt = make_receipt(root, output, items)
+    print(f"Built {len(items)} published posts / {total_pages} feed pages → {output}")
+    return receipt
 
-    (out_dir / "index.html").write_text(post_doc, encoding="utf-8")
 
-print(f"built index.html, {total_pages - 1} feed pages, and {len(items)} page files")
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Build Flux directly into its Git-ignored Pages artifact.")
+    parser.add_argument("--root", type=Path, default=ROOT)
+    parser.add_argument("--output", type=Path)
+    arguments = parser.parse_args()
+    build(arguments.root, arguments.output)
