@@ -1,6 +1,5 @@
 {
   "version": 1,
-  "cutover": "2026-10-18",
   "sources": {
     "text": {
       "repository": "fivsevn/fivsevn-flux",
@@ -15,24 +14,11 @@
       "repository": "fivsevn/fivsevn-flux",
       "path": "trigger_imgs",
       "cursor": "964c54d3535ef80fa4faee444c7353412cab7c22",
-      "previous_sources": [
-        {
-          "repository": "fivsevn/fivsevn-assets",
-          "path": "post/flux"
-        },
-        {
-          "repository": "fivsevn/fivsevn-assets",
-          "path": "post/stream"
-        }
-      ],
       "verification_commits": [
         "fdff5cd7a29cc05e934c094d1f0a7bc5d9b52928",
         "964c54d3535ef80fa4faee444c7353412cab7c22"
       ],
       "history_path": "",
-      "previous_paths": [
-        "uploads"
-      ],
       "identity": "commit-path"
     }
   },
