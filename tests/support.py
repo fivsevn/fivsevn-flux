@@ -17,3 +17,5 @@ def copy_builder(root):
     for name in ('build.py', 'ingest_github.py', 'image_inbox.py', 'site_post_metadata.py'):
         shutil.copy2(ROOT / 'scripts' / name, root / 'scripts' / name)
     shutil.copytree(ROOT / 'schemas', root / 'schemas', dirs_exist_ok=True)
+    (root / 'site-assets').mkdir(exist_ok=True)
+    shutil.copy2(ROOT / 'site-assets/navigation.js', root / 'site-assets/navigation.js')

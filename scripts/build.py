@@ -128,9 +128,10 @@ def render_head(title, description):
 '''
 
 
-def render_close(extra=""):
+def render_close(extra="", navigation_version=""):
+    navigation = "/site-assets/navigation.js" + ("?v=" + navigation_version if navigation_version else "")
     return f'''{extra}
-<script src="/site-assets/navigation.js"></script>
+<script src="{navigation}"></script>
 </main>
 </body>
 </html>
@@ -142,24 +143,7 @@ def render_brand():
 
 
 def render_return_bubble(href="/"):
-    return f'<a class="brand return-brand" href="{html.escape(href, quote=True)}" onclick="return goBackHome(event)" aria-label="still typing">still typing...</a>'
-
-
-def render_return_script():
-    return '''<script>
-function goBackHome(event) {
-  try {
-    const ref = document.referrer ? new URL(document.referrer) : null;
-    const sameSite = ref && ref.origin === window.location.origin;
-    if (sameSite && window.history.length > 1) {
-      event.preventDefault();
-      window.history.back();
-      return false;
-    }
-  } catch (e) {}
-  return true;
-}
-</script>'''
+    return f'<a class="brand return-brand" href="{html.escape(href, quote=True)}" aria-label="still typing">still typing...</a>'
 
 
 def render_nav_bubble():
@@ -231,7 +215,7 @@ def render_pager(current_page, total_pages):
     return f'<nav class="pager" aria-label="pagination">{" ".join(parts)}</nav>'
 
 
-def render_feed_page(page_items, current_page, total_pages):
+def render_feed_page(page_items, current_page, total_pages, navigation_version=""):
     entries = [render_entry(fm, body, title_href=page_url(fm)) for fm, body in page_items]
     pager = render_pager(current_page, total_pages)
     return f'''{render_head("flux.fivsevn", "五月七日的思考札记")}
@@ -240,7 +224,7 @@ def render_feed_page(page_items, current_page, total_pages):
 {chr(10).join(entries)}
 {pager}
 </section>
-{render_close(render_license_bubble())}'''
+{render_close(render_license_bubble(), navigation_version)}'''
 
 
 def read_posts(root):
@@ -264,17 +248,11 @@ def read_posts(root):
     return sorted(items, key=lambda item: (item[0]["_published"], item[0]["id"]), reverse=True)
 
 
-def navigation_script(items):
+def navigation_script(items, root=ROOT):
     # Old feed bookmarks may place an anchor on a different page after pagination changes.
     pages = {meta["id"]: feed_url(index // PER_PAGE + 1) for index, (meta, _) in enumerate(items)}
-    return """(() => {
-  const pages = """ + json.dumps(pages, ensure_ascii=False, separators=(",", ":")) + """;
-  if (location.pathname !== "/" && !/^\\/feed\\/\\d+\\/$/.test(location.pathname)) return;
-  let id;
-  try { id = decodeURIComponent(location.hash.slice(1)); } catch (_) { return; }
-  const page = Object.prototype.hasOwnProperty.call(pages, id) ? pages[id] : null;
-  if (page && page !== location.pathname) location.replace(page + location.search + "#" + encodeURIComponent(id));
-})();\n"""
+    return ("const fluxPostPages = " + json.dumps(pages, ensure_ascii=False, separators=(",", ":"))
+            + ";\n" + (Path(root) / "site-assets/navigation.js").read_text(encoding="utf-8"))
 
 
 def make_receipt(root, output, items):
@@ -326,11 +304,13 @@ def build(root=ROOT, output=None):
     if (root / "site-assets").exists():
         shutil.copytree(root / "site-assets", output / "site-assets")
     (output / "site-assets").mkdir(exist_ok=True)
-    (output / "site-assets/navigation.js").write_text(navigation_script(items), encoding="utf-8")
+    navigation = navigation_script(items, root)
+    (output / "site-assets/navigation.js").write_text(navigation, encoding="utf-8")
+    navigation_version = hashlib.sha256(navigation.encode()).hexdigest()[:12]
     (output / ".nojekyll").touch()
     total_pages = max(1, (len(items) + PER_PAGE - 1) // PER_PAGE)
     for number in range(1, total_pages + 1):
-        document = render_feed_page(items[(number - 1) * PER_PAGE:number * PER_PAGE], number, total_pages)
+        document = render_feed_page(items[(number - 1) * PER_PAGE:number * PER_PAGE], number, total_pages, navigation_version)
         relative = Path("index.html") if number == 1 else Path("feed", str(number), "index.html")
         destination = output / relative
         destination.parent.mkdir(parents=True, exist_ok=True)
@@ -345,7 +325,7 @@ def build(root=ROOT, output=None):
 <section class="feed" aria-label="single flux">
 {render_entry(meta, body, title_href=page_url(meta))}
 </section>
-{render_close(render_license_bubble() + render_return_script())}"""
+{render_close(render_license_bubble(), navigation_version)}"""
         (destination / "index.html").write_text(document, encoding="utf-8")
         assets = root / meta["_dir"] / "assets"
         if assets.exists():

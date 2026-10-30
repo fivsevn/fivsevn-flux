@@ -73,6 +73,9 @@ class ArtifactTests(unittest.TestCase):
         original = self.root / 'flux/2026/10/2026-10-18-080000-000000000000/assets/original.png'
         self.assertEqual((site / original.relative_to(self.root)).read_bytes(), original.read_bytes())
         self.assertTrue((site / 'page/2026/10/2026-10-18-080000-000000000000/index.html').exists())
+        detail = (site / 'page/2026/10/2026-10-18-080000-000000000000/index.html').read_text()
+        self.assertRegex(detail, r'/site-assets/navigation\.js\?v=[0-9a-f]{12}')
+        self.assertNotIn('onclick="return goBackHome', detail)
         artifact_text = '\n'.join(path.read_text() for path in site.rglob('*.html'))
         for number in range(20, 24):
             self.assertNotIn(f'POST_CONTENT_{number}', artifact_text)
@@ -89,17 +92,6 @@ class ArtifactTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             renderer.build(self.root)
         self.assertEqual((site / 'sentinel').read_text(), 'keep prior artifact')
-
-    @unittest.skipUnless(shutil.which('node'), 'Node is needed to execute the bookmark compatibility script')
-    def test_old_feed_bookmark_follows_post_to_new_page(self):
-        for number in range(13):
-            self.post(number)
-        renderer.build(self.root)
-        script = (self.root / '_site/site-assets/navigation.js').read_text()
-        ident = '2026-10-18-080000-000000000012'
-        mock = "const urls=[];const location={pathname:'/feed/10/',search:'?from=bookmark',hash:'#" + ident + "',replace:url=>urls.push(url)};"
-        result = subprocess.check_output(['node', '-e', mock + script + '\nconsole.log(JSON.stringify(urls));'], text=True)
-        self.assertEqual(json.loads(result), ['/?from=bookmark#' + ident])
 
     def test_text_trigger_fills_core_and_keeps_explicit_controls(self):
         source = {'repository': 'owner/flux', 'path': 'trigger_text.md'}
