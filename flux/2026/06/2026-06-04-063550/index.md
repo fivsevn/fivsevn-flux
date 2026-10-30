@@ -1,14 +1,50 @@
 ---
 id: 2026-06-04-063550
-date: '2026-06-04T06:35:50+08:00'
 title: 4 June, 2026 06:35
-source: wordpress-live
-sync: manual
-source_hash: a8d223f8284f5156
-wp_post_id: 3359
-wp_url: https://fivsevn.com/2026/06/04/4-june-2026-0635/
-wp_slug: 4-june-2026-0635
+
+module: posts
+submodule: flux
+topic: null
+
+type: log
 status: published
+canonical: true
+
+summary: null
+
+parents: []
+related: []
+
+tags: []
+
+audience:
+- public
+languages:
+- zh
+
+maturity: evolving
+confidence: null
+
+visibility: public
+source_of_truth: site
+
+filename_policy: entrypoint
+
+created: '2026-06-04'
+updated: '2026-06-04'
+metadata_updated: '2026-10-30'
+
+extra:
+  source: wordpress-live
+  sync: manual
+  source_hash: a8d223f8284f5156
+  wp_post_id: 3359
+  wp_url: https://fivsevn.com/2026/06/04/4-june-2026-0635/
+  wp_slug: 4-june-2026-0635
+  profile: site-post-v1
+  published_at: '2026-06-04T06:35:50+08:00'
+  author: 五月七日
+  alt: 4 June, 2026 06:35
 ---
 
 <https://www.nature.com/articles/d41586-026-01728-w>

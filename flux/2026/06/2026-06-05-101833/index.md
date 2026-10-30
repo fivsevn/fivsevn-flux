@@ -1,14 +1,50 @@
 ---
 id: 2026-06-05-101833
-date: '2026-06-05T10:18:33+08:00'
 title: 5 June, 2026 10:18
-source: wordpress-live
-sync: manual
-source_hash: a3815b6cd674c8cb
-wp_post_id: 3367
-wp_url: https://fivsevn.com/2026/06/05/5-june-2026-1018/
-wp_slug: 5-june-2026-1018
+
+module: posts
+submodule: flux
+topic: null
+
+type: log
 status: published
+canonical: true
+
+summary: null
+
+parents: []
+related: []
+
+tags: []
+
+audience:
+- public
+languages:
+- zh
+
+maturity: evolving
+confidence: null
+
+visibility: public
+source_of_truth: site
+
+filename_policy: entrypoint
+
+created: '2026-06-05'
+updated: '2026-06-05'
+metadata_updated: '2026-10-30'
+
+extra:
+  source: wordpress-live
+  sync: manual
+  source_hash: a3815b6cd674c8cb
+  wp_post_id: 3367
+  wp_url: https://fivsevn.com/2026/06/05/5-june-2026-1018/
+  wp_slug: 5-june-2026-1018
+  profile: site-post-v1
+  published_at: '2026-06-05T10:18:33+08:00'
+  author: 五月七日
+  alt: 5 June, 2026 10:18
 ---
 
 <https://www.theguardian.com/australia-news/2026/jun/05/live-cockroaches-seized-nsw-breeder-australia>

@@ -1,14 +1,50 @@
 ---
 id: 2026-05-11-172757
-date: '2026-05-11T17:27:57+08:00'
 title: 11 May, 2026 17:27
-source: wordpress-live
-sync: manual
-source_hash: 95d75e8d095389d1
-wp_post_id: 2686
-wp_url: https://fivsevn.com/2026/05/11/11-may-2026-1727/
-wp_slug: 11-may-2026-1727
+
+module: posts
+submodule: flux
+topic: null
+
+type: log
 status: published
+canonical: true
+
+summary: null
+
+parents: []
+related: []
+
+tags: []
+
+audience:
+- public
+languages:
+- zh
+
+maturity: evolving
+confidence: null
+
+visibility: public
+source_of_truth: site
+
+filename_policy: entrypoint
+
+created: '2026-05-11'
+updated: '2026-05-11'
+metadata_updated: '2026-10-30'
+
+extra:
+  source: wordpress-live
+  sync: manual
+  source_hash: 95d75e8d095389d1
+  wp_post_id: 2686
+  wp_url: https://fivsevn.com/2026/05/11/11-may-2026-1727/
+  wp_slug: 11-may-2026-1727
+  profile: site-post-v1
+  published_at: '2026-05-11T17:27:57+08:00'
+  author: 五月七日
+  alt: 11 May, 2026 17:27
 ---
 
 印尼etc.

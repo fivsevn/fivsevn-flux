@@ -1,14 +1,50 @@
 ---
 id: 2026-03-13-184612
-date: '2026-03-13T18:46:12+08:00'
 title: 13 March, 2026 18:46
-source: wordpress-live
-sync: manual
-source_hash: e6766f27b5d919af
-wp_post_id: 2464
-wp_url: https://fivsevn.com/2026/03/13/13-march-2026-1846/
-wp_slug: 13-march-2026-1846
+
+module: posts
+submodule: flux
+topic: null
+
+type: log
 status: published
+canonical: true
+
+summary: null
+
+parents: []
+related: []
+
+tags: []
+
+audience:
+- public
+languages:
+- zh
+
+maturity: evolving
+confidence: null
+
+visibility: public
+source_of_truth: site
+
+filename_policy: entrypoint
+
+created: '2026-03-13'
+updated: '2026-03-13'
+metadata_updated: '2026-10-30'
+
+extra:
+  source: wordpress-live
+  sync: manual
+  source_hash: e6766f27b5d919af
+  wp_post_id: 2464
+  wp_url: https://fivsevn.com/2026/03/13/13-march-2026-1846/
+  wp_slug: 13-march-2026-1846
+  profile: site-post-v1
+  published_at: '2026-03-13T18:46:12+08:00'
+  author: 五月七日
+  alt: 13 March, 2026 18:46
 ---
 
 看到个新文章：No such thing as a shark? Genomes shake up ocean predator’s family tree

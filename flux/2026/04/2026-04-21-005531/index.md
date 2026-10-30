@@ -1,14 +1,50 @@
 ---
 id: 2026-04-21-005531
-date: '2026-04-21T00:55:31+08:00'
 title: 21 April, 2026 00:55
-source: wordpress-live
-sync: manual
-source_hash: e90aee2ded4fe2c3
-wp_post_id: 2608
-wp_url: https://fivsevn.com/2026/04/21/21-april-2026-0055/
-wp_slug: 21-april-2026-0055
+
+module: posts
+submodule: flux
+topic: null
+
+type: log
 status: published
+canonical: true
+
+summary: null
+
+parents: []
+related: []
+
+tags: []
+
+audience:
+- public
+languages:
+- zh
+
+maturity: evolving
+confidence: null
+
+visibility: public
+source_of_truth: site
+
+filename_policy: entrypoint
+
+created: '2026-04-21'
+updated: '2026-04-21'
+metadata_updated: '2026-10-30'
+
+extra:
+  source: wordpress-live
+  sync: manual
+  source_hash: e90aee2ded4fe2c3
+  wp_post_id: 2608
+  wp_url: https://fivsevn.com/2026/04/21/21-april-2026-0055/
+  wp_slug: 21-april-2026-0055
+  profile: site-post-v1
+  published_at: '2026-04-21T00:55:31+08:00'
+  author: 五月七日
+  alt: 21 April, 2026 00:55
 ---
 
 我有点喜欢 Hardboiled（冷硬派）类型的犯罪小说。最近在看Lawrence Block（劳伦斯·布洛克）的小说。

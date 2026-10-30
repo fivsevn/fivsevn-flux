@@ -1,14 +1,50 @@
 ---
 id: 2026-06-18-034450
-date: '2026-06-18T03:44:50+08:00'
 title: 18 Jun, 2026 03:44
-source: wordpress-live
-sync: manual
-source_hash: b621a6366a536fcf
-wp_post_id: 3964
-wp_url: https://fivsevn.com/2026/06/18/github-text-87a3e26/
-wp_slug: github-text-87a3e26
+
+module: posts
+submodule: flux
+topic: null
+
+type: log
 status: published
+canonical: true
+
+summary: null
+
+parents: []
+related: []
+
+tags: []
+
+audience:
+- public
+languages:
+- zh
+
+maturity: evolving
+confidence: null
+
+visibility: public
+source_of_truth: site
+
+filename_policy: entrypoint
+
+created: '2026-06-18'
+updated: '2026-06-18'
+metadata_updated: '2026-10-30'
+
+extra:
+  source: wordpress-live
+  sync: manual
+  source_hash: b621a6366a536fcf
+  wp_post_id: 3964
+  wp_url: https://fivsevn.com/2026/06/18/github-text-87a3e26/
+  wp_slug: github-text-87a3e26
+  profile: site-post-v1
+  published_at: '2026-06-18T03:44:50+08:00'
+  author: 五月七日
+  alt: 18 Jun, 2026 03:44
 ---
 
 之前让 AI 辅助做过 system-map 一类的文档，那时候先凑合着用的。刚才我自己重新做了一份，比 AI 做的简洁一些。AI 之前弄得有点复杂，虽然大致意思都是对的。

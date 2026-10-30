@@ -1,14 +1,50 @@
 ---
 id: 2026-06-21-005753
-date: '2026-06-21T00:57:53+08:00'
 title: 21 Jun, 2026 00:57
-source: wordpress-live
-sync: manual
-source_hash: dce830fe1d89e639
-wp_post_id: 4076
-wp_url: https://fivsevn.com/2026/06/21/github-text-861acea/
-wp_slug: github-text-861acea
+
+module: posts
+submodule: flux
+topic: null
+
+type: log
 status: published
+canonical: true
+
+summary: null
+
+parents: []
+related: []
+
+tags: []
+
+audience:
+- public
+languages:
+- zh
+
+maturity: evolving
+confidence: null
+
+visibility: public
+source_of_truth: site
+
+filename_policy: entrypoint
+
+created: '2026-06-21'
+updated: '2026-06-21'
+metadata_updated: '2026-10-30'
+
+extra:
+  source: wordpress-live
+  sync: manual
+  source_hash: dce830fe1d89e639
+  wp_post_id: 4076
+  wp_url: https://fivsevn.com/2026/06/21/github-text-861acea/
+  wp_slug: github-text-861acea
+  profile: site-post-v1
+  published_at: '2026-06-21T00:57:53+08:00'
+  author: 五月七日
+  alt: 21 Jun, 2026 00:57
 ---
 
 > …

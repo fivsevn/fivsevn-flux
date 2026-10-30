@@ -1,14 +1,50 @@
 ---
 id: 2026-04-23-162204
-date: '2026-04-23T16:22:04+08:00'
 title: 23 April, 2026 16:22
-source: wordpress-live
-sync: manual
-source_hash: 78c19df9292111c6
-wp_post_id: 2618
-wp_url: https://fivsevn.com/2026/04/23/23-april-2026-1622/
-wp_slug: 23-april-2026-1622
+
+module: posts
+submodule: flux
+topic: null
+
+type: log
 status: published
+canonical: true
+
+summary: null
+
+parents: []
+related: []
+
+tags: []
+
+audience:
+- public
+languages:
+- zh
+
+maturity: evolving
+confidence: null
+
+visibility: public
+source_of_truth: site
+
+filename_policy: entrypoint
+
+created: '2026-04-23'
+updated: '2026-04-23'
+metadata_updated: '2026-10-30'
+
+extra:
+  source: wordpress-live
+  sync: manual
+  source_hash: 78c19df9292111c6
+  wp_post_id: 2618
+  wp_url: https://fivsevn.com/2026/04/23/23-april-2026-1622/
+  wp_slug: 23-april-2026-1622
+  profile: site-post-v1
+  published_at: '2026-04-23T16:22:04+08:00'
+  author: 五月七日
+  alt: 23 April, 2026 16:22
 ---
 
 阿内特青少年心理

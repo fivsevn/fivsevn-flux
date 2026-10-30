@@ -1,14 +1,50 @@
 ---
 id: 2026-03-04-195531
-date: '2026-03-04T19:55:31+08:00'
 title: 4 March, 2026 19:55
-source: wordpress-live
-sync: manual
-source_hash: 2ea91d16fd2266e8
-wp_post_id: 2358
-wp_url: https://fivsevn.com/2026/03/04/4-march-2026-1955/
-wp_slug: 4-march-2026-1955
+
+module: posts
+submodule: flux
+topic: null
+
+type: log
 status: published
+canonical: true
+
+summary: null
+
+parents: []
+related: []
+
+tags: []
+
+audience:
+- public
+languages:
+- zh
+
+maturity: evolving
+confidence: null
+
+visibility: public
+source_of_truth: site
+
+filename_policy: entrypoint
+
+created: '2026-03-04'
+updated: '2026-03-04'
+metadata_updated: '2026-10-30'
+
+extra:
+  source: wordpress-live
+  sync: manual
+  source_hash: 2ea91d16fd2266e8
+  wp_post_id: 2358
+  wp_url: https://fivsevn.com/2026/03/04/4-march-2026-1955/
+  wp_slug: 4-march-2026-1955
+  profile: site-post-v1
+  published_at: '2026-03-04T19:55:31+08:00'
+  author: 五月七日
+  alt: 4 March, 2026 19:55
 ---
 
 专栏【AI 话语分析】更新：《AI 生成文本与沟通责任问题》<https://fivsevn-agy.github.io/fivsevn-devlog/posts/ai-discourse-analysis/content/002-chatbot-etiquette.html>

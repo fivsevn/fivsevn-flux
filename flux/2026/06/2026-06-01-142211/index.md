@@ -1,14 +1,50 @@
 ---
 id: 2026-06-01-142211
-date: '2026-06-01T14:22:11+08:00'
 title: 1 June, 2026 14:22
-source: wordpress-live
-sync: manual
-source_hash: 3fbd0f34298a1519
-wp_post_id: 3288
-wp_url: https://fivsevn.com/2026/06/01/1-june-2026-1422/
-wp_slug: 1-june-2026-1422
+
+module: posts
+submodule: flux
+topic: null
+
+type: log
 status: published
+canonical: true
+
+summary: null
+
+parents: []
+related: []
+
+tags: []
+
+audience:
+- public
+languages:
+- zh
+
+maturity: evolving
+confidence: null
+
+visibility: public
+source_of_truth: site
+
+filename_policy: entrypoint
+
+created: '2026-06-01'
+updated: '2026-06-01'
+metadata_updated: '2026-10-30'
+
+extra:
+  source: wordpress-live
+  sync: manual
+  source_hash: 3fbd0f34298a1519
+  wp_post_id: 3288
+  wp_url: https://fivsevn.com/2026/06/01/1-june-2026-1422/
+  wp_slug: 1-june-2026-1422
+  profile: site-post-v1
+  published_at: '2026-06-01T14:22:11+08:00'
+  author: 五月七日
+  alt: 1 June, 2026 14:22
 ---
 
 有关“为什么有些书的译本很多”，AI 给出的参考思路：

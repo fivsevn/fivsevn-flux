@@ -1,14 +1,50 @@
 ---
 id: 2026-05-11-155656
-date: '2026-05-11T15:56:56+08:00'
 title: 11 May, 2026 15:56
-source: wordpress-live
-sync: manual
-source_hash: a69dcf53b984fca2
-wp_post_id: 2679
-wp_url: https://fivsevn.com/2026/05/11/11-may-2026-1556/
-wp_slug: 11-may-2026-1556
+
+module: posts
+submodule: flux
+topic: null
+
+type: log
 status: published
+canonical: true
+
+summary: null
+
+parents: []
+related: []
+
+tags: []
+
+audience:
+- public
+languages:
+- zh
+
+maturity: evolving
+confidence: null
+
+visibility: public
+source_of_truth: site
+
+filename_policy: entrypoint
+
+created: '2026-05-11'
+updated: '2026-05-11'
+metadata_updated: '2026-10-30'
+
+extra:
+  source: wordpress-live
+  sync: manual
+  source_hash: a69dcf53b984fca2
+  wp_post_id: 2679
+  wp_url: https://fivsevn.com/2026/05/11/11-may-2026-1556/
+  wp_slug: 11-may-2026-1556
+  profile: site-post-v1
+  published_at: '2026-05-11T15:56:56+08:00'
+  author: 五月七日
+  alt: 11 May, 2026 15:56
 ---
 
 陌生国度里，对方没有理解你的义务，而你有被理解的需求。这本身就是不对等。所以最后比的不是对错之类，是谁更着急；谁更急，谁就更主动、学得更快。

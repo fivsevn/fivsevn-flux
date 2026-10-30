@@ -14,6 +14,7 @@ from PIL import Image
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
 import ingest_github as pub
+from support import copy_builder, read_saved
 from verify_live import verify_once
 
 
@@ -45,7 +46,7 @@ class ImageUploadTests(unittest.TestCase):
         entries = list((self.root/'flux').glob('**/index.md'))
         self.assertEqual(len(entries), 2)
         for path in entries:
-            meta, body = pub.split_frontmatter(path.read_text())
+            meta, body = read_saved(path.read_text())
             self.assertIn('配文 [链接](https://example.com)\n第二行', body)
             asset = next((path.parent/'assets').iterdir())
             self.assertEqual(asset.read_bytes(), pub.convert_image(payloads[meta['source_asset_path']], meta['source_asset_path']))
@@ -60,7 +61,7 @@ class ImageUploadTests(unittest.TestCase):
         files = [{'filename': 'trigger_imgs/2026/自拍 #1.PNG', 'status': 'added'}]
         pub.import_images(self.root, self.source, self.commit, set(), files, read)
         self.assertIn('%20%231.PNG', urls[0])
-        _, body = pub.split_frontmatter(next((self.root/'flux').glob('**/index.md')).read_text())
+        _, body = read_saved(next((self.root/'flux').glob('**/index.md')).read_text())
         self.assertEqual(body, '![](assets/image.webp)')
 
     def test_phone_mpo_uses_primary_photo_without_animating_gain_map(self):
@@ -108,8 +109,7 @@ class ImageUploadTests(unittest.TestCase):
 
     def test_public_receipt_checks_actual_image_bytes(self):
         (self.root/'scripts').mkdir()
-        for name in ('ingest_github.py', 'build.py', 'package_site.py', 'image_inbox.py'):
-            shutil.copy2(ROOT/'scripts'/name, self.root/'scripts'/name)
+        copy_builder(self.root)
         (self.root/'style.css').write_text('')
         (self.root/'CNAME').write_text('example.com')
         (self.root/'.publishing').mkdir()
@@ -120,8 +120,7 @@ class ImageUploadTests(unittest.TestCase):
         second = {**self.commit, 'sha': 'b'*40}
         pub.import_images(self.root, self.source, second, set(),
                           [{'filename': 'trigger_imgs/second.png', 'status': 'added'}], lambda _: image_bytes())
-        for script in ('build.py', 'package_site.py'):
-            subprocess.run([sys.executable, str(self.root/'scripts'/script)], check=True, capture_output=True)
+        subprocess.run([sys.executable, str(self.root/'scripts/build.py')], check=True, capture_output=True)
         site = self.root/'_site'
         receipt = json.loads((site/'deployment.json').read_text())
         self.assertEqual(len(receipt['files']), 5)
@@ -140,12 +139,12 @@ class ImageUploadTests(unittest.TestCase):
         for number, order in enumerate([['a', 'b'], ['b', 'a']]):
             root = self.root/str(number)
             (root/'scripts').mkdir(parents=True)
-            shutil.copy2(ROOT/'scripts/build.py', root/'scripts/build.py')
+            copy_builder(root)
             for suffix in order:
                 snapshot = {**self.commit, 'sha': suffix*40}
                 pub.import_text(root, self.source, snapshot, set(), lambda _: b'text')
             subprocess.run([sys.executable, str(root/'scripts/build.py')], check=True, capture_output=True)
-            html.append((root/'index.html').read_text())
+            html.append((root/'_site/index.html').read_text())
         self.assertEqual(html[0], html[1])
 
     def test_both_inputs_are_direct_local_pushes(self):

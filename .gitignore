@@ -38,3 +38,5 @@ env/
 .obsidian/core-plugins.json
 
 _site/
+
+.metadata-spec/

@@ -9,6 +9,7 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
 import ingest_github as pub
+from support import copy_builder, read_saved
 IMAGE_BYTES = (ROOT / 'site-assets/pocket.webp').read_bytes()
 
 
@@ -52,15 +53,16 @@ class PublisherTests(unittest.TestCase):
             with self.assertRaises(ValueError): pub.import_text(self.root, self.source, commit(), set(), lambda u: raw)
     def test_draft_is_not_published(self):
         pub.import_text(self.root, self.source, commit(), set(), lambda u: b'---\nwp_status: private\n---\nhello')
-        meta,_=pub.split_frontmatter(next((self.root/'flux').glob('**/index.md')).read_text())
-        self.assertEqual(meta['status'], 'draft')
+        meta,_=read_saved(next((self.root/'flux').glob('**/index.md')).read_text())
+        self.assertEqual(meta['status'], 'private')
+        self.assertEqual(meta['visibility'], 'private')
     def test_flux_status_and_optional_title_are_independent_of_date(self):
         for i, (title, status) in enumerate([('', 'published'), ('我的标题: <随手记>', 'published'), ('草稿', 'draft')]):
             import yaml
             raw=('---\n'+yaml.safe_dump({'status':status,'title':title},allow_unicode=True)+'---\n正文').encode()
             pub.import_text(self.root,self.source,commit(str(i)*40),set(),lambda u:raw)
             path=next((self.root/'flux').glob(f'**/*-{str(i)*12}/index.md'))
-            meta,body=pub.split_frontmatter(path.read_text())
+            meta,body=read_saved(path.read_text())
             self.assertEqual(meta['title'],title or '18 Oct, 2026 08:00')
             self.assertEqual(meta['date'],'2026-10-18T08:00:00+08:00')
             self.assertEqual(meta['status'],status)
@@ -101,9 +103,9 @@ class PublisherTests(unittest.TestCase):
             self.assertEqual(parse_qs(urlparse(url).query)['path'],['post'])
             return [commit('d'*40),commit('c'*40)]
         self.assertEqual([c['sha'] for c in pub.pending_commits(self.source,read)],['d'*40])
-    def test_build_and_package_markdown_and_private_exclusion(self):
+    def test_build_artifact_markdown_and_private_exclusion(self):
         (self.root/'scripts').mkdir()
-        for name in ('build.py','package_site.py','ingest_github.py','image_inbox.py'): shutil.copy2(ROOT/'scripts'/name,self.root/'scripts'/name)
+        copy_builder(self.root)
         (self.root/'site-assets').mkdir()
         (self.root/'style.css').write_text('')
         (self.root/'CNAME').write_text('flux.fivsevn.com')
@@ -113,8 +115,7 @@ class PublisherTests(unittest.TestCase):
         (self.root/'.publishing').mkdir()
         (self.root/'.publishing/state.json').write_text(json.dumps({'sources': {'text': {**self.source, 'cursor': 'a'*40}}}))
         subprocess.run([sys.executable,str(self.root/'scripts/build.py')],check=True,capture_output=True)
-        subprocess.run([sys.executable,str(self.root/'scripts/package_site.py')],check=True,capture_output=True)
-        html=(self.root/'index.html').read_text()
+        html=(self.root/'_site/index.html').read_text()
         self.assertIn('<a href="https://example.com">链接</a>',html)
         self.assertIn('<br />',html)
         self.assertIn('<ul>',html)
@@ -126,7 +127,8 @@ class PublisherTests(unittest.TestCase):
         self.assertEqual(len(list((self.root/'_site/page').glob('**/index.html'))),1)
         self.assertFalse((self.root/'_site/scripts').exists())
         receipt = json.loads((self.root/'_site/deployment.json').read_text())
-        self.assertEqual(receipt['site_sha256'], (self.root/'.publishing/site.sha256').read_text().strip())
+        self.assertRegex(receipt['site_sha256'], r'^[0-9a-f]{64}$')
+        self.assertFalse((self.root/'.publishing/site.sha256').exists())
         self.assertEqual(len(receipt['files']), 2)
         self.assertNotIn('DRAFT_SENTINEL', json.dumps(receipt))
         # Editing the upper title updates both views without moving the page or
@@ -135,10 +137,10 @@ class PublisherTests(unittest.TestCase):
         import yaml
         meta,body=pub.split_frontmatter(path.read_text())
         meta['title']='新标题 <测试>'
-        page_path=self.root/'page/2026/10'/meta['id']/'index.html'
+        page_path=self.root/'_site/page/2026/10'/meta['id']/'index.html'
         path.write_text('---\n'+yaml.safe_dump(meta,allow_unicode=True)+'---\n'+body)
         subprocess.run([sys.executable,str(self.root/'scripts/build.py')],check=True,capture_output=True)
-        for rendered in [(self.root/'index.html').read_text(),page_path.read_text()]:
+        for rendered in [(self.root/'_site/index.html').read_text(),page_path.read_text()]:
             self.assertIn('新标题 &lt;测试&gt;',rendered)
             self.assertIn('2026-10-18T08:00:00+08:00',rendered)
             self.assertIn('/page/2026/10/'+meta['id']+'/',rendered)

@@ -12,7 +12,9 @@ from PIL import Image, ImageOps
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
 import ingest_github as pub
+from support import copy_builder, read_saved
 import image_inbox as inbox
+from site_post_metadata import dump_frontmatter
 
 
 class WebPTests(unittest.TestCase):
@@ -114,6 +116,32 @@ class InboxTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'not verified'): inbox.clear_verified(self.root)
         self.assertTrue(self.original.exists())
 
+    def test_newest_identical_unpublished_event_keeps_its_original(self):
+        self.source['identity'] = 'commit-path'
+        newer = {**self.commit, 'sha': 'b' * 40}
+        self.assertEqual(pub.import_images(self.root, self.source, newer, pub.existing_keys(self.root),
+                                          self.files, lambda _: self.raw), 1)
+        saved = next(path for path in (self.root / 'flux').glob('**/index.md')
+                     if read_saved(path.read_text())[0].get('source_commit') == 'b' * 40)
+        meta, body = pub.split_frontmatter(saved.read_text())
+        for status, visibility in [('hidden', 'public'), ('private', 'private'), ('published', 'private')]:
+            with self.subTest(status=status, visibility=visibility):
+                meta.update(status=status, visibility=visibility)
+                saved.write_text(dump_frontmatter(meta) + '\n' + body)
+                self.state.write_text(json.dumps({'sources': {'images': self.source}}))
+                self.assertEqual(inbox.clear_verified(self.root), (0, 0))
+                self.assertTrue(self.original.exists())
+        # Pre-ownership state also retains equal-time unpublished claims safely.
+        old_source = {key: value for key, value in self.source.items() if key != 'latest_uploads'}
+        self.state.write_text(json.dumps({'sources': {'images': old_source}}))
+        self.assertEqual(inbox.clear_verified(self.root), (0, 0))
+        self.assertTrue(self.original.exists())
+        # Removing the latest package must not restore an older event's claim.
+        self.state.write_text(json.dumps({'sources': {'images': self.source}}))
+        saved.unlink()
+        self.assertEqual(inbox.clear_verified(self.root), (0, 0))
+        self.assertTrue(self.original.exists())
+
     def test_changed_upload_and_manually_replaced_archive_are_kept(self):
         self.original.write_bytes(b'newer upload')
         self.assertEqual(inbox.clear_verified(self.root), (0, 0))
@@ -153,7 +181,7 @@ class InboxTests(unittest.TestCase):
                 pub.main()
             source = json.loads(self.state.read_text())['sources']['images']
             self.assertEqual(source['cursor'], 'b'*40)
-            new = [pub.split_frontmatter(p.read_text())[0] for p in (self.root / 'flux').glob('**/index.md')]
+            new = [read_saved(p.read_text())[0] for p in (self.root / 'flux').glob('**/index.md')]
             self.assertEqual(sum(meta.get('source_asset_path') == 'trigger_imgs/replaced.png' for meta in new), 1)
             self.assertTrue(any(meta['source_commit'] == 'b'*40 for meta in new))
         finally: pub.ROOT, pub.STATE = original_root, original_state

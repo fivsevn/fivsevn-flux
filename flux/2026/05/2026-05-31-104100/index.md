@@ -1,14 +1,50 @@
 ---
 id: 2026-05-31-104100
-date: '2026-05-31T10:41:00+08:00'
 title: 2026-05-31-104100
-source: wordpress-live
-sync: manual
-source_hash: 8e81b655bfe4ae68
-wp_post_id: 3196
-wp_url: https://fivsevn.com/2026/05/31/3196/
-wp_slug: '3196'
+
+module: posts
+submodule: flux
+topic: null
+
+type: log
 status: published
+canonical: true
+
+summary: null
+
+parents: []
+related: []
+
+tags: []
+
+audience:
+- public
+languages:
+- zh
+
+maturity: evolving
+confidence: null
+
+visibility: public
+source_of_truth: site
+
+filename_policy: entrypoint
+
+created: '2026-05-31'
+updated: '2026-05-31'
+metadata_updated: '2026-10-30'
+
+extra:
+  source: wordpress-live
+  sync: manual
+  source_hash: 8e81b655bfe4ae68
+  wp_post_id: 3196
+  wp_url: https://fivsevn.com/2026/05/31/3196/
+  wp_slug: '3196'
+  profile: site-post-v1
+  published_at: '2026-05-31T10:41:00+08:00'
+  author: 五月七日
+  alt: 2026-05-31-104100
 ---
 
 岩井：阿德勒心理学与弗洛伊德心理学的区分

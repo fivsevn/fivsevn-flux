@@ -1,14 +1,50 @@
 ---
 id: 2026-06-07-192318
-date: '2026-06-07T19:23:18+08:00'
 title: 7 June, 2026 19:23
-source: wordpress-live
-sync: manual
-source_hash: 0082cec136a2567e
-wp_post_id: 3686
-wp_url: https://fivsevn.com/2026/06/07/7-june-2026-1923/
-wp_slug: 7-june-2026-1923
+
+module: posts
+submodule: flux
+topic: null
+
+type: log
 status: published
+canonical: true
+
+summary: null
+
+parents: []
+related: []
+
+tags: []
+
+audience:
+- public
+languages:
+- zh
+
+maturity: evolving
+confidence: null
+
+visibility: public
+source_of_truth: site
+
+filename_policy: entrypoint
+
+created: '2026-06-07'
+updated: '2026-06-07'
+metadata_updated: '2026-10-30'
+
+extra:
+  source: wordpress-live
+  sync: manual
+  source_hash: 0082cec136a2567e
+  wp_post_id: 3686
+  wp_url: https://fivsevn.com/2026/06/07/7-june-2026-1923/
+  wp_slug: 7-june-2026-1923
+  profile: site-post-v1
+  published_at: '2026-06-07T19:23:18+08:00'
+  author: 五月七日
+  alt: 7 June, 2026 19:23
 ---
 
 <https://www.npr.org/2026/06/06/nx-s1-5847932/why-one-historian-uses-social-media-to-remember-d-day-in-real-time>
