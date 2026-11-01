@@ -46,5 +46,5 @@ extra:
   alt: 19 April, 2026 02:19
 ---
 
-🎉 <https://fivsevn.com/stills/>
+🎉 <https://roll.fivsevn.com/stills/>
 🥳 主页（<https://fivsevn.com>)点相机大图也可以进入。

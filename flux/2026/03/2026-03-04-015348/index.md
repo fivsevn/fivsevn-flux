@@ -51,4 +51,4 @@ extra:
 目标并非评判真假，也不只是针对特定观点进行反驳。核心用途是借助 AI 拆解表达中的逻辑结构，生成可能的论证路径，逐步积累更完整的分析框架。
 很多时候，我能感觉到某种表达存在问题，却无法迅速梳理出清晰的思路。在这种情况下，AI 的价值在于辅助构造思考结构，避免陷入单点视角或情绪化判断。这是一个用于训练“论证结构感”的实验区。
 
-<https://fivsevn-agy.github.io/fivsevn-devlog/posts/ai-public-argument-audit/>
+<https://devlog.fivsevn.com/posts/ai-discourse-analysis/>

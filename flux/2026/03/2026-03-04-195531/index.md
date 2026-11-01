@@ -46,7 +46,7 @@ extra:
   alt: 4 March, 2026 19:55
 ---
 
-专栏【AI 话语分析】更新：《AI 生成文本与沟通责任问题》<https://fivsevn-agy.github.io/fivsevn-devlog/posts/ai-discourse-analysis/content/002-chatbot-etiquette.html>
+专栏【AI 话语分析】更新：《AI 生成文本与沟通责任问题》<https://devlog.fivsevn.com/posts/ai-discourse-analysis/content/002-chatbot-etiquette.html>
 
 简单来讲，不论过程当中是使用了什么方式获取信息或者形成文字（ai，或者其他非 ai 的检索来源），在发内容出去之前，都得自己先通读并检查一遍。如果出了问题，你可以解释“是因为用 ai 生成之后自己没有充分检查”，而不是“因为 ai 生成本身有问题”。因为“ai 生成本身有问题”只是描述了这个工具目前存在的局限性，并没有真正回答“为什么你的这个任务会出问题”。
 

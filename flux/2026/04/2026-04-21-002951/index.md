@@ -46,5 +46,5 @@ extra:
   alt: 21 April, 2026 00:29
 ---
 
-📷🌊<https://fivsevn.com/2026/04/20/kamakura/>
+📷🌊<https://roll.fivsevn.com/stills/kamakura/>
 以前拍的，我记得那天风很大。

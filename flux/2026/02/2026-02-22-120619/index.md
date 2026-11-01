@@ -46,6 +46,6 @@ extra:
   alt: 《洞穴奇案》速记（待整理）
 ---
 
-笔记：<https://fivsevn-agy.github.io/fivsevn-devlog/posts/2026/20260222speluncean.html>
+笔记：<https://devlog.fivsevn.com/posts/2026/posts-20260222-speluncean-001.html>
 
 \*随时整理更新。

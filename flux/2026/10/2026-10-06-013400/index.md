@@ -46,4 +46,4 @@ extra:
   alt: 6 Oct, 2026 01:33
 ---
 
-资料页面方便对比：https://devlog.fivsevn.com/posts/2026/posts-toy- reference.html
+资料页面方便对比：https://devlog.fivsevn.com/posts/2026/posts-toy-reference.html

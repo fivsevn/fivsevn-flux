@@ -50,6 +50,6 @@ extra:
 
 《埃及古墓历险记》
 
-全文：<https://fivsevn.com/2025/03/13/%E6%B3%A2%E6%B4%9B%E5%8E%BB%E5%9F%83%E5%8F%8A/>
+全文：<https://devlog.fivsevn.com/posts/2025/2025-03-13-波洛去埃及.html>
 
 \*看阿加莎的小说，可以放地图在旁边标记。

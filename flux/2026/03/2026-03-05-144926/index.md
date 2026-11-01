@@ -47,4 +47,4 @@ extra:
 ---
 
 blogops更新：赛博地产建设者！😁
-<https://fivsevn-agy.github.io/fivsevn-devlog/blogops/content/blogops-cyber-estate-masterplan-001.html>
+<https://devlog.fivsevn.com/blogops/legacy/legacy-blogops-cyber-estate-masterplan-001.html>

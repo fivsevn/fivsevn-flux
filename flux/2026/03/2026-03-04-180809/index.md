@@ -46,4 +46,4 @@ extra:
   alt: 4 March, 2026 18:08
 ---
 
-改名字了：《AI话语分析》这样简洁、直接一点。<https://fivsevn-agy.github.io/fivsevn-devlog/posts/ai-discourse-analysis/>
+改名字了：《AI话语分析》这样简洁、直接一点。<https://devlog.fivsevn.com/posts/ai-discourse-analysis/>
