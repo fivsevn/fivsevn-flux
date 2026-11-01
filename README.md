@@ -40,14 +40,14 @@ metadata_updated: '2026-10-30'
 
 Flux is the short-form section of [fivsevn.com](https://fivsevn.com/): thoughts, photographs, and links. Its public address is [flux.fivsevn.com](https://flux.fivsevn.com/). This repository owns the publishing inputs, editable post packages, and GitHub Pages workflow.
 
-Publish text through [`trigger_text.md`](trigger_text.md) and photos through [`trigger_imgs/`](trigger_imgs/). The image inbox has a [short Chinese guide](trigger_imgs/README.md). This README describes the complete publishing and maintenance contract in English.
+Publish text through [`trigger_text.md`](trigger_text.md) and photos through [`trigger_imgs/`](trigger_imgs/). See the [image inbox guide](trigger_imgs/README.md) for publishing steps.
 
 ## Repository layout
 
 ```text
 trigger_text.md                  Text publishing input
 trigger_imgs/                    Temporary photo-upload inbox
-  README.md                      Short Chinese upload instructions
+   README.md                      Upload instructions
 flux/YYYY/MM/{id}/
   index.md                       Canonical metadata and Markdown body
   assets/                        Media owned by this post
