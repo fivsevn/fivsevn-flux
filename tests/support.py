@@ -14,7 +14,7 @@ def read_saved(text):
 
 def copy_builder(root):
     (root / 'scripts').mkdir(exist_ok=True)
-    for name in ('build.py', 'ingest_github.py', 'image_inbox.py', 'site_post_metadata.py'):
+    for name in ('build.py', 'ingest_github.py', 'image_inbox.py', 'site_post_metadata.py', 'media_naming.py'):
         shutil.copy2(ROOT / 'scripts' / name, root / 'scripts' / name)
     shutil.copytree(ROOT / 'schemas', root / 'schemas', dirs_exist_ok=True)
     (root / 'site-assets').mkdir(exist_ok=True)

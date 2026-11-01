@@ -39,7 +39,6 @@ extra:
   sync: manual
   source_hash: 6dccd7ec1e459b89
   wp_post_id: 2881
-  wp_url: https://fivsevn.com/2026/05/21/21-may-2026-2214/
   wp_slug: 21-may-2026-2214
   profile: site-post-v1
   published_at: '2026-05-21T22:14:31+08:00'
@@ -49,8 +48,8 @@ extra:
 legacy:
   metadata:
     media:
-    - file: ./assets/01-IMG_6884.jpg
+    - file: ./assets/20260521-221431-flux-fb69e7bdf352-001.jpg
       source: https://raw.githubusercontent.com/fivsevn/fivsevn-assets/7fefbd6a6fa594482ec5e46f5c814cd30685f046/post/2026/202605/IMG_6884.JPG
 ---
 
-![](./assets/01-IMG_6884.jpg)
+![](./assets/20260521-221431-flux-fb69e7bdf352-001.jpg)

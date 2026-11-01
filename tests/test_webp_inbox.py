@@ -146,7 +146,7 @@ class InboxTests(unittest.TestCase):
         self.original.write_bytes(b'newer upload')
         self.assertEqual(inbox.clear_verified(self.root), (0, 0))
         self.original.write_bytes(self.raw)
-        (self.entry.parent / 'assets/image.webp').write_bytes(b'manually edited')
+        (self.entry.parent / read_saved(self.entry.read_text())[0]['upload']['file']).write_bytes(b'manually edited')
         self.assertEqual(inbox.clear_verified(self.root), (0, 0))
         self.assertTrue(self.original.exists())
 

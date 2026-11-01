@@ -44,8 +44,9 @@ class ImageNamingTests(unittest.TestCase):
                     self.assertEqual(meta['date'], '2026-10-18T12:30:12+08:00')
                     self.assertEqual(body, '![](assets/' + name + ')')
                     self.assertTrue((path.parent / meta['upload']['file']).is_file())
-                self.assertEqual(actual, {'trigger_imgs/相片/IMG_0001.PNG': '20261018-123012-01.webp',
-                                          'trigger_imgs/说明/IMG_0001.PNG': '20261018-123012-02.webp'})
+                self.assertEqual(len(set(actual.values())),2)
+                for name in actual.values():
+                    self.assertRegex(name,r'^20261018-123012-flux-[a-f0-9]{12}-001\.webp$')
 
     def test_same_filename_and_bytes_in_two_upload_commits_create_two_posts(self):
         files = [{'filename': 'trigger_imgs/IMG_0001.PNG', 'status': 'added'}]
@@ -59,7 +60,7 @@ class ImageNamingTests(unittest.TestCase):
         self.assertEqual(len({meta['id'] for _, meta, _ in entries}), 2)
         self.assertEqual(len({meta['source_key'] for _, meta, _ in entries}), 2)
         # Two uploads in the same second are isolated by their package IDs.
-        self.assertEqual({Path(meta['upload']['file']).name for _, meta, _ in entries}, {'20261018-123012-01.webp'})
+        self.assertEqual(len({Path(meta['upload']['file']).name for _, meta, _ in entries}),2)
 
     def test_a_deliberate_new_upload_can_reuse_a_historical_phone_filename(self):
         self.source['previous_paths'] = ['uploads']

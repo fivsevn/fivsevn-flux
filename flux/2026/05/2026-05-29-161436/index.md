@@ -39,7 +39,6 @@ extra:
   sync: manual
   source_hash: 6c5f7be4140d6777
   wp_post_id: 3076
-  wp_url: https://fivsevn.com/2026/05/29/29-may-2026-1614/
   wp_slug: 29-may-2026-1614
   profile: site-post-v1
   published_at: '2026-05-29T16:14:36+08:00'
@@ -49,10 +48,10 @@ extra:
 legacy:
   metadata:
     media:
-    - file: ./assets/01-IMG_6887.jpg
+    - file: ./assets/20260529-161436-flux-d208a62d2f4b-001.jpg
       source: https://raw.githubusercontent.com/fivsevn/fivsevn-assets/7fefbd6a6fa594482ec5e46f5c814cd30685f046/post/2026/202605/IMG_6887.JPG
 ---
 
-![](./assets/01-IMG_6887.jpg)
+![](./assets/20260529-161436-flux-d208a62d2f4b-001.jpg)
 
 前情提要：<https://flux.fivsevn.com/page/2026/05/2026-05-20-230953/>

@@ -46,7 +46,7 @@ extra:
     path: trigger_imgs/IMG_2726.jpeg
     uploaded_at: '2026-10-18T13:15:07+08:00'
     sha256: 6bb677667e289937dab751fdd13e472c9df0a32f90c86d0837f00e3acbc1449b
-    file: assets/20261018-131507-01.webp
+    file: assets/20261018-131507-flux-129dfb26af1d-001.webp
     file_sha256: 576a6414da4059be92cabaad851745afcc33054f818bcb1c3bee35e40824d8ff
   profile: site-post-v1
   published_at: '2026-10-18T13:15:07+08:00'
@@ -54,4 +54,4 @@ extra:
   alt: 18 Oct, 2026 13:15
 ---
 
-![](assets/20261018-131507-01.webp)
+![](assets/20261018-131507-flux-129dfb26af1d-001.webp)

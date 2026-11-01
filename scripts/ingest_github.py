@@ -22,6 +22,7 @@ from zoneinfo import ZoneInfo
 
 from PIL import Image, ImageOps
 from pillow_heif import register_heif_opener
+from media_naming import media_filename
 from site_post_metadata import CORE_FIELDS, dump_frontmatter, metadata_view, normalize_metadata, read_frontmatter, validate_metadata
 
 register_heif_opener(thumbnails=False)
@@ -271,7 +272,7 @@ def import_images(root: Path, source: dict, commit: dict, keys: set[str], files:
             print(f"Skipped a replaced or removed invalid upload: {path}")
             continue
         suffix = hashlib.sha256((sha + ":" + path if identity == "commit-path" else path).encode()).hexdigest()[:12]
-        filename = date.strftime("%Y%m%d-%H%M%S") + f"-{number:02d}.webp" if identity == "commit-path" else "image.webp"
+        filename = media_filename("flux", date.strftime("%Y-%m-%d-%H%M%S") + "-" + suffix, date, 1, ".webp")
         body = f"![](assets/{filename})"
         if caption:
             body += "\n\n" + caption

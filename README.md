@@ -111,7 +111,7 @@ Each committed change to a nonempty text trigger is a new publishing event. Edit
 
 Each image path in an upload commit creates one independent post. A batch shares its optional caption. Publication time comes from the upload commit's committer timestamp, converted to `Asia/Shanghai`. The default heading uses that time; edit the saved `title` to customize it later.
 
-Package IDs combine the timestamp with a stable digest of the upload commit and path. New saved media uses `assets/YYYYMMDD-HHMMSS-NN.webp`, with stable batch numbers assigned from sorted paths. A retry reuses the saved event and preserves later edits. A new upload commit creates a new post, including when a phone filename is reused. After inbox cleanup, the same filename and identical bytes can be uploaded again.
+Package IDs combine the timestamp with a stable digest of the upload commit and path. Saved media uses `assets/YYYYMMDD-HHMMSS-flux-<package-key>-001.webp`; each uploaded image creates its own package. A retry reuses the saved event and preserves later edits. A new upload commit creates a new post, including when a phone filename is reused. After inbox cleanup, the same filename and identical bytes can be uploaded again.
 
 The Git history is the publishing queue. Removing an inbox file does not cancel an earlier committed upload event. Hide or edit the saved post instead.
 
@@ -280,3 +280,7 @@ Open `http://localhost:8000/`. `build.py` is offline and reads only saved packag
 Retrying an existing committed event preserves its saved package and later edits. Uploading again is a new event. Keep `.publishing/state.json` during ordinary maintenance.
 
 Content license: CC BY-NC-SA 4.0. Quoted and third-party material retains its original rights and licenses.
+
+## Publication media names
+
+Package images follow `YYYYMMDD-HHMMSS-<board>-<package-key>-NNN.ext`. The key is the first 12 lowercase hexadecimal characters of SHA-256 over `board:id`; publication time uses Asia/Shanghai. The file sequence stays fixed when display order changes. Uploads receive canonical names automatically. Keep shared assets and unarranged drafts in their existing locations. See the [shared naming rule](https://github.com/fivsevn-agy/fivsevn-spec/blob/main/content/spec-content-media-naming-001.md).

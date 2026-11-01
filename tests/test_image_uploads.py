@@ -62,7 +62,7 @@ class ImageUploadTests(unittest.TestCase):
         pub.import_images(self.root, self.source, self.commit, set(), files, read)
         self.assertIn('%20%231.PNG', urls[0])
         _, body = read_saved(next((self.root/'flux').glob('**/index.md')).read_text())
-        self.assertEqual(body, '![](assets/image.webp)')
+        self.assertRegex(body,r'^!\[\]\(assets/20261018-080000-flux-[a-f0-9]{12}-001\.webp\)$')
 
     def test_phone_mpo_uses_primary_photo_without_animating_gain_map(self):
         output = BytesIO()
@@ -74,7 +74,7 @@ class ImageUploadTests(unittest.TestCase):
             self.assertEqual(image.format, 'MPO')
         files = [{'filename': 'trigger_imgs/phone.jpeg', 'status': 'added'}]
         self.assertEqual(pub.import_images(self.root, self.source, self.commit, set(), files, lambda _: payload), 1)
-        saved = next((self.root/'flux').glob('**/assets/image.webp'))
+        saved = next((self.root/'flux').glob('**/assets/*.webp'))
         with Image.open(saved) as image:
             self.assertEqual(image.format, 'WEBP')
             self.assertEqual(image.n_frames, 1)

@@ -39,7 +39,6 @@ extra:
   sync: manual
   source_hash: 67cab125ed3ff468
   wp_post_id: 2748
-  wp_url: https://fivsevn.com/2026/05/14/14-may-2026-0211/
   wp_slug: 14-may-2026-0211
   profile: site-post-v1
   published_at: '2026-05-14T02:11:13+08:00'

@@ -39,7 +39,6 @@ extra:
   sync: manual
   source_hash: 6ba054c0cfed8279
   wp_post_id: 2003
-  wp_url: https://fivsevn.com/2026/02/22/%e6%97%a7%e8%b4%b4poirot-goes-to-egypt/
   wp_slug: '%e6%97%a7%e8%b4%b4poirot-goes-to-egypt'
   profile: site-post-v1
   published_at: '2026-02-22T11:18:08+08:00'

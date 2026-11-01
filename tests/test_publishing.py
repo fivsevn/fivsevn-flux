@@ -78,7 +78,8 @@ class PublisherTests(unittest.TestCase):
         self.assertEqual(pub.import_images(self.root,self.source,c,pub.existing_keys(self.root),rows,lambda u:IMAGE_BYTES),0)
         p=next((self.root/'flux').glob('**/index.md'))
         self.assertIn('配文 [链接](https://example.com)',p.read_text())
-        self.assertEqual((p.parent/'assets/image.webp').read_bytes(),IMAGE_BYTES)
+        meta,_=read_saved(p.read_text())
+        self.assertEqual((p.parent/meta['upload']['file']).read_bytes(),IMAGE_BYTES)
     def test_media_failure_does_not_create_partial_entry(self):
         self.source['path']='post/flux'
         rows=[{'filename':'post/flux/a.png','status':'added'}]

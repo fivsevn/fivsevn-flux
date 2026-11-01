@@ -53,4 +53,4 @@ metadata_updated: '2026-10-30'
 >
 > **修改旧帖**：编辑 `flux/` 下对应帖子的 `index.md`；重新上传图片会生成新帖。
 
-[详细英文说明](../README.md#publish-images) · [文字入口](../trigger_text.md)
+[构建与维护](../README.md#publish-images) · [文字入口](../trigger_text.md)
