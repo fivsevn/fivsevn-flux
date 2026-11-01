@@ -13,14 +13,13 @@
     "images": {
       "repository": "fivsevn/fivsevn-flux",
       "path": "trigger_imgs",
-      "cursor": "964c54d3535ef80fa4faee444c7353412cab7c22",
+      "cursor": "f1b940d5b1dc31ba907643e38b2d2182e355ae54",
       "verification_commits": [
-        "fdff5cd7a29cc05e934c094d1f0a7bc5d9b52928",
-        "964c54d3535ef80fa4faee444c7353412cab7c22"
+        "f1b940d5b1dc31ba907643e38b2d2182e355ae54"
       ],
       "history_path": "",
       "identity": "commit-path"
     }
   },
-  "last_checked_day": "2026-10-30"
+  "last_checked_day": "2026-11-01"
 }
