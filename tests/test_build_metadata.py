@@ -56,17 +56,17 @@ class ArtifactTests(unittest.TestCase):
         (package / 'index.md').write_text(dump_frontmatter(metadata) + '\n' + body)
         return ident, package, metadata
 
-    def test_eleven_public_posts_per_page_and_preserved_routes(self):
-        for number in range(13):
+    def test_seventeen_public_posts_per_page_and_preserved_routes(self):
+        for number in range(19):
             self.post(number, status=('active', 'publish', 'published')[number % 3], media=number == 0)
         for number, status, visibility in [(20, 'draft', 'public'), (21, 'hidden', 'public'),
                                             (22, 'published', 'private'), (23, 'active', 'internal')]:
             self.post(number, status, visibility, media=True)
         renderer.build(self.root)
         site = self.root / '_site'
-        self.assertEqual(len(EntryCounter((site / 'index.html').read_text()).entries), 11)
+        self.assertEqual(len(EntryCounter((site / 'index.html').read_text()).entries), 17)
         self.assertEqual(len(EntryCounter((site / 'feed/2/index.html').read_text()).entries), 2)
-        self.assertEqual(len(list((site / 'page').glob('**/index.html'))), 13)
+        self.assertEqual(len(list((site / 'page').glob('**/index.html'))), 19)
         self.assertFalse((self.root / 'index.html').exists())
         self.assertFalse((self.root / 'page').exists())
         self.assertFalse((self.root / 'feed').exists())

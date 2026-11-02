@@ -223,7 +223,7 @@ Set `status: hidden` or `draft` to retain its package while excluding it from th
 
 ## Pages and navigation
 
-Each list page contains **11 published posts**, newest first by the fixed publication instant, then stable ID. Introductory bubbles, links, and the license bubble do not count toward that limit. The interface keeps this order:
+Each list page contains **17 published posts**, newest first by the fixed publication instant, then stable ID. Introductory bubbles, links, and the license bubble do not count toward that limit. The interface keeps this order:
 
 ```text
 typing bubble → pocket image → content-library link → Today's Arrival → posts → pagination → license bubble

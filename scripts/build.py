@@ -16,7 +16,7 @@ from site_post_metadata import is_published, metadata_view, published_datetime, 
 
 
 ROOT = Path(__file__).resolve().parents[1]
-PER_PAGE = 11
+PER_PAGE = 17
 
 
 markdown = mistune.create_markdown(
