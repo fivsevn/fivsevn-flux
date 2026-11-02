@@ -226,8 +226,10 @@ Set `status: hidden` or `draft` to retain its package while excluding it from th
 Each list page contains **11 published posts**, newest first by the fixed publication instant, then stable ID. Introductory bubbles, links, and the license bubble do not count toward that limit. The interface keeps this order:
 
 ```text
-typing bubble → pocket image → content-library link → posts → pagination → license bubble
+typing bubble → pocket image → content-library link → Today's Arrival → posts → pagination → license bubble
 ```
+
+The permanent Today's Arrival bubble uses the green dev avatar and links to `https://devlog.fivsevn.com/intake/`. Below the link, its generation time uses the same muted metadata style as post timestamps, retaining UTC and intake's minute precision (for example, `2026-11-02T03:49+00:00`). The live intake header's “Shift opened” generation value is read when a list page opens or returns from the browser's back/forward cache, independently of Flux builds. The browser requests only the first 16 KiB, caches the last successfully read time locally, and keeps the link usable if the intake request fails. The build remains offline; no example date or Flux publication time is substituted.
 
 Public post URLs remain `/page/YYYY/MM/{id}/`, list URLs remain `/feed/N/` after the first page, and package media stays at `/flux/YYYY/MM/{id}/assets/`. These routes are independent of `_site/` on disk.
 

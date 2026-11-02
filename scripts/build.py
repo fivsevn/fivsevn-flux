@@ -150,6 +150,13 @@ def render_nav_bubble():
     return '''<div class="nav">??? 分享了一条链接：[ <a href="https://devlog.fivsevn.com/posts/">内容仓库</a> ]</div>'''
 
 
+def render_arrival_bubble():
+    return '''<div class="nav arrival-bubble">
+ <div class="entry-body">📰 [ <a href="https://devlog.fivsevn.com/intake/">Today’s Arrival</a> ]</div>
+ <div class="entry-meta"><time class="arrival-time" title="到店时间（页面生成，UTC）">…</time></div>
+</div>'''
+
+
 def render_pocket_bubble():
     return '<div class="pocket-bubble"><a href="https://fivsevn.com/" aria-label="五月七日主页"><img src="/site-assets/pocket.webp" alt="布口袋" width="125"></a></div>'
 
@@ -162,7 +169,8 @@ def render_feed_header():
     # Every feed page follows the same chat-message sequence.
     return f'''{render_brand()}
 {render_pocket_bubble()}
-{render_nav_bubble()}'''
+{render_nav_bubble()}
+{render_arrival_bubble()}'''
 
 def render_pager(current_page, total_pages):
     if total_pages <= 1:
@@ -218,13 +226,14 @@ def render_pager(current_page, total_pages):
 def render_feed_page(page_items, current_page, total_pages, navigation_version=""):
     entries = [render_entry(fm, body, title_href=page_url(fm)) for fm, body in page_items]
     pager = render_pager(current_page, total_pages)
+    footer = render_license_bubble() + '\n<script src="/site-assets/intake.js" defer></script>'
     return f'''{render_head("flux.fivsevn", "五月七日的思考札记")}
 {render_feed_header()}
 <section class="feed" aria-label="flux">
 {chr(10).join(entries)}
 {pager}
 </section>
-{render_close(render_license_bubble(), navigation_version)}'''
+{render_close(footer, navigation_version)}'''
 
 
 def read_posts(root):
