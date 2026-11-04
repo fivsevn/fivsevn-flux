@@ -100,11 +100,11 @@ Each committed change to a nonempty text trigger is a new publishing event. Edit
 
 ### Configure a phone shortcut
 
-1. Configure the shortcut to call the GitHub API for **fivsevn/fivsevn-flux**.
-2. Read the current `main` from GitHub for each upload; do not merge an old local checkout.
-3. Save photos into [`trigger_imgs/`](trigger_imgs/) with their original filenames.
-4. Commit and push to this repository's `main` branch.
-5. If the shortcut collects a caption, write it to the commit's **extended description**, below the summary line.
+1. In Working Copy or GitHub Desktop, sync **fivsevn/fivsevn-flux** with the latest `main` before saving the next batch.
+2. Configure the shortcut to save photos into this local repository's root [`trigger_imgs/`](trigger_imgs/) with their original filenames. On a computer, copy photos into the same directory.
+3. Put an optional caption in the commit's **extended description**, below the summary line; leave it empty for image-only posts.
+4. Commit and push to `main` in Working Copy or GitHub Desktop. Opening the app or copying a commit message alone does not push changes.
+5. Wait for Build and deploy Flux to finish, then check the public list, individual page, and image.
 
 ### Upload through GitHub
 
@@ -132,9 +132,9 @@ Supported inputs are JPG/JPEG, PNG, WebP, GIF, HEIC, and HEIF. Extensions are ca
 
 Phone MPO and HEIF files publish the primary display photograph; auxiliary gain maps are not treated as animation frames. Saved package media and this site’s UI raster assets use WebP. Existing WebP bytes are retained; scripts/normalize_images.py transactionally converts manually added and legacy images without resizing them, updating local references and saved-media checksums. Builds copy the normalized archive without recompression.
 
-Inbox originals are removed only after their saved packages have been committed, deployed, and verified at the public domain. Cleanup checks both the original upload checksum and the saved media checksum. Failed runs, newer uploads, changed archives, and unpublished posts retain their inbox originals. After successful cleanup, the workflow removes converted non-WebP images from `main` history and remaps publication cursors; pending inputs or concurrent commits defer this step. Keep original backups outside Git.
+Inbox originals are removed only after their saved packages have been committed, deployed, and verified at the public domain. Cleanup checks both the original upload checksum and the saved media checksum. Failed runs, newer uploads, changed archives, and unpublished posts retain their inbox originals. Routine publication does not rewrite Git history. Keep original backups outside Git.
 
-Use the GitHub upload page or a direct GitHub API shortcut. History cleanup changes commit IDs: re-clone old Working Copy checkouts instead of merging them. Read-only PR refs and server object retention are managed by GitHub.
+History cleanup is optional maintenance: manually run `workflow_dispatch` with `compact_image_history=true` (default `false`) to remove converted non-WebP images from `main` history and remap publication cursors. Pending inputs or concurrent commits defer it. This changes commit IDs; realign or re-clone Working Copy and desktop checkouts afterward without merging the old history. Read-only PR refs and server object retention are managed by GitHub.
 
 ## Shared metadata
 
