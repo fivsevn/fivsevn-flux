@@ -48,14 +48,14 @@ extra:
 legacy:
   metadata:
     media:
-    - file: ./assets/20260521-225157-flux-915deb1de884-001.png
+    - file: ./assets/20260521-225157-flux-915deb1de884-001.webp
       source: https://raw.githubusercontent.com/fivsevn/fivsevn-assets/7fefbd6a6fa594482ec5e46f5c814cd30685f046/post/2026/202605/IMG_6885.PNG
-    - file: ./assets/20260521-225157-flux-915deb1de884-002.png
+    - file: ./assets/20260521-225157-flux-915deb1de884-002.webp
       source: https://raw.githubusercontent.com/fivsevn/fivsevn-assets/7fefbd6a6fa594482ec5e46f5c814cd30685f046/post/2026/202605/IMG_6886.PNG
 ---
 
-![](./assets/20260521-225157-flux-915deb1de884-001.png)
-![](./assets/20260521-225157-flux-915deb1de884-002.png)
+![](./assets/20260521-225157-flux-915deb1de884-001.webp)
+![](./assets/20260521-225157-flux-915deb1de884-002.webp)
 
 检测到未注册肉质组件
 正在执行强制卸载…

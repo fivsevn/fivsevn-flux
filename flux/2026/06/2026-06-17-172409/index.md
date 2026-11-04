@@ -43,8 +43,8 @@ extra:
   upload:
     path: trigger_imgs/IMG_7202.jpg
     sha256: 6dc2ae3426e3b6a949c8849db657b8bfd35c5d21e26d9cba054cb67780605b22
-    file: ./assets/20260617-172409-flux-62b579468d3c-001.jpg
-    file_sha256: 6dc2ae3426e3b6a949c8849db657b8bfd35c5d21e26d9cba054cb67780605b22
+    file: ./assets/20260617-172409-flux-62b579468d3c-001.webp
+    file_sha256: 25b3e3c66fe444b0a8c1aa6577fc750b2bca89eb6262dfde55493ff279e78e36
   profile: site-post-v1
   published_at: '2026-06-17T17:24:09+08:00'
   author: 五月七日
@@ -53,10 +53,10 @@ extra:
 legacy:
   metadata:
     media:
-    - file: ./assets/20260617-172409-flux-62b579468d3c-001.jpg
+    - file: ./assets/20260617-172409-flux-62b579468d3c-001.webp
       source: https://raw.githubusercontent.com/fivsevn/fivsevn-flux/7d429e0e9e68499dab5e8c47922e4a4bed469030/uploads/IMG_7202.jpg
 ---
 
-![17 Jun, 2026 18:23](./assets/20260617-172409-flux-62b579468d3c-001.jpg)
+![17 Jun, 2026 18:23](./assets/20260617-172409-flux-62b579468d3c-001.webp)
 
 还不错

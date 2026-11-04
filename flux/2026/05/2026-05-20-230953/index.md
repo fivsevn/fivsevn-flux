@@ -48,13 +48,13 @@ extra:
 legacy:
   metadata:
     media:
-    - file: ./assets/20260520-230953-flux-5b57a7f76cc0-001.jpg
+    - file: ./assets/20260520-230953-flux-5b57a7f76cc0-001.webp
       source: https://raw.githubusercontent.com/fivsevn/fivsevn-assets/7fefbd6a6fa594482ec5e46f5c814cd30685f046/post/2026/202605/IMG_6881.JPG
-    - file: ./assets/20260520-230953-flux-5b57a7f76cc0-002.jpg
+    - file: ./assets/20260520-230953-flux-5b57a7f76cc0-002.webp
       source: https://raw.githubusercontent.com/fivsevn/fivsevn-assets/7fefbd6a6fa594482ec5e46f5c814cd30685f046/post/2026/202605/IMG_6882.JPG
 ---
 
-![](./assets/20260520-230953-flux-5b57a7f76cc0-001.jpg)
-![](./assets/20260520-230953-flux-5b57a7f76cc0-002.jpg)
+![](./assets/20260520-230953-flux-5b57a7f76cc0-001.webp)
+![](./assets/20260520-230953-flux-5b57a7f76cc0-002.webp)
 
 🔴 现已摘除抑制器失控核心，执行强制泄压。

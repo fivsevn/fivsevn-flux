@@ -59,6 +59,8 @@ scripts/
   build.py                       Build the complete Pages artifact once
   verify_live.py                 Compare public pages and media bytes
   image_inbox.py                 Clear verified matching inbox originals
+  image_codec.py                 Validate and encode full-size WebP images
+  normalize_images.py            Normalize saved content and UI raster assets
 schemas/
   content-metadata.schema.json   Shared fivsevn core schema
   site-post.schema.json          Site-post profile
@@ -98,8 +100,8 @@ Each committed change to a nonempty text trigger is a new publishing event. Edit
 
 ### Configure a phone shortcut
 
-1. Select **fivsevn-flux** as the Working Copy repository.
-2. Pull or sync `main` before saving each upload.
+1. Configure the shortcut to call the GitHub API for **fivsevn/fivsevn-flux**.
+2. Read the current `main` from GitHub for each upload; do not merge an old local checkout.
 3. Save photos into [`trigger_imgs/`](trigger_imgs/) with their original filenames.
 4. Commit and push to this repository's `main` branch.
 5. If the shortcut collects a caption, write it to the commit's **extended description**, below the summary line.
@@ -123,16 +125,16 @@ Supported inputs are JPG/JPEG, PNG, WebP, GIF, HEIC, and HEIF. Extensions are ca
 
 | Input | Saved image behavior |
 | --- | --- |
-| JPEG, HEIC, and HEIF | WebP quality 85, original display dimensions, corrected orientation, retained ICC color profile |
+| JPEG, HEIC, and HEIF | WebP quality 95, original display dimensions, corrected orientation, retained ICC color profile |
 | PNG | Lossless WebP with transparency and animation timing when applicable |
 | GIF | Lossless animated WebP retaining frames, timing, transparency, and loop behavior |
 | Existing WebP | Validated and retained byte for byte |
 
-Phone MPO and HEIF files publish the primary display photograph; auxiliary gain maps are not treated as animation frames. Existing saved package media retains its supplied format and bytes. Builds copy that media without recompression.
+Phone MPO and HEIF files publish the primary display photograph; auxiliary gain maps are not treated as animation frames. Saved package media and this site’s UI raster assets use WebP. Existing WebP bytes are retained; scripts/normalize_images.py transactionally converts manually added and legacy images without resizing them, updating local references and saved-media checksums. Builds copy the normalized archive without recompression.
 
-Inbox originals are removed only after their saved packages have been committed, deployed, and verified at the public domain. Cleanup checks both the original upload checksum and the saved media checksum. Failed runs, newer uploads, changed archives, and unpublished posts retain their inbox originals. Uploaded originals also remain recoverable from Git history.
+Inbox originals are removed only after their saved packages have been committed, deployed, and verified at the public domain. Cleanup checks both the original upload checksum and the saved media checksum. Failed runs, newer uploads, changed archives, and unpublished posts retain their inbox originals. After successful cleanup, the workflow removes converted non-WebP images from `main` history and remaps publication cursors; pending inputs or concurrent commits defer this step. Keep original backups outside Git.
 
-Pull `main` before the next phone upload so it receives the publishing bot's saved packages and inbox cleanup.
+Use the GitHub upload page or a direct GitHub API shortcut. History cleanup changes commit IDs: re-clone old Working Copy checkouts instead of merging them. Read-only PR refs and server object retention are managed by GitHub.
 
 ## Shared metadata
 
@@ -215,11 +217,11 @@ Titles and timestamps are independent. Changing the title keeps the post's chron
 
 ### Replace an image
 
-Put the replacement into the post's own `assets/` directory and update its relative Markdown link, such as `![](assets/replacement.webp)`. Check for references before deleting an old file. Saved-package media keeps its supplied format; prepare the desired format before adding it there. A deliberate archive replacement causes original-inbox cleanup to retain that upload until its record is reviewed.
+Put the replacement into the post's own `assets/` directory and update its relative Markdown link, such as `![](assets/replacement.webp)`. Check for references before deleting an old file. Saved-package media uses WebP; the normalizer converts supported manually added images before publication. A deliberate archive replacement causes original-inbox cleanup to retain that upload until its record is reviewed.
 
 ### Hide or remove a post
 
-Set `status: hidden` or `draft` to retain its package while excluding it from the artifact. Restore `status: published` with `visibility: public` to publish it at its original address. To remove the source, delete the complete package directory after checking media references. The next build removes its generated detail page and list entry. Recover accidental deletion from Git history, including the package's media.
+Set `status: hidden` or `draft` to retain its package while excluding it from the artifact. Restore `status: published` with `visibility: public` to publish it at its original address. To remove the source, delete the complete package directory after checking media references. The next build removes its generated detail page and list entry. Recover accidental deletion from retained WebP archive history or external backups.
 
 ## Pages and navigation
 
@@ -240,7 +242,7 @@ List bookmarks with a post hash follow that post to its current page when pagina
 [Build and deploy Flux](https://github.com/fivsevn/fivsevn-flux/actions/workflows/build.yml) is the only deployment workflow. Relevant pushes to `main` and manual dispatch start it. Runs are serialized, and it uses this sequence:
 
 1. Check out current `main` and install dependencies.
-2. Normalize saved frontmatter, run tests, and validate the shared core/profile schemas.
+2. Normalize saved frontmatter and saved/UI images, run tests, and validate the shared core/profile schemas.
 3. Read new committed text and image snapshots from GitHub, preserving processed-event identities.
 4. Validate imported packages and build the complete `_site/` artifact once.
 5. Confirm the branch has not changed, then commit source packages and input cursors together.

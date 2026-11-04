@@ -10,7 +10,6 @@ from __future__ import annotations
 
 import json
 import hashlib
-from io import BytesIO
 import os
 import re
 import tempfile
@@ -20,12 +19,10 @@ from urllib.parse import quote, urlencode
 from urllib.request import Request, urlopen
 from zoneinfo import ZoneInfo
 
-from PIL import Image, ImageOps
-from pillow_heif import register_heif_opener
+from image_codec import convert_image
 from media_naming import media_filename
 from site_post_metadata import CORE_FIELDS, dump_frontmatter, metadata_view, normalize_metadata, read_frontmatter, validate_metadata
 
-register_heif_opener(thumbnails=False)
 
 ROOT = Path(__file__).resolve().parents[1]
 STATE = ROOT / ".publishing/state.json"
@@ -265,64 +262,6 @@ def import_text(root: Path, source: dict, commit: dict, keys: set[str], read=fet
 
 def asset_slug(path: str) -> str:
     return "asset-" + path.lower().replace("/", "-").replace("_", "-").replace(".", "-")
-
-
-def convert_image(media: bytes, path: str) -> bytes:
-    """Keep WebP uploads; encode photos at quality 85, graphics losslessly.
-
-    GIF/APNG frames are composited by Pillow before WebP encoding. MPO/HEIF
-    auxiliary images (for example HDR gain maps) are not animation frames.
-    Original uploads remain recoverable from their immutable Git commits.
-    """
-    if not media:
-        raise ValueError(f"Empty image: {path}")
-    try:
-        with Image.open(BytesIO(media)) as image:
-            fmt = image.format
-            if fmt not in {"JPEG", "MPO", "PNG", "WEBP", "GIF", "HEIF"}:
-                raise ValueError(f"Unsupported image format in {path}")
-            if fmt == "WEBP":
-                for n in range(image.n_frames):
-                    image.seek(n)
-                    image.load()
-                return media
-            animated = fmt in {"GIF", "PNG"} and getattr(image, "is_animated", False)
-            # For lossless WebP, quality controls encoder effort, not pixels.
-            # Maximum effort makes ordinary multi-frame phone GIFs very slow.
-            options = {"method": 4 if fmt in {"PNG", "GIF"} else 6,
-                       "lossless": fmt in {"PNG", "GIF"},
-                       "quality": 75 if fmt in {"PNG", "GIF"} else 85}
-            if image.info.get("icc_profile"):
-                options["icc_profile"] = image.info["icc_profile"]
-            if animated:
-                frames, durations = [], []
-                loop = image.info.get("loop")
-                options["loop"] = (0 if loop == 0 else (loop + 1 if loop is not None else 1)) if fmt == "GIF" else (loop or 0)
-                start = 1 if image.info.get("default_image") else 0
-                for n in range(start, image.n_frames):
-                    image.seek(n)
-                    frames.append(image.convert("RGBA"))
-                    durations.append(image.info.get("duration", 100) or 100)
-                options.update(save_all=True, append_images=frames[1:], duration=durations,
-                               minimize_size=False)
-                primary = frames[0]
-            else:
-                primary = ImageOps.exif_transpose(image)
-                exif = primary.getexif()
-                if exif:
-                    options["exif"] = exif.tobytes()
-                primary = primary.convert("RGBA" if "A" in primary.getbands() or "transparency" in primary.info else "RGB")
-            output = BytesIO()
-            primary.save(output, format="WEBP", **options)
-            result = output.getvalue()
-        # Decode the result before making an entry durable.
-        with Image.open(BytesIO(result)) as check:
-            for n in range(check.n_frames):
-                check.seek(n)
-                check.load()
-        return result
-    except (OSError, SyntaxError, EOFError) as error:
-        raise ValueError(f"Invalid or damaged image: {path}") from error
 
 
 def import_images(root: Path, source: dict, commit: dict, keys: set[str], files: list[dict], read=fetch, superseded: set[str] = frozenset()) -> int:

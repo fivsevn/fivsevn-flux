@@ -12,9 +12,9 @@
   --avatar-gap: 18px;
   --post-radius: 15px;
   --message-gap: 48px;
-  --avatar-main: url("/site-assets/avatar-main.png");
-  --avatar-typing: url("/site-assets/avatar-typing.png");
-  --avatar-dev: url("/site-assets/avatar-dev.png");
+  --avatar-main: url("/site-assets/avatar-main.webp");
+  --avatar-typing: url("/site-assets/avatar-typing.webp");
+  --avatar-dev: url("/site-assets/avatar-dev.webp");
 }
 
 * {

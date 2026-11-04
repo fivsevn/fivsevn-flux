@@ -15,6 +15,7 @@ from PIL import Image, ImageOps
 
 from ingest_github import split_frontmatter
 from image_inbox import candidates
+from image_codec import is_lossless_webp
 from site_post_metadata import is_published, metadata_view, published_datetime, validate_metadata
 
 
@@ -98,7 +99,8 @@ def prepare_images(root, output, items):
                     image.thumbnail((DISPLAY_WIDTH, image.height), Image.Resampling.LANCZOS)
                     data = BytesIO()
                     image.save(data, 'WEBP', quality=85, method=6,
-                               lossless=original.format == 'PNG' or transparent,
+                               lossless=original.format == 'PNG' or transparent or is_lossless_webp(source.read_bytes()),
+                               exact=True,
                                icc_profile=original.info.get('icc_profile', b''))
                     preview = data.getvalue()
                     if len(preview) < source.stat().st_size:

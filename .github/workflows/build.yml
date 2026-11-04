@@ -38,7 +38,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: main
-          fetch-depth: 1
+          fetch-depth: 0
       - uses: actions/checkout@v4
         with:
           repository: fivsevn-agy/fivsevn-spec
@@ -59,6 +59,8 @@ jobs:
           cmp schemas/site-post.schema.json .metadata-spec/content/site-post.schema.json
       - name: Normalize saved metadata
         run: python scripts/site_post_metadata.py normalize --site flux --root flux --schema-dir schemas
+      - name: Normalize saved content and UI images to WebP
+        run: python scripts/normalize_images.py
       - name: Verify publishing and saved metadata
         run: |
           python -m unittest discover -s tests -v
@@ -77,6 +79,8 @@ jobs:
       - uses: actions/configure-pages@v5
       - name: Build the Pages artifact
         run: python scripts/build.py
+      - name: Verify WebP source and public images
+        run: python scripts/normalize_images.py --check --output _site
       - name: Save content and upload cursors together
         run: |
           git fetch origin main
@@ -86,7 +90,7 @@ jobs:
           fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add flux .publishing/state.json
+          git add flux site-assets style.css .publishing/state.json
           if ! git diff --cached --quiet; then
             git commit -m 'publish: save Flux posts and upload cursors'
             git push origin HEAD:main
@@ -113,3 +117,36 @@ jobs:
             git commit -m 'publish: record verified Flux deployment and clear inbox'
             git push origin HEAD:main
           fi
+      - name: Prepare verified image history cleanup
+        id: media_history
+        run: |
+          python -m pip install git-filter-repo==2.47.0
+          python scripts/compact_media_history.py --prepare --scope flux --repo "$GITHUB_WORKSPACE" --output-dir "$RUNNER_TEMP/webp-history" --defer-if-pending > "$RUNNER_TEMP/webp-history-result.json"
+          python - <<'PY_HISTORY'
+          import json, os
+          from pathlib import Path
+          report = json.loads((Path(os.environ['RUNNER_TEMP']) / 'webp-history/report.json').read_text())
+          ready = report['status'] == 'prepared'
+          if ready:
+              assert report['protected_files_equal'] and report['cursor_ancestors_verified']
+              assert report['remaining_target_paths'] == 0 and report['backup']['verified']
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
+              output.write('ready=' + str(ready).lower() + '\n')
+          print('Image history cleanup:', report['status'], report.get('reason', ''), 'paths:', report.get('filtered_path_count', 0))
+          PY_HISTORY
+      - name: Push compacted history without overwriting newer work
+        if: steps.media_history.outputs.ready == 'true'
+        run: python scripts/compact_media_history.py --push --repo "$GITHUB_WORKSPACE" --output-dir "$RUNNER_TEMP/webp-history" --defer-if-pending
+      - name: Retain the image history cleanup report
+        if: always() && steps.media_history.outcome != 'skipped'
+        uses: actions/upload-artifact@v4
+        with:
+          name: image-history-cleanup-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/webp-history/report.json
+            ${{ runner.temp }}/webp-history/filtered-paths.json
+            ${{ runner.temp }}/webp-history/commit-map.json
+            ${{ runner.temp }}/webp-history/filter-repo.log
+            ${{ runner.temp }}/webp-history/push.log
+          if-no-files-found: ignore
+          retention-days: 1

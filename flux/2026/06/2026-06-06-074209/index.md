@@ -43,8 +43,8 @@ extra:
   upload:
     path: trigger_imgs/IMG_6858.GIF
     sha256: 83a806f9af4f082aea9cc00e04d5dab84b1bdde1d4951b0efe65afbe30c3df2a
-    file: ./assets/20260606-074209-flux-1117fc9dc91a-001.gif
-    file_sha256: 83a806f9af4f082aea9cc00e04d5dab84b1bdde1d4951b0efe65afbe30c3df2a
+    file: ./assets/20260606-074209-flux-1117fc9dc91a-001.webp
+    file_sha256: ccbb283ff3223509f147bb6954008cc34734500edce4064839ce67d0b28643eb
   profile: site-post-v1
   published_at: '2026-06-06T07:42:09+08:00'
   author: 五月七日
@@ -53,8 +53,8 @@ extra:
 legacy:
   metadata:
     media:
-    - file: ./assets/20260606-074209-flux-1117fc9dc91a-001.gif
+    - file: ./assets/20260606-074209-flux-1117fc9dc91a-001.webp
       source: https://raw.githubusercontent.com/fivsevn/fivsevn-flux/7d429e0e9e68499dab5e8c47922e4a4bed469030/uploads/IMG_6858.GIF
 ---
 
-![06 Jun, 2026 08:42](./assets/20260606-074209-flux-1117fc9dc91a-001.gif)
+![06 Jun, 2026 08:42](./assets/20260606-074209-flux-1117fc9dc91a-001.webp)

@@ -26,6 +26,7 @@ class WebPTests(unittest.TestCase):
     def test_transparency_pixels_and_icc_are_lossless(self):
         image = Image.new('RGBA', (4, 3), (22, 75, 108, 80))
         image.putpixel((0, 0), (10, 20, 30, 255))
+        image.putpixel((1, 0), (91, 82, 73, 0))
         raw = self.encode(image, 'PNG', icc_profile=b'test-profile')
         with Image.open(BytesIO(pub.convert_image(raw, 'phone.png'))) as webp:
             self.assertEqual(webp.format, 'WEBP')
@@ -66,6 +67,31 @@ class WebPTests(unittest.TestCase):
     def test_existing_webp_is_not_recompressed(self):
         raw = self.encode(Image.new('RGBA', (3, 3), (50, 80, 90, 70)), 'WEBP')
         self.assertEqual(pub.convert_image(raw, 'uploaded.webp'), raw)
+
+    def test_truncated_jpeg_is_rejected_before_an_archive_can_be_created(self):
+        raw = self.encode(Image.new('RGB', (32, 24), 'red'), 'JPEG')
+        for broken in [raw[:-2], raw[:len(raw)//2]]:
+            with self.subTest(length=len(broken)), self.assertRaises(ValueError):
+                pub.convert_image(broken, 'truncated.jpg')
+
+    def test_apng_poster_is_not_an_extra_frame(self):
+        raw = self.encode(Image.new('RGBA', (4, 3), 'green'), 'PNG', save_all=True,
+                          append_images=[Image.new('RGBA', (4, 3), 'red'), Image.new('RGBA', (4, 3), 'blue')],
+                          default_image=True, duration=[120, 240], loop=2)
+        with Image.open(BytesIO(pub.convert_image(raw, 'motion.png'))) as saved:
+            self.assertEqual(saved.n_frames, 2)
+            self.assertEqual(saved.info['loop'], 2)
+            for number, duration in enumerate([120, 240]):
+                saved.seek(number); saved.load()
+                self.assertEqual(saved.info['duration'], duration)
+
+    def test_animation_zero_duration_is_not_changed_to_a_tenth_second(self):
+        raw = self.encode(Image.new('RGB', (4, 3), 'red'), 'GIF', save_all=True,
+                          append_images=[Image.new('RGB', (4, 3), 'blue')], duration=[0, 140], loop=0, disposal=2)
+        with Image.open(BytesIO(pub.convert_image(raw, 'zero.gif'))) as saved:
+            for number, duration in enumerate([0, 140]):
+                saved.seek(number); saved.load()
+                self.assertEqual(saved.info['duration'], duration)
 
 
 class InboxTests(unittest.TestCase):

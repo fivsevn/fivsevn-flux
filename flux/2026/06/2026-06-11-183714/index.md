@@ -43,8 +43,8 @@ extra:
   upload:
     path: trigger_imgs/IMG_7049.jpg
     sha256: e9d443afb66f4f819fed4e7d40f0b4072bb33b5f3f05ef660d740ccf3ba37985
-    file: ./assets/20260611-183714-flux-33cbb4a51514-001.jpg
-    file_sha256: e9d443afb66f4f819fed4e7d40f0b4072bb33b5f3f05ef660d740ccf3ba37985
+    file: ./assets/20260611-183714-flux-33cbb4a51514-001.webp
+    file_sha256: bc2ae0b810e193c34b33d30d919485f04aa20c199a96a16080b93ef7762f68ad
   profile: site-post-v1
   published_at: '2026-06-11T18:37:14+08:00'
   author: 五月七日
@@ -53,10 +53,10 @@ extra:
 legacy:
   metadata:
     media:
-    - file: ./assets/20260611-183714-flux-33cbb4a51514-001.jpg
+    - file: ./assets/20260611-183714-flux-33cbb4a51514-001.webp
       source: https://raw.githubusercontent.com/fivsevn/fivsevn-flux/7d429e0e9e68499dab5e8c47922e4a4bed469030/uploads/IMG_7049.jpg
 ---
 
-![11 Jun, 2026 19:36](./assets/20260611-183714-flux-33cbb4a51514-001.jpg)
+![11 Jun, 2026 19:36](./assets/20260611-183714-flux-33cbb4a51514-001.webp)
 
 暴龙beer

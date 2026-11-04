@@ -48,8 +48,8 @@ extra:
 legacy:
   metadata:
     media:
-    - file: ./assets/20260521-162038-flux-c3f8bd84b2f3-001.jpg
+    - file: ./assets/20260521-162038-flux-c3f8bd84b2f3-001.webp
       source: https://raw.githubusercontent.com/fivsevn/fivsevn-assets/7fefbd6a6fa594482ec5e46f5c814cd30685f046/post/2026/202605/IMG_6883.JPG
 ---
 
-![](./assets/20260521-162038-flux-c3f8bd84b2f3-001.jpg)
+![](./assets/20260521-162038-flux-c3f8bd84b2f3-001.webp)
