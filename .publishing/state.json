@@ -1,25 +1,25 @@
 {
-  "version": 1,
+  "last_checked_day": "2026-11-05",
   "sources": {
-    "text": {
-      "repository": "fivsevn/fivsevn-flux",
-      "path": "trigger_text.md",
-      "cursor": "6fb6e8f5de7baa18af18a4a0d70ab6b2f23f537a",
+    "images": {
+      "cursor": "638e5876a3f1cc162b5edbafd188dcdb497dfa85",
       "history_path": "",
+      "identity": "commit-path",
+      "path": "trigger_imgs",
+      "repository": "fivsevn/fivsevn-flux",
       "verification_commits": [
-        "8216d0db6528221302558d8912c51205c6cfb1b6"
+        "638e5876a3f1cc162b5edbafd188dcdb497dfa85"
       ]
     },
-    "images": {
-      "repository": "fivsevn/fivsevn-flux",
-      "path": "trigger_imgs",
-      "cursor": "6fb6e8f5de7baa18af18a4a0d70ab6b2f23f537a",
-      "verification_commits": [
-        "6fb6e8f5de7baa18af18a4a0d70ab6b2f23f537a"
-      ],
+    "text": {
+      "cursor": "638e5876a3f1cc162b5edbafd188dcdb497dfa85",
       "history_path": "",
-      "identity": "commit-path"
+      "path": "trigger_text.md",
+      "repository": "fivsevn/fivsevn-flux",
+      "verification_commits": [
+        "8a4aeb79347854396fbc5afb17f3aed03317ae59"
+      ]
     }
   },
-  "last_checked_day": "2026-11-05"
+  "version": 1
 }
