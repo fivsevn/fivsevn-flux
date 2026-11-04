@@ -138,7 +138,7 @@ History cleanup is optional maintenance: manually run `workflow_dispatch` with `
 
 ## Shared metadata
 
-Flux, Savour, and Fieldlog use the [shared fivsevn core schema](https://github.com/fivsevn-agy/fivsevn-spec/blob/main/content/content-metadata.schema.json) and [site-post profile](https://github.com/fivsevn-agy/fivsevn-spec/blob/main/content/site-post.schema.json). The helper and schemas in this repository are local copies, so normalizing, checking, and building need no network access.
+Flux, Savour, and Fieldlog use the [shared fivsevn core schema](https://github.com/fivsevn-agy/fivsevn-spec/blob/main/content/content-metadata.schema.json) and [site-post profile](https://github.com/fivsevn-agy/fivsevn-spec/blob/main/content/site-post.schema.json). The helper and schemas in this repository are local copies, so normalizing, checking, and building need no network access. CI reads the fixed Spec revision from [`.github/spec-ref`](.github/spec-ref); update that lock and the local helper/schema copies together when adopting a new contract version.
 
 Saved posts use the shared core fields at the top level. Precise publication time and site-specific values live in `extra`; unrecognized input metadata is retained under `legacy.metadata`. The compatibility view used by the renderer and importer is never written back as a saved frontmatter format.
 

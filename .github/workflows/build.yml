@@ -14,6 +14,7 @@ on:
       - '.publishing/**'
       - 'style.css'
       - 'requirements.txt'
+      - '.github/spec-ref'
       - '.github/workflows/build.yml'
   workflow_dispatch:
     inputs:
@@ -44,10 +45,21 @@ jobs:
         with:
           ref: main
           fetch-depth: 0
+      # Keep the Spec pin with the checked-out source and local contract copies.
+      - name: Read pinned Spec revision
+        id: spec_version
+        shell: bash
+        run: |
+          spec_ref="$(cat .github/spec-ref)"
+          if [[ ! "$spec_ref" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "::error::.github/spec-ref must contain one full Spec commit SHA"
+            exit 1
+          fi
+          echo "ref=$spec_ref" >> "$GITHUB_OUTPUT"
       - uses: actions/checkout@v4
         with:
           repository: fivsevn-agy/fivsevn-spec
-          ref: main
+          ref: ${{ steps.spec_version.outputs.ref }}
           path: .metadata-spec
           persist-credentials: false
       - uses: actions/setup-python@v5
