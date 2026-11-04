@@ -25,11 +25,50 @@ class PublisherTests(unittest.TestCase):
     def tearDown(self):
         self.tmp.cleanup()
     def test_all_queued_snapshots_in_order(self):
-        rows = [commit('a'*40), commit('b'*40), commit('c'*40)]
-        self.assertEqual([x['sha'] for x in pub.pending_commits(self.source, lambda p: rows)], ['b'*40, 'a'*40])
+        rows = [commit('b'*40), commit('a'*40)]
+        def read(path):
+            if '/git/ref/' in path:
+                return {'object': {'sha': 'a'*40}}
+            return {'status': 'ahead', 'merge_base_commit': {'sha': 'c'*40},
+                    'total_commits': len(rows), 'commits': rows}
+        self.assertEqual([x['sha'] for x in pub.pending_commits(self.source, read)], ['b'*40, 'a'*40])
     def test_missing_cursor_fails_without_replaying(self):
+        def read(path):
+            if '/git/ref/' in path:
+                return {'object': {'sha': 'a'*40}}
+            return {'status': 'diverged', 'merge_base_commit': {'sha': 'd'*40},
+                    'total_commits': 1, 'commits': [commit()]}
         with self.assertRaises(ValueError):
-            pub.pending_commits(self.source, lambda p: [commit()])
+            pub.pending_commits(self.source, read)
+    def test_commit_comparison_paginates_against_a_pinned_head(self):
+        from urllib.parse import parse_qs, urlsplit
+        rows = [commit(f'{number:040x}') for number in range(1, 102)]
+        head = rows[-1]['sha']
+        def read(path):
+            if '/git/ref/' in path:
+                return {'object': {'sha': head}}
+            self.assertIn('/compare/' + 'c'*40 + '...' + head + '?', path)
+            page = int(parse_qs(urlsplit(path).query)['page'][0])
+            return {'status': 'ahead', 'merge_base_commit': {'sha': 'c'*40},
+                    'total_commits': len(rows), 'commits': rows[(page-1)*100:page*100]}
+        self.assertEqual(pub.pending_commits(self.source, read), rows)
+    def test_incomplete_commit_comparison_fails_without_advancing(self):
+        def read(path):
+            if '/git/ref/' in path:
+                return {'object': {'sha': 'a'*40}}
+            return {'status': 'ahead', 'merge_base_commit': {'sha': 'c'*40},
+                    'total_commits': 1, 'commits': []}
+        with self.assertRaisesRegex(ValueError, 'Incomplete'):
+            pub.pending_commits(self.source, read)
+        self.assertEqual(self.source['cursor'], 'c'*40)
+    def test_comparison_must_share_the_exact_cursor_as_merge_base(self):
+        def read(path):
+            if '/git/ref/' in path:
+                return {'object': {'sha': 'a'*40}}
+            return {'status': 'ahead', 'merge_base_commit': {'sha': 'd'*40},
+                    'total_commits': 1, 'commits': [commit()]}
+        with self.assertRaisesRegex(ValueError, 'ancestor'):
+            pub.pending_commits(self.source, read)
     def test_markdown_preserved_and_retry_does_not_overwrite_edit(self):
         body = '[文字](https://example.com)\n第二行\n\n- 一\n- 二'
         keys = set()
@@ -97,12 +136,14 @@ class PublisherTests(unittest.TestCase):
                 entry=next((root/'flux').glob('**/index.md')).read_text()
                 self.assertIn('post/flux/new.png',entry)
                 self.assertNotIn('old.PNG',entry)
-    def test_folder_rename_keeps_cursor_in_parent_history(self):
-        from urllib.parse import parse_qs,urlparse
+    def test_folder_rename_keeps_cursor_in_repository_graph(self):
         self.source.update(path='post/flux',history_path='post')
-        def read(url):
-            self.assertEqual(parse_qs(urlparse(url).query)['path'],['post'])
-            return [commit('d'*40),commit('c'*40)]
+        def read(path):
+            if '/git/ref/' in path:
+                return {'object': {'sha': 'd'*40}}
+            self.assertIn('/compare/' + 'c'*40 + '...' + 'd'*40 + '?', path)
+            return {'status': 'ahead', 'merge_base_commit': {'sha': 'c'*40},
+                    'total_commits': 1, 'commits': [commit('d'*40)]}
         self.assertEqual([c['sha'] for c in pub.pending_commits(self.source,read)],['d'*40])
     def test_build_artifact_markdown_and_private_exclusion(self):
         (self.root/'scripts').mkdir()

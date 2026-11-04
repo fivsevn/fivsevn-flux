@@ -31,8 +31,8 @@ source_of_truth: site
 filename_policy: entrypoint
 
 created: '2026-03-17'
-updated: '2026-03-17'
-metadata_updated: '2026-10-30'
+updated: '2026-11-04'
+metadata_updated: '2026-11-04'
 
 extra:
   source: wordpress-live
@@ -46,5 +46,5 @@ extra:
   alt: 17 March, 2026 07:36
 ---
 
-做了一个昆虫数据库索引：<https://devlog.fivsevn.com/natsci/taxonomy/insecta/natsci-taxonomy-insecta-database-001.html>
+做了一个昆虫数据库索引：[昆虫数据库索引（历史存档）](https://github.com/fivsevn-agy/fivsevn-devlog/blob/8266fdfd7a9a5a8676735f6ebbcf167b2d4f6145/natsci/taxonomy/insecta/natsci-taxonomy-insecta-database-001.md)
 现在只是做出了索引方式的大框架，总之不再是零散的笔记一样、看到一条填一条。具体的内容会慢慢填充。

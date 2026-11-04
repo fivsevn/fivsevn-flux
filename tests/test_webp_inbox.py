@@ -175,8 +175,9 @@ class InboxTests(unittest.TestCase):
             return real_import(root, source, commit, keys, files,
                                read=lambda _: self.raw if commit['sha'] == 'b'*40 else b'broken', **options)
         try:
-            with patch.object(pub, 'pending_commits', return_value=[self.commit, replacement]), \
+            with patch.object(pub, 'pending_commits', return_value=('b'*40, [self.commit, replacement])), \
                  patch.object(pub, 'commit_files', return_value=files), \
+                 patch.object(pub, 'update_image_owners'), \
                  patch.object(pub, 'import_images', side_effect=import_snapshot):
                 pub.main()
             source = json.loads(self.state.read_text())['sources']['images']
@@ -186,16 +187,17 @@ class InboxTests(unittest.TestCase):
             self.assertTrue(any(meta['source_commit'] == 'b'*40 for meta in new))
         finally: pub.ROOT, pub.STATE = original_root, original_state
 
-    def test_cleanup_and_build_commits_do_not_change_cursor_or_receipt_batch(self):
+    def test_cleanup_commits_advance_graph_cursor_without_changing_receipt_batch(self):
         original_root, original_state = pub.ROOT, pub.STATE
         pub.ROOT, pub.STATE = self.root, self.state
         try:
             deleted = {**self.commit, 'sha': 'b'*40}
-            with patch.object(pub, 'pending_commits', return_value=[self.commit, deleted]), \
-                 patch.object(pub, 'commit_files', side_effect=[self.files, [{'filename': self.files[0]['filename'], 'status': 'removed'}]]):
+            with patch.object(pub, 'pending_commits', return_value=('b'*40, [self.commit, deleted])), \
+                 patch.object(pub, 'commit_files', side_effect=[self.files, [{'filename': self.files[0]['filename'], 'status': 'removed'}]]), \
+                 patch.object(pub, 'update_image_owners'):
                 pub.main()
             source = json.loads(self.state.read_text())['sources']['images']
-            self.assertEqual(source['cursor'], 'a'*40)
+            self.assertEqual(source['cursor'], 'b'*40)
             self.assertEqual(source['verification_commits'], ['a'*40])
         finally: pub.ROOT, pub.STATE = original_root, original_state
 

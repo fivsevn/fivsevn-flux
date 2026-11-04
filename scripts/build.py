@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 from pathlib import Path
-from urllib.parse import urlparse
+from urllib.parse import unquote, urlparse
+from html.parser import HTMLParser
+from io import BytesIO
 import argparse
 import hashlib
 import html
@@ -9,6 +11,7 @@ import re
 import shutil
 
 import mistune
+from PIL import Image, ImageOps
 
 from ingest_github import split_frontmatter
 from image_inbox import candidates
@@ -17,6 +20,8 @@ from site_post_metadata import is_published, metadata_view, published_datetime, 
 
 ROOT = Path(__file__).resolve().parents[1]
 PER_PAGE = 17
+DISPLAY_WIDTH = 1220  # Two pixels per CSS pixel in the existing 610px image area.
+IMAGE_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.gif', '.webp', '.heic', '.heif', '.avif'}
 
 
 markdown = mistune.create_markdown(
@@ -67,6 +72,82 @@ def rewrite_local_asset_paths(rendered_html, item_dir):
     return rendered_html
 
 
+def prepare_images(root, output, items):
+    """Keep archive bytes intact and generate smaller, static display copies."""
+    images = {}
+    for meta, _ in items:
+        assets = root / meta['_dir'] / 'assets'
+        if not assets.exists():
+            continue
+        if assets.is_symlink() or any(path.is_symlink() for path in assets.rglob('*')):
+            raise ValueError(f'Package assets must not follow symlinks: {assets}')
+        shutil.copytree(assets, output / assets.relative_to(root))
+        for source in sorted(assets.rglob('*')):
+            if not source.is_file() or source.suffix.lower() not in IMAGE_EXTENSIONS:
+                continue
+            relative = source.relative_to(root).as_posix()
+            with Image.open(source) as original:
+                # Do not flatten animations or rewrite their frame timing/loop count.
+                image = ImageOps.exif_transpose(original)
+                info = {'width': image.width, 'height': image.height, 'src': '/' + relative}
+                # MPO's additional HDR/auxiliary photos are not animation frames.
+                animated = getattr(original, 'is_animated', False) and original.format != 'MPO'
+                if not animated:
+                    transparent = 'A' in image.getbands() or 'transparency' in image.info
+                    image = image.convert('RGBA' if transparent else 'RGB')
+                    image.thumbnail((DISPLAY_WIDTH, image.height), Image.Resampling.LANCZOS)
+                    data = BytesIO()
+                    image.save(data, 'WEBP', quality=85, method=6,
+                               lossless=original.format == 'PNG' or transparent,
+                               icc_profile=original.info.get('icc_profile', b''))
+                    preview = data.getvalue()
+                    if len(preview) < source.stat().st_size:
+                        key = hashlib.sha256(relative.encode() + b'\0' + preview).hexdigest()[:24]
+                        display = output / 'display' / (key + '.webp')
+                        display.parent.mkdir(exist_ok=True)
+                        display.write_bytes(preview)
+                        info['src'] = '/' + display.relative_to(output).as_posix()
+            images['/' + relative] = info
+    return images
+
+
+def render_images(fragment, images, previews=True):
+    """Rewrite image tags without reserializing authored Markdown or HTML."""
+    class ImageTags(HTMLParser):
+        def __init__(self):
+            super().__init__(convert_charrefs=False)
+            self.offsets = [0]
+            self.replacements = []
+            for match in re.finditer('\n', fragment):
+                self.offsets.append(match.end())
+
+        def handle_starttag(self, tag, attributes):
+            if tag != 'img':
+                return
+            attributes = dict(attributes)
+            source = urlparse(attributes.get('src') or '')
+            image = images.get(unquote(source.path)) if not source.scheme and not source.netloc else None
+            if image:
+                if previews:
+                    attributes['src'] = image['src']
+                if 'width' not in attributes and 'height' not in attributes:
+                    attributes.update(width=str(image['width']), height=str(image['height']))
+            attributes.update(loading='lazy', decoding='async')
+            markup = '<img' + ''.join(' ' + name + ('' if value is None else '="' + html.escape(value, quote=True) + '"')
+                                     for name, value in attributes.items()) + '>'
+            line, column = self.getpos()
+            start = self.offsets[line - 1] + column
+            self.replacements.append((start, start + len(self.get_starttag_text()), markup))
+
+        handle_startendtag = handle_starttag
+
+    parser = ImageTags()
+    parser.feed(fragment)
+    for start, end, markup in reversed(parser.replacements):
+        fragment = fragment[:start] + markup + fragment[end:]
+    return fragment
+
+
 def page_rel_dir(fm):
     parts = fm["_dir"].split("/")
     if len(parts) >= 4 and parts[0] == "flux":
@@ -87,7 +168,7 @@ def feed_url(page_number):
     return f"/feed/{page_number}/"
 
 
-def render_entry(fm, body, title_href=None):
+def render_entry(fm, body, title_href=None, images=None, previews=True):
     ident = fm.get("id") or fm["_dir"].split("/")[-1]
     title = fm.get("title") or ident
     date = fm.get("date", "")
@@ -95,6 +176,7 @@ def render_entry(fm, body, title_href=None):
     renderer = trigger_markdown if fm.get("source") in {"github-trigger", "github-image"} else markdown
     html_body = renderer(body) if body else ""
     html_body = rewrite_local_asset_paths(html_body, fm["_dir"])
+    html_body = render_images(html_body, images or {}, previews)
 
     title_text = html.escape(str(title))
     if title_href:
@@ -223,8 +305,8 @@ def render_pager(current_page, total_pages):
     return f'<nav class="pager" aria-label="pagination">{" ".join(parts)}</nav>'
 
 
-def render_feed_page(page_items, current_page, total_pages, navigation_version=""):
-    entries = [render_entry(fm, body, title_href=page_url(fm)) for fm, body in page_items]
+def render_feed_page(page_items, current_page, total_pages, navigation_version="", images=None):
+    entries = [render_entry(fm, body, title_href=page_url(fm), images=images) for fm, body in page_items]
     pager = render_pager(current_page, total_pages)
     footer = render_license_bubble() + '\n<script src="/site-assets/intake.js" defer></script>'
     return f'''{render_head("flux.fivsevn", "五月七日的思考札记")}
@@ -287,6 +369,9 @@ def make_receipt(root, output, items):
         for _, archived, page in candidates(root):
             for public in (archived, page):
                 receipt["files"][public.as_posix()] = hashlib.sha256((output / public).read_bytes()).hexdigest()
+    # Display files are user-facing media too, and must be verified before cleanup.
+    for display in sorted((output / 'display').glob('*.webp')):
+        receipt['files'][display.relative_to(output).as_posix()] = hashlib.sha256(display.read_bytes()).hexdigest()
     digest = hashlib.sha256()
     for path in sorted(output.rglob("*")):
         if path.is_file():
@@ -317,9 +402,10 @@ def build(root=ROOT, output=None):
     (output / "site-assets/navigation.js").write_text(navigation, encoding="utf-8")
     navigation_version = hashlib.sha256(navigation.encode()).hexdigest()[:12]
     (output / ".nojekyll").touch()
+    images = prepare_images(root, output, items)
     total_pages = max(1, (len(items) + PER_PAGE - 1) // PER_PAGE)
     for number in range(1, total_pages + 1):
-        document = render_feed_page(items[(number - 1) * PER_PAGE:number * PER_PAGE], number, total_pages, navigation_version)
+        document = render_feed_page(items[(number - 1) * PER_PAGE:number * PER_PAGE], number, total_pages, navigation_version, images)
         relative = Path("index.html") if number == 1 else Path("feed", str(number), "index.html")
         destination = output / relative
         destination.parent.mkdir(parents=True, exist_ok=True)
@@ -332,15 +418,10 @@ def build(root=ROOT, output=None):
         document = f"""{render_head(f"{title} · flux.fivsevn", title)}
 {render_return_bubble(return_url)}
 <section class="feed" aria-label="single flux">
-{render_entry(meta, body, title_href=page_url(meta))}
+{render_entry(meta, body, title_href=page_url(meta), images=images, previews=False)}
 </section>
 {render_close(render_license_bubble(), navigation_version)}"""
         (destination / "index.html").write_text(document, encoding="utf-8")
-        assets = root / meta["_dir"] / "assets"
-        if assets.exists():
-            if any(path.is_symlink() for path in assets.rglob("*")):
-                raise ValueError(f"Package assets must not follow symlinks: {assets}")
-            shutil.copytree(assets, output / assets.relative_to(root))
     receipt = make_receipt(root, output, items)
     print(f"Built {len(items)} published posts / {total_pages} feed pages → {output}")
     return receipt

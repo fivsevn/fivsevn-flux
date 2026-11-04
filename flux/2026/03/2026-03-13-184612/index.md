@@ -31,8 +31,8 @@ source_of_truth: site
 filename_policy: entrypoint
 
 created: '2026-03-13'
-updated: '2026-03-13'
-metadata_updated: '2026-10-30'
+updated: '2026-11-04'
+metadata_updated: '2026-11-04'
 
 extra:
   source: wordpress-live
@@ -51,4 +51,4 @@ extra:
 
 原文链接：<https://www.nature.com/articles/d41586-026-00594-w>
 
-ai翻译记在这里：<https://devlog.fivsevn.com/natsci/taxonomy/chondrichthyes/natsci-taxonomy-chondrichthyes-translation-001.html>
+ai翻译记在这里：<https://devlog.fivsevn.com/natsci/taxonomy/chondrichthyes/natsci-taxonomy-shark-phylogeny-001.html>

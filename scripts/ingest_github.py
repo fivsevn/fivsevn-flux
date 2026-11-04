@@ -51,25 +51,35 @@ def split_frontmatter(text: str):
     return meta, body.strip()
 
 
-def pending_commits(source: dict, read=api) -> list[dict]:
-    """Never silently replay history if a cursor disappeared after a force push."""
-    pending = []
+def pending_commits(source: dict, read=api, *, with_head=False):
+    """Read the complete Git graph difference, including newly merged old work."""
+    repository, cursor = source["repository"], source["cursor"]
+    head = read(f"repos/{repository}/git/ref/heads/main")["object"]["sha"]
+    pending, seen, total = [], set(), None
     for page in range(1, 101):
-        parameters = {"sha": "main", "per_page": 100, "page": page}
-        history_path = source.get("history_path", source["path"])
-        if history_path:
-            parameters["path"] = history_path
-        query = urlencode(parameters)
-        commits = read(f"repos/{source['repository']}/commits?{query}")
-        if not isinstance(commits, list):
-            raise ValueError("Unexpected commit listing")
+        query = urlencode({"per_page": 100, "page": page})
+        comparison = read(f"repos/{repository}/compare/{cursor}...{head}?{query}")
+        if (not isinstance(comparison, dict)
+                or comparison.get("status") not in {"ahead", "identical"}
+                or comparison.get("merge_base_commit", {}).get("sha") != cursor):
+            raise ValueError(f"Source cursor is not an ancestor of main for {repository}; review history before importing")
+        commits, count = comparison.get("commits"), comparison.get("total_commits")
+        if (not isinstance(commits, list) or type(count) is not int or count < 0
+                or total is not None and count != total):
+            raise ValueError("Unexpected commit comparison")
+        total = count
         for commit in commits:
-            if commit["sha"] == source["cursor"]:
-                return list(reversed(pending))
+            if commit["sha"] in seen:
+                raise ValueError("Duplicate commit in paginated comparison")
+            seen.add(commit["sha"])
             pending.append(commit)
-        if len(commits) < 100:
-            break
-    raise ValueError(f"Source cursor missing for {source['repository']}; review history before importing")
+        if len(pending) == total:
+            # The comparison API returns oldest commits first. The graph head
+            # is kept separately because the last input can belong to a branch.
+            return (head, pending) if with_head else pending
+        if not commits or len(pending) > total:
+            raise ValueError("Incomplete commit comparison; no source cursor was advanced")
+    raise ValueError("Commit comparison exceeded API pagination limit")
 
 
 def commit_files(repository: str, sha: str, read=api) -> list[dict]:
@@ -81,6 +91,104 @@ def commit_files(repository: str, sha: str, read=api) -> list[dict]:
         if len(batch) < 100:
             return files
     raise ValueError("Commit file listing exceeded API pagination limit")
+
+
+def cached_api(path, read, cache):
+    if path not in cache:
+        cache[path] = read(path)
+    return cache[path]
+
+
+def file_identity(repository, revision, filename, read, cache):
+    tree = cached_api(f"repos/{repository}/git/commits/{revision}", read, cache)["tree"]["sha"]
+    parts = PurePosixPath(filename).parts
+    for index, part in enumerate(parts):
+        listing = cached_api(f"repos/{repository}/git/trees/{tree}", read, cache)
+        if listing.get("truncated"):
+            raise ValueError("Incomplete Git tree while checking an upload")
+        entry = next((item for item in listing["tree"] if item["path"] == part), None)
+        if entry is None:
+            return None
+        if index == len(parts) - 1:
+            return entry["mode"], entry["type"], entry["sha"]
+        if entry["type"] != "tree":
+            return None
+        tree = entry["sha"]
+    return None
+
+
+def publication_files(source: dict, commit: dict, files: list[dict], read=api, cache=None) -> list[dict]:
+    """Exclude merge copies of a parent's exact file, retaining new resolutions.
+
+    GitHub's merge file listing is a first-parent diff, so it can repeat uploads
+    already present in another parent. Compare the path, mode and blob identity
+    rather than image bytes: later independent uploads remain separate events.
+    """
+    parents = commit.get("parents", [])
+    if len(parents) < 2:
+        return files
+    cache = {} if cache is None else cache
+    repository = source["repository"]
+
+    selected = []
+    for item in files:
+        filename = item["filename"]
+        relevant = filename == source["path"] or filename.startswith(source["path"].rstrip("/") + "/")
+        if relevant and item["status"] != "removed":
+            current = file_identity(repository, commit["sha"], filename, read, cache)
+            if current is None:
+                raise ValueError("Committed upload is missing from its Git tree: " + filename)
+            if any(current == file_identity(repository, parent["sha"], filename, read, cache) for parent in parents):
+                continue
+        selected.append(item)
+    return selected
+
+
+def update_image_owners(root, source, head, paths, previous, read=api, cache=None):
+    """Keep cleanup ownership on the input actually retained by the final merge.
+
+    Follow equal file identities through the first parent when possible, then
+    through another matching parent. Equal bytes in independent upload events
+    do not replace the owner selected by that history.
+    """
+    if not paths:
+        return
+    cache = {} if cache is None else cache
+    repository = source["repository"]
+    claims = {}
+    for owners in (previous, source.get("latest_uploads", {})):
+        for path, sha in owners.items():
+            claims.setdefault(path, set()).add(sha)
+    for entry in (root / "flux").glob("**/index.md"):
+        meta, _ = split_frontmatter(entry.read_text(encoding="utf-8"))
+        meta = metadata_view(meta)
+        upload = meta.get("upload")
+        if (meta.get("source_repository") == repository and meta.get("source_commit")
+                and isinstance(upload, dict) and upload.get("path") in paths):
+            claims.setdefault(upload["path"], set()).add(meta["source_commit"])
+    owners = source.setdefault("latest_uploads", {})
+    for filename in paths:
+        revision, visited = head, set()
+        while revision:
+            if revision in visited:
+                raise ValueError("Cyclic Git history while checking upload ownership")
+            visited.add(revision)
+            current = file_identity(repository, revision, filename, read, cache)
+            if current is None:
+                break
+            if revision in claims.get(filename, ()):
+                owners[filename] = revision
+                break
+            commit = cached_api(f"repos/{repository}/git/commits/{revision}", read, cache)
+            parent = next((parent["sha"] for parent in commit["parents"]
+                           if file_identity(repository, parent["sha"], filename, read, cache) == current), None)
+            if parent is None:
+                # A legacy create-only alias may intentionally have no saved
+                # package for this input. Its event still reserves the path,
+                # so an older archive cannot clear an unarchived original.
+                owners[filename] = revision
+                break
+            revision = parent
 
 
 def source_date(commit: dict) -> datetime:
@@ -297,10 +405,20 @@ def main():
     state = json.loads(STATE.read_text(encoding="utf-8"))
     keys = existing_keys(ROOT)
     total = 0
+    tree_cache = {}
     for kind, source in state["sources"].items():
-        commits = pending_commits(source)
+        head, commits = pending_commits(source, with_head=True)
+        previous_owners = dict(source.get("latest_uploads", {}))
         consumed = []
-        batches = [(commit, commit_files(source["repository"], commit["sha"])) for commit in commits]
+        batches, image_paths = [], set()
+        for commit in commits:
+            files = commit_files(source["repository"], commit["sha"])
+            if kind != "text":
+                image_paths.update(item["filename"] for item in files
+                                   if item["status"] != "removed" and item["filename"].startswith(source["path"] + "/")
+                                   and PurePosixPath(item["filename"]).suffix.lower() in EXTENSIONS)
+            selected = publication_files(source, commit, files, cache=tree_cache)
+            batches.append((commit, selected))
         last_change = {}
         for index, (_, files) in enumerate(batches):
             for item in files:
@@ -319,8 +437,12 @@ def main():
                     continue
                 superseded = {item["filename"] for item in files if last_change[item["filename"]] > index}
                 total += import_images(ROOT, source, commit, keys, files, superseded=superseded)
-            source["cursor"] = commit["sha"]
             consumed.append(commit["sha"])
+        if kind != "text":
+            update_image_owners(ROOT, source, head, image_paths, previous_owners, cache=tree_cache)
+        # Every newly reachable commit was examined, even when a merge retained
+        # its first parent's input and therefore had no source-file diff.
+        source["cursor"] = head
         if consumed:
             # Keep every imported snapshot in the receipt, including earlier
             # commits that arrived in the same push. Retain this list on retry.
