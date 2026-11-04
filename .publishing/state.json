@@ -2,7 +2,7 @@
   "last_checked_day": "2026-11-05",
   "sources": {
     "images": {
-      "cursor": "abe347735c4124bd8ef85804a220e99dd3b2122d",
+      "cursor": "56d144efc6282513da2fbf6b84438b407f6f549a",
       "history_path": "",
       "identity": "commit-path",
       "path": "trigger_imgs",
@@ -12,7 +12,7 @@
       ]
     },
     "text": {
-      "cursor": "abe347735c4124bd8ef85804a220e99dd3b2122d",
+      "cursor": "56d144efc6282513da2fbf6b84438b407f6f549a",
       "history_path": "",
       "path": "trigger_text.md",
       "repository": "fivsevn/fivsevn-flux",
