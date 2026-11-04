@@ -171,7 +171,8 @@ class PublisherTests(unittest.TestCase):
         receipt = json.loads((self.root/'_site/deployment.json').read_text())
         self.assertRegex(receipt['site_sha256'], r'^[0-9a-f]{64}$')
         self.assertFalse((self.root/'.publishing/site.sha256').exists())
-        self.assertEqual(len(receipt['files']), 2)
+        self.assertEqual(len(receipt['files']), 4)
+        self.assertTrue({'sitemap.xml', 'robots.txt'} <= set(receipt['files']))
         self.assertNotIn('DRAFT_SENTINEL', json.dumps(receipt))
         # Editing the upper title updates both views without moving the page or
         # changing the lower publication timestamp.

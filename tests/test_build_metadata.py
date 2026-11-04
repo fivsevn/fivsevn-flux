@@ -8,6 +8,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+import xml.etree.ElementTree as ET
 
 from PIL import Image
 
@@ -29,6 +30,32 @@ class EntryCounter(HTMLParser):
         attributes = dict(attributes)
         if tag == 'article' and attributes.get('class') == 'entry':
             self.entries.append(attributes['id'])
+
+
+class HeadMetadata(HTMLParser):
+    def __init__(self, document):
+        super().__init__()
+        self.values = {}
+        self.title = ''
+        self.in_title = False
+        self.feed(document)
+
+    def handle_starttag(self, tag, attributes):
+        attributes = dict(attributes)
+        if tag == 'meta':
+            self.values[attributes.get('name', attributes.get('property'))] = attributes.get('content')
+        elif tag == 'link' and attributes.get('rel') == 'canonical':
+            self.values['canonical'] = attributes['href']
+        elif tag == 'title':
+            self.in_title = True
+
+    def handle_endtag(self, tag):
+        if tag == 'title':
+            self.in_title = False
+
+    def handle_data(self, data):
+        if self.in_title:
+            self.title += data
 
 
 class ArtifactTests(unittest.TestCase):
@@ -92,6 +119,35 @@ class ArtifactTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             renderer.build(self.root)
         self.assertEqual((site / 'sentinel').read_text(), 'keep prior artifact')
+
+    def test_canonical_social_metadata_and_discovery_follow_public_routes(self):
+        for number in range(18):
+            self.post(number, media=number == 0)
+        hidden, _, _ = self.post(19, status='hidden')
+        ident, _, _ = self.post(20, media=True)
+        renderer.build(self.root)
+        site = self.root / '_site'
+        origin = 'https://flux.fivsevn.com'
+        detail = f'page/2026/10/{ident}/'
+        for path, route, kind in [('index.html', '/', 'website'), ('feed/2/index.html', '/feed/2/', 'website'),
+                                  (detail + 'index.html', '/' + detail, 'article')]:
+            head = HeadMetadata((site / path).read_text())
+            self.assertEqual(origin + route, head.values['canonical'])
+            self.assertEqual(origin + route, head.values['og:url'])
+            self.assertEqual(kind, head.values['og:type'])
+            self.assertEqual(head.title, head.values['og:title'])
+            self.assertEqual('summary', head.values['twitter:card'])
+            self.assertEqual(head.values['description'], head.values['twitter:description'])
+        head = HeadMetadata((site / detail / 'index.html').read_text())
+        self.assertEqual(origin + f'/flux/2026/10/{ident}/assets/original.png', head.values['og:image'])
+        sitemap = ET.parse(site / 'sitemap.xml')
+        locations = [node.text for node in sitemap.findall('.//{*}loc')]
+        self.assertEqual(21, len(locations))
+        self.assertIn(origin + '/feed/2/', locations)
+        self.assertIn(origin + '/' + detail, locations)
+        self.assertFalse(any(hidden in location for location in locations))
+        self.assertEqual([], sitemap.findall('.//{*}lastmod'))
+        self.assertIn('Sitemap: ' + origin + '/sitemap.xml', (site / 'robots.txt').read_text())
 
     def test_text_trigger_fills_core_and_keeps_explicit_controls(self):
         source = {'repository': 'owner/flux', 'path': 'trigger_text.md'}

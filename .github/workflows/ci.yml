@@ -1,0 +1,77 @@
+name: Check Flux
+
+on:
+  pull_request:
+    paths:
+      - 'trigger_text.md'
+      - 'trigger_imgs/**'
+      - 'flux/**'
+      - 'site-assets/**'
+      - 'scripts/**'
+      - 'schemas/**'
+      - 'tests/**'
+      - '.publishing/**'
+      - 'style.css'
+      - 'requirements.txt'
+      - 'CNAME'
+      - '.github/spec-ref'
+      - '.github/workflows/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: flux-check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      # Keep the Spec pin with the checked-out source and local contract copies.
+      - name: Read pinned Spec revision
+        id: spec_version
+        shell: bash
+        run: |
+          spec_ref="$(cat .github/spec-ref)"
+          if [[ ! "$spec_ref" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "::error::.github/spec-ref must contain one full Spec commit SHA"
+            exit 1
+          fi
+          echo "ref=$spec_ref" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: fivsevn-agy/fivsevn-spec
+          ref: ${{ steps.spec_version.outputs.ref }}
+          path: .metadata-spec
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.13'
+          cache: pip
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Verify shared contract copies
+        run: |
+          cmp scripts/site_post_metadata.py .metadata-spec/tools/site_post_metadata.py
+          cmp scripts/media_naming.py .metadata-spec/tools/media_naming.py
+          cmp schemas/content-metadata.schema.json .metadata-spec/content/content-metadata.schema.json
+          cmp schemas/site-post.schema.json .metadata-spec/content/site-post.schema.json
+      - name: Test publishing behavior
+        run: python -m unittest discover -s tests -v
+      - name: Validate saved metadata and publication media
+        run: |
+          python scripts/site_post_metadata.py check --site flux --root flux --schema-dir schemas
+          python .metadata-spec/tools/check_metadata.py --profile site-post-v1 --site flux --content-root flux --root . --schema .metadata-spec/content/content-metadata.schema.json
+          python scripts/media_naming.py check --site flux --root flux
+          python scripts/normalize_images.py --check
+      - name: Build and validate the static site
+        run: |
+          python scripts/build.py
+          python scripts/normalize_images.py --check --output _site

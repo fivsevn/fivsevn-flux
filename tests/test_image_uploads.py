@@ -123,7 +123,8 @@ class ImageUploadTests(unittest.TestCase):
         subprocess.run([sys.executable, str(self.root/'scripts/build.py')], check=True, capture_output=True)
         site = self.root/'_site'
         receipt = json.loads((site/'deployment.json').read_text())
-        self.assertEqual(len(receipt['files']), 5)
+        self.assertEqual(len(receipt['files']), 7)
+        self.assertTrue({'sitemap.xml', 'robots.txt'} <= set(receipt['files']))
         image = next(p for p in receipt['files'] if '/assets/' in p)
         self.assertEqual(receipt['files'][image], hashlib.sha256(pub.convert_image(image_bytes(), 'new.png')).hexdigest())
         def read(url):

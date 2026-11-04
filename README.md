@@ -241,6 +241,8 @@ List bookmarks with a post hash follow that post to its current page when pagina
 
 [Build and deploy Flux](https://github.com/fivsevn/fivsevn-flux/actions/workflows/build.yml) is the only deployment workflow. Relevant pushes to `main` and manual dispatch start it. Runs are serialized, and it uses this sequence:
 
+Pull requests run `Check Flux` with read-only repository access: tests, pinned Spec checks, metadata/media validation and a static build, without importing real uploads or publishing. Changes to `CNAME` trigger these checks and the main-branch deployment. The build adds canonical/social metadata, `sitemap.xml` and `robots.txt` from published page routes; page bodies and media are unchanged.
+
 1. Check out current `main` and install dependencies.
 2. Normalize saved frontmatter and saved/UI images, run tests, and validate the shared core/profile schemas.
 3. Read new committed text and image snapshots from GitHub, preserving processed-event identities.

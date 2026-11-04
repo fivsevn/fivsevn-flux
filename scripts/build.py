@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from pathlib import Path
-from urllib.parse import unquote, urlparse
+from urllib.parse import quote, unquote, urljoin, urlparse
 from html.parser import HTMLParser
 from io import BytesIO
 import argparse
@@ -9,6 +9,7 @@ import html
 import json
 import re
 import shutil
+import xml.etree.ElementTree as ET
 
 import mistune
 from PIL import Image, ImageOps
@@ -197,7 +198,32 @@ def render_entry(fm, body, title_href=None, images=None, previews=True):
 </article>'''
 
 
-def render_head(title, description):
+def first_image(fragment):
+    class Images(HTMLParser):
+        def __init__(self):
+            super().__init__()
+            self.source = None
+
+        def handle_starttag(self, tag, attributes):
+            source = dict(attributes).get('src', '')
+            if tag == 'img' and self.source is None and source and urlparse(source).scheme in {'', 'http', 'https'}:
+                self.source = source
+
+    images = Images()
+    images.feed(fragment)
+    return images.source or '/site-assets/avatar-main.webp'
+
+
+def render_head(title, description, canonical, image, kind='website'):
+    tags = '\n'.join(
+        f' <meta {attribute}="{name}" content="{html.escape(value, quote=True)}">'
+        for attribute, name, value in [
+            ('property', 'og:title', title), ('property', 'og:description', description),
+            ('property', 'og:type', kind), ('property', 'og:url', canonical),
+            ('property', 'og:image', image), ('property', 'og:site_name', 'flux.fivsevn'),
+            ('name', 'twitter:card', 'summary'), ('name', 'twitter:title', title),
+            ('name', 'twitter:description', description), ('name', 'twitter:image', image),
+        ])
     return f'''<!doctype html>
 <html lang="zh-Hans">
 <head>
@@ -205,6 +231,8 @@ def render_head(title, description):
  <meta name="viewport" content="width=device-width, initial-scale=1">
  <title>{html.escape(title)}</title>
  <meta name="description" content="{html.escape(description, quote=True)}">
+ <link rel="canonical" href="{html.escape(canonical, quote=True)}">
+{tags}
  <link rel="stylesheet" href="/style.css">
 </head>
 <body>
@@ -307,11 +335,11 @@ def render_pager(current_page, total_pages):
     return f'<nav class="pager" aria-label="pagination">{" ".join(parts)}</nav>'
 
 
-def render_feed_page(page_items, current_page, total_pages, navigation_version="", images=None):
+def render_feed_page(page_items, current_page, total_pages, navigation_version="", images=None, origin='https://flux.fivsevn.com'):
     entries = [render_entry(fm, body, title_href=page_url(fm), images=images) for fm, body in page_items]
     pager = render_pager(current_page, total_pages)
     footer = render_license_bubble() + '\n<script src="/site-assets/intake.js" defer></script>'
-    return f'''{render_head("flux.fivsevn", "五月七日的思考札记")}
+    return f'''{render_head("flux.fivsevn", "五月七日的思考札记", origin + feed_url(current_page), origin + '/site-assets/avatar-main.webp')}
 {render_feed_header()}
 <section class="feed" aria-label="flux">
 {chr(10).join(entries)}
@@ -355,7 +383,8 @@ def make_receipt(root, output, items):
         "version": 1,
         "sources": {kind: {key: source[key] for key in ("repository", "path", "cursor")}
                     for kind, source in sources.items()},
-        "files": {"index.html": hashlib.sha256((output / "index.html").read_bytes()).hexdigest()},
+        "files": {path: hashlib.sha256((output / path).read_bytes()).hexdigest()
+                  for path in ('index.html', 'sitemap.xml', 'robots.txt')},
     }
     for meta, _ in items:
         if any(meta.get("source_repository") == source["repository"]
@@ -391,6 +420,7 @@ def build(root=ROOT, output=None):
     if output == root or root.is_relative_to(output) or output.is_relative_to(root / "flux"):
         raise ValueError("Unsafe build output path")
     items = read_posts(root)
+    origin = 'https://' + ((root / 'CNAME').read_text().strip() if (root / 'CNAME').is_file() else 'flux.fivsevn.com')
     if output.exists():
         shutil.rmtree(output)
     output.mkdir(parents=True)
@@ -407,7 +437,7 @@ def build(root=ROOT, output=None):
     images = prepare_images(root, output, items)
     total_pages = max(1, (len(items) + PER_PAGE - 1) // PER_PAGE)
     for number in range(1, total_pages + 1):
-        document = render_feed_page(items[(number - 1) * PER_PAGE:number * PER_PAGE], number, total_pages, navigation_version, images)
+        document = render_feed_page(items[(number - 1) * PER_PAGE:number * PER_PAGE], number, total_pages, navigation_version, images, origin)
         relative = Path("index.html") if number == 1 else Path("feed", str(number), "index.html")
         destination = output / relative
         destination.parent.mkdir(parents=True, exist_ok=True)
@@ -417,13 +447,22 @@ def build(root=ROOT, output=None):
         destination.mkdir(parents=True, exist_ok=True)
         title = str(meta.get("title") or meta["id"])
         return_url = feed_url(index // PER_PAGE + 1) + "#" + meta["id"]
-        document = f"""{render_head(f"{title} · flux.fivsevn", title)}
+        entry = render_entry(meta, body, title_href=page_url(meta), images=images, previews=False)
+        document = f"""{render_head(f"{title} · flux.fivsevn", title, origin + quote(page_url(meta), safe='/'), urljoin(origin + '/', first_image(entry)), 'article')}
 {render_return_bubble(return_url)}
 <section class="feed" aria-label="single flux">
-{render_entry(meta, body, title_href=page_url(meta), images=images, previews=False)}
+{entry}
 </section>
 {render_close(render_license_bubble(), navigation_version)}"""
         (destination / "index.html").write_text(document, encoding="utf-8")
+    namespace = 'http://www.sitemaps.org/schemas/sitemap/0.9'
+    ET.register_namespace('', namespace)
+    sitemap = ET.Element('{' + namespace + '}urlset')
+    paths = [feed_url(number) for number in range(1, total_pages + 1)] + [page_url(meta) for meta, _ in items]
+    for path in paths:
+        ET.SubElement(ET.SubElement(sitemap, '{' + namespace + '}url'), '{' + namespace + '}loc').text = origin + quote(path, safe='/')
+    ET.ElementTree(sitemap).write(output / 'sitemap.xml', encoding='utf-8', xml_declaration=True)
+    (output / 'robots.txt').write_text('User-agent: *\nAllow: /\n\nSitemap: ' + origin + '/sitemap.xml\n', encoding='utf-8')
     receipt = make_receipt(root, output, items)
     print(f"Built {len(items)} published posts / {total_pages} feed pages → {output}")
     return receipt
