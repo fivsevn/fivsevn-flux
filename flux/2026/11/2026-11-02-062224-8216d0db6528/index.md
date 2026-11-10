@@ -31,7 +31,7 @@ source_of_truth: site
 filename_policy: entrypoint
 
 created: '2026-11-02'
-updated: '2026-11-02'
+updated: '2026-11-10'
 metadata_updated: '2026-11-02'
 
 extra:
@@ -52,4 +52,4 @@ legacy:
 ---
 
 一些曾经被认为也许会消失的行业似乎又要回来了...⬇️
-[评论｜Scripps 正在裁撤主播、增聘记者：这是地方电视新闻的未来吗？](https://devlog.fivsevn.com/posts/2026/11/posts-2026-scripps-anchorless-local-tv-news-001/)
+[Opinion | Scripps is cutting anchors and adding reporters. Is this the future of local TV news?](https://devlog.fivsevn.com/posts/2026/11/posts-2026-scripps-anchorless-local-tv-news-001/)
