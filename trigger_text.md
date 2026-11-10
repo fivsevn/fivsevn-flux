@@ -8,6 +8,11 @@ title: ""
 # YAML 配置不会显示在网页上，正文写在配置区结束线后面
 ---
 
-一些曾经被认为也许会消失的行业似乎又要回来了...⬇️
-[评论｜Scripps 正在裁撤主播、增聘记者：这是地方电视新闻的未来吗？](https://devlog.fivsevn.com/posts/2026/11/posts-2026-scripps-anchorless-local-tv-news-001/)
+> But...you know who you are
+> and what you want.
+> Many may not approve, but
+> you simply do not care.
+> I call that freedom indeed.
+
+*Miss Scarlet and the Duke* S2E1
 
